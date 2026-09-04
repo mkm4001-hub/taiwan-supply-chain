@@ -31,7 +31,7 @@ st.set_page_config(
 )
 
 # 系統預設存取密碼（使用者可隨時在此修改為與 V25.2 相同之密碼）
-DEFAULT_SYSTEM_PASSWORD = "v25"
+DEFAULT_SYSTEM_PASSWORD = "pwd001!"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "master_supply_chain_db.json")
