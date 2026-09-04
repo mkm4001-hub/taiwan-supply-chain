@@ -1,13 +1,16 @@
 """
 ================================================================================
-科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦正式版 (第 2 次深度優化)
-根據使用者反饋升級：
-1. 頂部標籤頁 (Tabs) 字體放大 1.22 倍，且當前選中頁面加粗體 (800) 並高亮顯示！
-2. 點擊「檢視供應鏈」或「進入產業鏈」按鈕後，直接穿透進入下一層專屬獨立頁面（隱藏上層卡片），
-   並於頂部設置清晰的「← 返回清單」按鈕，徹底告別下方堆疊排版的混亂感！
-3. 永久磁碟保存機制：每次單股更新或批次更新，資料與精確日期時間（price_date、last_synced_at）
-   立即寫入 master_supply_chain_db.json 保存，明日開啟絕不流失！
-4. 保留每家廠商專屬的「🔄 更新行情」按鈕，以及正下方的「🐋 V25.2 分析」按鈕與獨立網頁跳轉！
+科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦正式版 (第 3 次深度升級)
+根據使用者最新反饋全面升級：
+1. 【公司名稱與股號字體放大 2 倍】：
+   - 全面修復淺色/深色模式配色衝突，公司名稱與股號放大至 1.85rem (約2倍大)，加粗呈現「公司名稱 (股號)」，保證在白底與黑底均清晰醒目！
+2. 【全站密碼登入保護機制】：
+   - 內建密碼驗證閘門，需輸入與 V25.2 相同的密碼方可解鎖，未授權者無法存取。
+3. 【直通獨立 V25.2 程式進行完整分析】：
+   - 在「更新行情」正下方設置「🐋 V25.2 完整分析 ↗」按鈕，點擊後直接新開分頁跳轉至你的獨立 V25.2 網頁，
+     並於網址自動附帶股票代號與授權金鑰 (?stock=2330&auth=...)，無縫啟動完整大局透視分析！
+4. 【永久磁碟保存與資料日期】：
+   - 更新資料即刻寫入硬碟 JSON 檔保存，標註精確報價日期與更新時間，明日開啟絕不流失。
 ================================================================================
 """
 
@@ -27,12 +30,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 使用絕對路徑以確保本地或雲端環境皆能準確寫入磁碟保存
+# 系統預設存取密碼（使用者可隨時在此修改為與 V25.2 相同之密碼）
+DEFAULT_SYSTEM_PASSWORD = "v25"
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "master_supply_chain_db.json")
 
 # ==============================================================================
-# 注入全域自訂 CSS：分頁字體放大 1.22 倍、選中標籤加粗高亮
+# 全域自訂 CSS（適應深色/淺色主題，字體放大與選中標籤加粗）
 # ==============================================================================
 st.markdown("""
 <style>
@@ -40,7 +45,7 @@ st.markdown("""
     div[data-baseweb="tab-list"] {
         gap: 12px !important;
         margin-bottom: 24px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
     }
     div[data-baseweb="tab-list"] button[role="tab"] {
         font-size: 1.22rem !important;
@@ -49,31 +54,26 @@ st.markdown("""
         border-radius: 10px 10px 0 0 !important;
         transition: all 0.25s ease !important;
     }
-    /* 當前選中的標籤頁：字體變粗體 (800) + 高亮亮藍 + 底部邊框 */
+    /* 當前選中的標籤頁：字體變粗體 (800) + 高亮 + 底部線 */
     div[data-baseweb="tab-list"] button[aria-selected="true"] {
         font-weight: 800 !important;
-        color: #38bdf8 !important;
-        border-bottom: 3.5px solid #38bdf8 !important;
-        background: rgba(56, 189, 248, 0.08) !important;
+        color: #0284c7 !important;
+        border-bottom: 3.5px solid #0284c7 !important;
+        background: rgba(2, 132, 199, 0.08) !important;
     }
-    /* 未選中的標籤頁：中等字重 + 灰階 */
     div[data-baseweb="tab-list"] button[aria-selected="false"] {
         font-weight: 500 !important;
-        color: #94a3b8 !important;
-    }
-    div[data-baseweb="tab-list"] button[role="tab"]:hover {
-        color: #f1f5f9 !important;
-        background: rgba(255, 255, 255, 0.04) !important;
+        color: #64748b !important;
     }
 
-    /* 頂部橫幅微光樣式 */
+    /* 頂部橫幅樣式 */
     .hero-banner {
         padding: 18px 24px;
-        background: linear-gradient(135deg, #0b1329 0%, #1e1b4b 100%);
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
         border-radius: 18px;
-        border: 1px solid rgba(56,189,248,0.28);
+        border: 1px solid rgba(56,189,248,0.35);
         margin-bottom: 24px;
-        box-shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.2);
+        box-shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.25);
     }
     .hero-title {
         color: #ffffff;
@@ -88,22 +88,58 @@ st.markdown("""
         font-size: 0.95rem;
     }
 
-    /* 廠商卡片專屬樣式 */
+    /* 廠商卡片專屬樣式 (自適應雙色模式) */
     .company-card {
-        padding: 12px 16px;
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 12px;
-        background: rgba(255,255,255,0.025);
-        margin-bottom: 8px;
+        padding: 14px 18px;
+        border: 1.5px solid rgba(2, 132, 199, 0.25);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.04);
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 資料庫載入與 Session State 管理（無快取，磁碟持久化）
+# 密碼驗證閘門（只有輸入正確密碼才可存取整個情報庫）
+# ==============================================================================
+def check_password_auth():
+    """系統密碼驗證閘門，未授權者無法查看與存取資料庫"""
+    if st.session_state.get("authenticated", False):
+        return True
+
+    st.markdown("""
+        <div style="max-width: 520px; margin: 50px auto 24px auto; padding: 28px; border-radius: 18px; border: 2px solid #0284c7; background: rgba(2, 132, 199, 0.04); text-align: center;">
+            <div style="font-size: 2.8rem; margin-bottom: 10px;">🔒</div>
+            <h2 style="color: #0284c7; margin: 0 0 8px 0; font-weight: 800;">科技巨頭台灣供應鏈情報庫</h2>
+            <p style="color: #64748b; font-size: 0.92rem; margin: 0;">請輸入系統存取密碼以進行身分認證（可與 V25.2 設定相同）</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    col_l, col_m, col_r = st.columns([1.2, 2, 1.2])
+    with col_m:
+        entered_pwd = st.text_input("存取密碼", type="password", key="input_system_pwd", placeholder="請輸入授權密碼...")
+        if st.button("🔐 驗證登入 ➔", use_container_width=True):
+            # 支援從 Streamlit Secrets 或預設變數比對
+            correct_pwd = st.secrets.get("PASSWORD", DEFAULT_SYSTEM_PASSWORD)
+            if entered_pwd == correct_pwd:
+                st.session_state["authenticated"] = True
+                st.session_state["user_pwd"] = entered_pwd
+                st.success("✅ 認證成功，正在載入資料庫...")
+                time.sleep(0.5)
+                st.rerun()
+            else:
+                st.error("❌ 密碼錯誤！未獲授權無法存取情報庫。")
+    return False
+
+# 執行驗證閘門
+if not check_password_auth():
+    st.stop()
+
+# ==============================================================================
+# 資料庫載入與 Session State 管理
 # ==============================================================================
 def init_database():
-    """初始化並將資料庫置入 session_state，確保所有修改立即連動至畫面上"""
     if "db" not in st.session_state:
         if os.path.exists(DB_PATH):
             with open(DB_PATH, "r", encoding="utf-8") as f:
@@ -138,14 +174,14 @@ class V25MarketSyncEngine:
         tw_code = f"{stock_id}.TW"
         two_code = f"{stock_id}.TWO"
         
-        # 1. 擬真隨機安全延遲 (V25.2 防爬設定)
+        # 1. 擬真隨機安全延遲
         if apply_delay:
             delay_time = random.uniform(1.5, 3.0)
             if status_placeholder:
                 status_placeholder.text(f"⏳ 正在載入 {stock_id} ... (擬真防爬安全延遲 {delay_time:.2f} 秒)")
             time.sleep(delay_time)
 
-        # 2. 方案 A：yfinance (優先，支援上市櫃自動重試)
+        # 2. yfinance 雙軌切換
         try:
             import yfinance as yf
             for code in [tw_code, two_code]:
@@ -160,7 +196,6 @@ class V25MarketSyncEngine:
                             "price": f"{close_price:,.1f} 元" if close_price >= 100 else f"{close_price:.2f} 元",
                             "raw_price": close_price,
                             "date": trade_date,
-                            "source": f"yfinance ({code})",
                             "status": "success"
                         }, None
                 except Exception:
@@ -168,7 +203,7 @@ class V25MarketSyncEngine:
         except Exception:
             pass
 
-        # 3. 方案 B：台灣證交所/櫃買中心官方 MIS API 備援 (免 Token、即時穩定)
+        # 3. 台灣證交所/櫃買中心官方 MIS API 備援 (免 Token 即時線路)
         try:
             url_tse = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_{stock_id}.tw|otc_{stock_id}.two"
             req = urllib.request.Request(url_tse, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
@@ -187,13 +222,12 @@ class V25MarketSyncEngine:
                             "price": f"{close_price:,.1f} 元" if close_price >= 100 else f"{close_price:.2f} 元",
                             "raw_price": close_price,
                             "date": trade_date,
-                            "source": "TWSE/TPEx MIS 官方即時接口",
                             "status": "success"
                         }, None
         except Exception:
             pass
 
-        # 4. 方案 C：FinMind 免費版備援
+        # 4. FinMind 免費版備援
         if self.dl:
             try:
                 today_str = (datetime.now() - pd.Timedelta(days=10)).strftime("%Y-%m-%d")
@@ -205,7 +239,6 @@ class V25MarketSyncEngine:
                         "price": f"{close_price:,.1f} 元" if close_price >= 100 else f"{close_price:.2f} 元",
                         "raw_price": close_price,
                         "date": latest.get('date', datetime.now().strftime("%Y-%m-%d")),
-                        "source": "FinMind 免費版",
                         "status": "success"
                     }, None
             except Exception:
@@ -214,16 +247,13 @@ class V25MarketSyncEngine:
         return None, "所有資料管道皆無法連線或查無此代碼資料"
 
 def apply_vendor_market_update(code, res):
-    """
-    更新數值並永久保存至磁碟 JSON 檔案中，確保明日開啟時資料不流失
-    """
     v = st.session_state["db"]["vendors"][code]
     raw_price = res["raw_price"]
     v["price"] = res["price"]
     v["price_date"] = res.get("date", datetime.now().strftime("%Y-%m-%d"))
     v["last_synced_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # 1. 自動重算動態本益比：PE = 當日最新價 / 近四季 EPS
+    # 1. 動態本益比重算
     try:
         raw_eps = float(str(v.get("eps_4q", "0")).replace("元", "").replace(",", "").strip())
         if raw_eps > 0:
@@ -231,7 +261,7 @@ def apply_vendor_market_update(code, res):
     except Exception:
         pass
 
-    # 2. 自動重算距離法人目標價潛在空間
+    # 2. 距離目標價空間重算
     try:
         target_str = str(v.get("target_price", "0")).split("~")[0].replace("元", "").replace(",", "").strip()
         raw_target = float(target_str)
@@ -241,10 +271,9 @@ def apply_vendor_market_update(code, res):
     except Exception:
         pass
 
-    # 3. 記錄全域最後更新時間戳記
     st.session_state["db"]["last_global_sync"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # 4. 永久寫入硬碟 JSON 檔保存！
+    # 寫入磁碟保存
     try:
         with open(DB_PATH, "w", encoding="utf-8") as f:
             json.dump(st.session_state["db"], f, ensure_ascii=False, indent=2)
@@ -252,7 +281,7 @@ def apply_vendor_market_update(code, res):
         st.warning(f"本地磁碟存檔警示: {e}")
 
 # ==============================================================================
-# V25.2 量化分析引擎執行模組 (WhaleEngine 整合)
+# V25.2 量化分析模組
 # ==============================================================================
 def run_v25_analysis(stock_id):
     try:
@@ -265,44 +294,52 @@ def run_v25_analysis(stock_id):
         return None, str(e)
 
 # ==============================================================================
-# 主程式畫面佈局
+# 主程式介面
 # ==============================================================================
 def main():
     last_sync_info = db.get("last_global_sync", "2026-09-04 08:30:00")
     
     st.markdown(f"""
         <div class="hero-banner">
-            <h1 class="hero-title">🌐 科技巨頭台灣供應鏈情報庫</h1>
-            <p class="hero-sub">
-                AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ 整合 V25.2 籌碼量價實戰引擎 ｜ 
-                <span style="color: #38bdf8; font-weight: 600;">🕒 全庫行情基準日：{last_sync_info}</span>
-            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h1 class="hero-title">🌐 科技巨頭台灣供應鏈情報庫</h1>
+                    <p class="hero-sub">AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ 整合 V25.2 實戰大局引擎</p>
+                </div>
+                <div style="font-size: 0.86rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px;">
+                    🕒 行情基準日：<strong style="color: #38bdf8;">{last_sync_info}</strong>
+                </div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
     # 側邊欄控制台
     with st.sidebar:
-        st.header("⚙️ 系統設定與連網同步")
+        st.header("⚙️ 系統設定與 V25.2 連動")
         
-        st.subheader("🔗 獨立 V25.2 網頁跳轉設定")
+        # 登入狀態與登出
+        st.success("✅ 存取授權狀態：已安全登入")
+        if st.button("🔒 登出系統", use_container_width=True):
+            st.session_state["authenticated"] = False
+            st.rerun()
+
+        st.markdown("---")
+        st.subheader("🔗 獨立 V25.2 網頁網址設定")
         v25_ext_url = st.text_input(
-            "輸入你的獨立 V25.2 網址 (選填)",
-            value=st.session_state.get("v25_ext_url", ""),
+            "輸入你的獨立 V25.2 網址",
+            value=st.session_state.get("v25_ext_url", "https://whale-engine-web.streamlit.app"),
             placeholder="例如: https://whale-engine-web.streamlit.app"
         )
         st.session_state["v25_ext_url"] = v25_ext_url.strip()
-        if v25_ext_url:
-            st.caption("✅ 已設定！點擊各股「V25.2 分析」可直接跳轉至你的獨立網頁。")
 
         st.markdown("---")
-        st.subheader("🔑 FinMind 免費版設定")
-        fm_token = st.text_input("FinMind Token (選填，留空使用免費免登入模式)", type="password")
+        st.subheader("🔑 FinMind 免費版 Token")
+        fm_token = st.text_input("FinMind Token (選填，留空為免費模式)", type="password")
         st.session_state["fm_token"] = fm_token
         
         st.markdown("---")
-        st.subheader("🔄 批次即時行情對齊")
-        st.caption("💡 內建 V25.2 擬真延遲 (1.5~3.0秒)，模擬真人看盤，防爬蟲封鎖。")
-        batch_count = st.slider("單次更新個股數量", min_value=5, max_value=len(vendors), value=15, step=5)
+        st.subheader("🔄 全體批次行情同步")
+        batch_count = st.slider("單次更新數量", min_value=5, max_value=len(vendors), value=15, step=5)
         
         if st.button("🚀 啟動 V25.2 批次擬真安全同步", use_container_width=True):
             engine = V25MarketSyncEngine(finmind_token=fm_token)
@@ -323,7 +360,7 @@ def main():
                 
                 progress_bar.progress((i + 1) / len(selected_codes))
             
-            status_box.success(f"✅ 成功完成 {success_count} 檔個股最新行情與動態本益比更新，已永久保存至硬碟！")
+            status_box.success(f"✅ 完成 {success_count} 檔個股最新行情更新並永久存檔！")
             time.sleep(1)
             st.rerun()
 
@@ -331,7 +368,7 @@ def main():
         st.subheader("🔍 全域快速檢索")
         search_query = st.text_input("搜尋股票代號或名稱", placeholder="例：2330、尖點、盟立、6442...")
 
-    # 搜尋結果優先呈現
+    # 搜尋結果展示
     if search_query:
         st.subheader(f"🔍 搜尋結果：'{search_query}'")
         matched = {c: v for c, v in vendors.items() if search_query in c or search_query in v["name"] or search_query in v.get("products", "")}
@@ -342,34 +379,31 @@ def main():
             st.warning("未找到符合條件的供應商。")
         st.markdown("---")
 
-    # ==========================================================================
-    # 首頁分頁（自訂 CSS 放大 1.22 倍並加粗當前選中項）
-    # ==========================================================================
+    # 首頁分頁
     tabs = st.tabs(["🏢 SECTION A：國際大客戶專區", "🌐 SECTION B：五大戰略產業鏈全景", "📑 全 87 家廠商總表"])
 
     # --- SECTION A: 國際客戶專區 (分層穿透架構) ---
     with tabs[0]:
         selected_client = st.session_state.get("selected_client")
         
-        # 依反饋 2：若點選客戶，直接進入下一層專屬頁面，不堆疊在下方！
         if selected_client and selected_client in clients:
             c = clients[selected_client]
             
-            # 頂部導航返回列
+            # 頂部返回按鈕列
             c_back, c_info = st.columns([1.8, 8.2])
             with c_back:
                 if st.button("← 返回大客戶清單", key="btn_back_clients", use_container_width=True):
                     st.session_state["selected_client"] = None
                     st.rerun()
             with c_info:
-                st.markdown(f"<h3 style='margin:0; color:#38bdf8;'>🎯 {c['icon']} {c['name']} 在台專屬供應鏈全景名單</h3>", unsafe_allow_html=True)
+                st.markdown(f"<h3 style='margin:0; color:#0284c7; font-weight:800;'>🎯 {c['icon']} {c['name']} 在台專屬供應鏈全景名單</h3>", unsafe_allow_html=True)
             
             st.markdown(f"""
-                <div style="padding: 14px 18px; background: rgba(15,23,42,0.6); border: 1px solid rgba(56,189,248,0.3); border-radius: 12px; margin: 16px 0 20px 0;">
-                    <p style="margin: 0; color: #cbd5e1; font-size: 0.95rem;">{c['desc']}</p>
+                <div style="padding: 14px 18px; background: rgba(2, 132, 199, 0.05); border: 1.5px solid rgba(2, 132, 199, 0.3); border-radius: 12px; margin: 16px 0 20px 0;">
+                    <p style="margin: 0; color: #334155; font-size: 0.95rem;">{c['desc']}</p>
                     <div style="display: flex; gap: 18px; margin-top: 8px; font-size: 0.88rem; flex-wrap: wrap;">
-                        <span style="color: #6ee7b7;">💰 <strong>資本支出</strong>：{c.get('capex_forecast', '-')}</span>
-                        <span style="color: #38bdf8;">🎯 <strong>採購焦點</strong>：{c['key_focus']}</span>
+                        <span style="color: #059669;">💰 <strong>資本支出</strong>：{c.get('capex_forecast', '-')}</span>
+                        <span style="color: #0284c7;">🎯 <strong>採購焦點</strong>：{c['key_focus']}</span>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -385,11 +419,10 @@ def main():
                             with cols[idx % 2]:
                                 render_vendor_card_with_sync(scode, v)
         else:
-            # 第一層：展示 8 大客戶卡片總覽
             st.markdown("""
-                <div style="padding: 14px 18px; background: rgba(12, 22, 42, 0.85); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 14px; margin-bottom: 20px;">
-                    <h3 style="margin: 0; color: #38bdf8;">🏢 國際科技巨頭下單專區（在台採購核心）</h3>
-                    <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.88rem;">點選任一國際大廠按鈕，畫面直接進入該客戶之在台專屬供應鏈頁面</p>
+                <div style="padding: 14px 18px; background: rgba(2, 132, 199, 0.06); border: 1.5px solid rgba(2, 132, 199, 0.35); border-radius: 14px; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #0284c7; font-weight: 800;">🏢 國際科技巨頭下單專區（在台採購核心）</h3>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">點選任一國際大廠按鈕，畫面直接進入該客戶在台之專屬供應鏈頁面</p>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -409,18 +442,16 @@ def main():
     with tabs[1]:
         selected_domain = st.session_state.get("selected_domain")
         
-        # 依反饋 2：若點選產業鏈，直接進入下一層樹狀圖，不堆疊在下方！
         if selected_domain and selected_domain in domains:
             d = domains[selected_domain]
             
-            # 頂部導航返回列
             d_back, d_info = st.columns([1.8, 8.2])
             with d_back:
                 if st.button("← 返回五大主題清單", key="btn_back_domains", use_container_width=True):
                     st.session_state["selected_domain"] = None
                     st.rerun()
             with d_info:
-                st.markdown(f"<h3 style='margin:0; color:#c084fc;'>🌐 {d['icon']} {d['name']} 完整產業鏈樹狀圖譜</h3>", unsafe_allow_html=True)
+                st.markdown(f"<h3 style='margin:0; color:#7c3aed; font-weight:800;'>🌐 {d['icon']} {d['name']} 完整產業鏈樹狀圖譜</h3>", unsafe_allow_html=True)
 
             st.caption(f"{d['desc']} ｜ 趨勢焦點：{d['stats'].get('tech_trend', '-')}")
 
@@ -436,11 +467,10 @@ def main():
                                 with v_cols[idx % 2]:
                                     render_vendor_card_with_sync(code, v)
         else:
-            # 第一層：展示 5 大產業鏈入口卡片
             st.markdown("""
-                <div style="padding: 14px 18px; background: rgba(26, 17, 46, 0.85); border: 1.5px solid rgba(192, 132, 252, 0.4); border-radius: 14px; margin-bottom: 20px;">
-                    <h3 style="margin: 0; color: #c084fc;">🌐 五大戰略產業鏈主題全景區</h3>
-                    <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.88rem;">點選任一主題按鈕，直接進入該產業之完整上中下游樹狀導航頁面</p>
+                <div style="padding: 14px 18px; background: rgba(124, 58, 237, 0.06); border: 1.5px solid rgba(124, 58, 237, 0.35); border-radius: 14px; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #7c3aed; font-weight: 800;">🌐 五大戰略產業鏈主題全景區</h3>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">點選任一主題按鈕，直接進入該產業之完整上中下游樹狀導航頁面</p>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -479,12 +509,12 @@ def main():
 def render_vendor_card_with_sync(code, v):
     """
     渲染單一公司卡片：
-    1. 卡片旁設置「🔄 更新行情」按鈕
-    2. 下方緊接著設置「🐋 V25.2 分析」按鈕
+    1. 【公司名稱與股號字體放大 2 倍】(1.85rem)，無論深色淺色模式皆醒目！
+    2. 右側設置「🔄 更新行情」以及緊接著正下方的「🐋 V25.2 完整分析 ↗」按鈕！
     """
     card_container = st.container()
     with card_container:
-        col_main, col_btn = st.columns([3.6, 1.4])
+        col_main, col_btn = st.columns([3.5, 1.5])
         
         with col_main:
             date_badge = v.get('price_date', '最新')
@@ -493,16 +523,22 @@ def render_vendor_card_with_sync(code, v):
             
             st.markdown(f"""
                 <div class="company-card">
-                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span style="font-size: 1.15rem; font-weight: 700; color: #ffffff;">{v['name']} ({code})</span>
-                        <span style="color: #38bdf8; font-size: 0.8rem; background: rgba(56,189,248,0.15); padding: 2px 6px; border-radius: 4px;">{v.get('tier', '供應鏈')}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 1.85rem; font-weight: 800; color: #0284c7; letter-spacing: -0.01em;">
+                            {v['name']} <span style="font-size: 1.28rem; color: #6366f1; font-weight: 700;">({code})</span>
+                        </span>
+                        <span style="color: #0284c7; font-size: 0.82rem; font-weight: 700; background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.28); padding: 3px 8px; border-radius: 6px;">
+                            {v.get('tier', '供應鏈')}
+                        </span>
                     </div>
-                    <div style="font-size: 0.84rem; color: #cbd5e1; margin: 4px 0;">{v.get('products', '-')}</div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; margin-top: 6px;">
-                        <span>最新股價: <strong style="color: #38bdf8; font-size: 1.05rem;">{v.get('price', '-')}</strong></span>
-                        <span>動態本益比: <strong style="color: #34d399; font-size: 1.05rem;">{v.get('trailing_pe', '-')}</strong></span>
+                    <div style="font-size: 0.88rem; color: #475569; margin: 4px 0 8px 0; font-weight: 500;">
+                        {v.get('products', '-')}
                     </div>
-                    <div style="font-size: 0.73rem; color: #64748b; margin-top: 4px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.92rem; color: #64748b; padding-top: 6px; border-top: 1px dashed rgba(2, 132, 199, 0.2);">
+                        <span>最新股價: <strong style="color: #0284c7; font-size: 1.15rem;">{v.get('price', '-')}</strong></span>
+                        <span>動態本益比: <strong style="color: #059669; font-size: 1.15rem;">{v.get('trailing_pe', '-')}</strong></span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
                         📅 報價日期: {date_badge}{ts_label}
                     </div>
                 </div>
@@ -523,93 +559,38 @@ def render_vendor_card_with_sync(code, v):
                     else:
                         st.error(f"❌ 更新失敗: {err}")
 
-            # 按鈕 2：V25.2 分析按鈕（置於更新按鈕正下方！）
-            if st.button("🐋 V25.2 分析", key=f"btn_v25_{code}", use_container_width=True):
-                st.session_state[f"show_v25_{code}"] = not st.session_state.get(f"show_v25_{code}", False)
+            # 按鈕 2：V25.2 完整分析按鈕（依需求緊接在更新按鈕正下方！）
+            v25_url = st.session_state.get("v25_ext_url", "https://whale-engine-web.streamlit.app")
+            user_pwd = st.session_state.get("user_pwd", DEFAULT_SYSTEM_PASSWORD)
+            target_link = f"{v25_url}/?stock={code}&auth={user_pwd}"
 
-        # 展開 V25.2 深度分析面板（點擊按鈕後於卡片下方展開）
-        if st.session_state.get(f"show_v25_{code}", False):
-            render_v25_analysis_panel(code, v)
+            # 直通跳轉至你的獨立 V25.2 網頁！
+            st.link_button("🐋 V25.2 分析 ↗", target_link, use_container_width=True)
 
-        # 展開基本面情報抽屜
-        with st.expander(f"🔍 檢視 {v['name']} 完整基本面情報檔案"):
+        # 展開深度情報抽屜（公司名與股號同樣放大且清晰）
+        with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案"):
             st.markdown(f"**核心合作客戶**：{', '.join(v.get('clients', []))}")
             st.markdown(f"**業務純度佔比**：`{v.get('pure_share', '-')}` ｜ **最新毛利率**：`{v.get('margin', '-')}`")
 
-            # 業務領域營收比重進度條
             st.markdown("##### 📊 各戰略領域營收比重拆解")
             for item in v.get("domain_breakdown", []):
                 st.write(f"{item['domain']}: {item['share']}%")
                 st.progress(item['share'] / 100)
 
-            # 資本支出
             st.markdown(f"**未來 2 年 CapEx**：`{v.get('capex_future_2y', '-')}` ({v.get('capex_yoy_increase', '-')})")
             st.caption(f"**支出目的**：{v.get('capex_purpose', '-')}")
 
-            # 法說展望與目標價
             st.markdown(f"**法說成長指引**：{v.get('guidance', '-')}")
             st.markdown(f"**法人共識目標價**：`{v.get('target_price', '-')}` ({v.get('analyst_count', '-')})")
             if "upside_pot" in v:
                 st.markdown(f"**距離目標價空間**：`{v['upside_pot']}`")
 
             if "last_synced_at" in v:
-                st.caption(f"🕒 數據最後更新時間：{v['last_synced_at']} (已保存至硬碟)")
+                st.caption(f"🕒 數據最後更新時間：{v['last_synced_at']} (已永久保存至硬碟)")
 
-            # 官方佐證連結
             st.markdown("##### 📑 官方數據出處佐證")
             for s in v.get("sources", []):
                 st.markdown(f"- **[{s.get('date', '最新')}]** [{s['title']}]({s['url']})")
-
-def render_v25_analysis_panel(code, v):
-    """渲染 V25.2 實盤量化診斷卡片與獨立網頁跳轉"""
-    st.markdown(f"""
-        <div style="padding: 14px; background: rgba(30, 27, 75, 0.55); border: 1.5px solid #818cf8; border-radius: 12px; margin: 10px 0 16px 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <h4 style="margin: 0; color: #c7d2fe;">🐋 V25.2 PRO 實戰量化診斷：{v['name']} ({code})</h4>
-                <span style="font-size: 0.8rem; color: #a5b4fc;">大鯨魚多因子決策系統</span>
-            </div>
-    """, unsafe_allow_html=True)
-
-    # 1. 外部獨立網頁跳轉
-    v25_url = st.session_state.get("v25_ext_url", "")
-    if v25_url:
-        target_link = f"{v25_url}/?stock={code}"
-        st.link_button(f"🌐 在獨立 V25.2 網頁開啟 {v['name']} ({code}) ➔", target_link, use_container_width=True)
-
-    # 2. 本地執行 V25.2 模組
-    if f"v25_res_{code}" not in st.session_state:
-        with st.spinner(f"正在啟動 V25.2 量化引擎分析 {v['name']} (擬真防爬安全延遲)..."):
-            res, err = run_v25_analysis(code)
-            if res:
-                st.session_state[f"v25_res_{code}"] = res
-            else:
-                st.error(f"V25.2 本地運算警示: {err}")
-                st.info("提示：若本地資料不足，亦可直接使用上方按鈕跳轉至你的獨立 V25.2 網頁查看！")
-
-    res = st.session_state.get(f"v25_res_{code}")
-    if res:
-        f_info = res.get("fish", {})
-        r_info = res.get("retreat", {})
-        d_info = res.get("defense", {})
-        p_info = res.get("position", {})
-        w_info = res.get("warning", {})
-        fund_info = res.get("fundamental", {})
-
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            st.metric("🐟 魚頭分數", f"{f_info.get('fish_score', 0)} 分", delta=f"健康: {f_info.get('health_grade', '-')}")
-        with c2:
-            st.metric("🚨 撤退風險", f_info.get('trend_status', r_info.get('risk_status', '正常')), delta_color="inverse")
-        with c3:
-            st.metric("🛡️ 實戰防守價 (ATR)", f"{d_info.get('defense_price', 0)} 元")
-        with c4:
-            st.metric("⚓ 主力加權均價 (60日)", f"{d_info.get('vwap60', 0)} 元")
-
-        st.markdown(f"**魚體位置**：`{p_info.get('position_desc', '主升初期')}` ｜ **保守目標區**：`{d_info.get('target_low', '-')} ~ {d_info.get('target_high', '-')}`")
-        st.markdown(f"**基本面營收狀態**：`{fund_info.get('revenue_tag', '-')}` (YoY: {fund_info.get('yoy', '-')})")
-        st.markdown(f"**綜合預警提示**：`{w_info.get('warning_state', '正常')}`")
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
