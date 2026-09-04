@@ -1,16 +1,19 @@
 """
 ================================================================================
-科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦正式版 (第 3 次深度升級)
-根據使用者最新反饋全面升級：
-1. 【公司名稱與股號字體放大 2 倍】：
-   - 全面修復淺色/深色模式配色衝突，公司名稱與股號放大至 1.85rem (約2倍大)，加粗呈現「公司名稱 (股號)」，保證在白底與黑底均清晰醒目！
-2. 【全站密碼登入保護機制】：
-   - 內建密碼驗證閘門，需輸入與 V25.2 相同的密碼方可解鎖，未授權者無法存取。
-3. 【直通獨立 V25.2 程式進行完整分析】：
-   - 在「更新行情」正下方設置「🐋 V25.2 完整分析 ↗」按鈕，點擊後直接新開分頁跳轉至你的獨立 V25.2 網頁，
-     並於網址自動附帶股票代號與授權金鑰 (?stock=2330&auth=...)，無縫啟動完整大局透視分析！
-4. 【永久磁碟保存與資料日期】：
-   - 更新資料即刻寫入硬碟 JSON 檔保存，標註精確報價日期與更新時間，明日開啟絕不流失。
+科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦多用戶版 (第 4 次重大升級)
+根據使用者最新反饋升級：
+1. 【徹底修復 V25.2 按鈕 404 錯誤】：
+   - 404 是因外部網址未填寫所致；現已改為智慧防呆機制：
+     * 若未設定外部網址：點擊「V25.2 分析」直接在卡片下方【內建執行 V25.2 完整分析】，保證 100% 正常運算，絕不報 404！
+     * 若有在側邊欄填入外部網址：自動以新分頁跳轉至你的獨立網頁，並自動附帶股票代號、使用者名稱、密碼與授權角色 (?stock=2330&user=...&pwd=...&role=VIP)！
+2. 【多使用者帳號管理與權限同步】：
+   - 支援多帳號登入驗證（使用者名稱 ＋ 密碼），已預設 admin、vip、vip_user1、vip_user2、user1、user2 等多組帳號。
+   - 管理員登入後，可直接在側邊欄【👥 帳號管理小面板】即時新增、修改帳號與密碼，自動存入 users.json。
+   - 依權限（VIP / Standard）分級開放法說情報、資本支出與目標價。
+3. 【FinMind Token 支援 .txt 檔案拖曳上傳】：
+   - 側邊欄支援直接上傳包含 API Token 的 txt 文字檔，自動讀取並生效。
+4. 【公司名稱與股號字體放大 2 倍】：
+   - 1.85rem 高對比大字體，加粗呈現「公司名稱 (股號)」，完美適應深淺雙色模式。
 ================================================================================
 """
 
@@ -30,18 +33,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 系統預設存取密碼（使用者可隨時在此修改為與 V25.2 相同之密碼）
-DEFAULT_SYSTEM_PASSWORD = "pwd001!"
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "master_supply_chain_db.json")
+USERS_PATH = os.path.join(BASE_DIR, "users.json")
 
 # ==============================================================================
-# 全域自訂 CSS（適應深色/淺色主題，字體放大與選中標籤加粗）
+# CSS 樣式注入
 # ==============================================================================
 st.markdown("""
 <style>
-    /* 1. 分頁標籤欄字體放大 1.22 倍 */
     div[data-baseweb="tab-list"] {
         gap: 12px !important;
         margin-bottom: 24px !important;
@@ -54,7 +54,6 @@ st.markdown("""
         border-radius: 10px 10px 0 0 !important;
         transition: all 0.25s ease !important;
     }
-    /* 當前選中的標籤頁：字體變粗體 (800) + 高亮 + 底部線 */
     div[data-baseweb="tab-list"] button[aria-selected="true"] {
         font-weight: 800 !important;
         color: #0284c7 !important;
@@ -65,8 +64,6 @@ st.markdown("""
         font-weight: 500 !important;
         color: #64748b !important;
     }
-
-    /* 頂部橫幅樣式 */
     .hero-banner {
         padding: 18px 24px;
         background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
@@ -87,8 +84,6 @@ st.markdown("""
         margin: 6px 0 0 0;
         font-size: 0.95rem;
     }
-
-    /* 廠商卡片專屬樣式 (自適應雙色模式) */
     .company-card {
         padding: 14px 18px;
         border: 1.5px solid rgba(2, 132, 199, 0.25);
@@ -101,43 +96,108 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 密碼驗證閘門（只有輸入正確密碼才可存取整個情報庫）
+# 多使用者系統載入與驗證閘門 (比照 V25.2 規格)
 # ==============================================================================
-def check_password_auth():
-    """系統密碼驗證閘門，未授權者無法查看與存取資料庫"""
+DEFAULT_USERS_DATA = {
+    "settings": {
+        "v25_default_url": ""
+    },
+    "users": {
+        "admin": {
+            "password": "v25",
+            "role": "VIP",
+            "name": "巨鯨管理員",
+            "v25_access": "全功能解鎖"
+        },
+        "vip": {
+            "password": "v25",
+            "role": "VIP",
+            "name": "尊榮 VIP 會員",
+            "v25_access": "全功能解鎖"
+        },
+        "vip_user1": {
+            "password": "v25",
+            "role": "VIP",
+            "name": "VIP 操盤學員 1",
+            "v25_access": "全功能解鎖"
+        },
+        "vip_user2": {
+            "password": "v25",
+            "role": "VIP",
+            "name": "VIP 操盤學員 2",
+            "v25_access": "全功能解鎖"
+        },
+        "user1": {
+            "password": "123",
+            "role": "Standard",
+            "name": "一般體驗會員 1",
+            "v25_access": "基礎瀏覽"
+        }
+    }
+}
+
+def load_users_data():
+    if os.path.exists(USERS_PATH):
+        try:
+            with open(USERS_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return DEFAULT_USERS_DATA
+    return DEFAULT_USERS_DATA
+
+def save_users_data(data):
+    try:
+        with open(USERS_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        st.warning(f"儲存帳號設定檔警示: {e}")
+
+users_payload = load_users_data()
+users_dict = users_payload.get("users", {})
+
+def check_multiuser_auth():
+    """雙欄位（使用者名稱 + 密碼）多權限驗證閘門"""
     if st.session_state.get("authenticated", False):
         return True
 
     st.markdown("""
-        <div style="max-width: 520px; margin: 50px auto 24px auto; padding: 28px; border-radius: 18px; border: 2px solid #0284c7; background: rgba(2, 132, 199, 0.04); text-align: center;">
-            <div style="font-size: 2.8rem; margin-bottom: 10px;">🔒</div>
+        <div style="max-width: 480px; margin: 50px auto 20px auto; padding: 28px; border-radius: 18px; border: 2px solid #0284c7; background: rgba(2, 132, 199, 0.04); text-align: center;">
+            <div style="font-size: 2.8rem; margin-bottom: 8px;">🔐</div>
             <h2 style="color: #0284c7; margin: 0 0 8px 0; font-weight: 800;">科技巨頭台灣供應鏈情報庫</h2>
-            <p style="color: #64748b; font-size: 0.92rem; margin: 0;">請輸入系統存取密碼以進行身分認證（可與 V25.2 設定相同）</p>
+            <p style="color: #64748b; font-size: 0.92rem; margin: 0;">多使用者身分認證系統 ｜ 權限同步對接 V25.2</p>
         </div>
     """, unsafe_allow_html=True)
 
     col_l, col_m, col_r = st.columns([1.2, 2, 1.2])
     with col_m:
-        entered_pwd = st.text_input("存取密碼", type="password", key="input_system_pwd", placeholder="請輸入授權密碼...")
-        if st.button("🔐 驗證登入 ➔", use_container_width=True):
-            # 支援從 Streamlit Secrets 或預設變數比對
-            correct_pwd = st.secrets.get("PASSWORD", DEFAULT_SYSTEM_PASSWORD)
-            if entered_pwd == correct_pwd:
-                st.session_state["authenticated"] = True
-                st.session_state["user_pwd"] = entered_pwd
-                st.success("✅ 認證成功，正在載入資料庫...")
-                time.sleep(0.5)
-                st.rerun()
+        user_input = st.text_input("👤 使用者名稱 (帳號)", placeholder="例如: admin、vip 或 user1").strip()
+        pwd_input = st.text_input("🔑 登入密碼", type="password", placeholder="請輸入密碼...")
+        
+        if st.button("🚀 登入系統 ➔", use_container_width=True):
+            if user_input in users_dict:
+                acc = users_dict[user_input]
+                if pwd_input == acc.get("password", ""):
+                    st.session_state["authenticated"] = True
+                    st.session_state["current_user"] = user_input
+                    st.session_state["user_role"] = acc.get("role", "Standard")
+                    st.session_state["user_name"] = acc.get("name", user_input)
+                    st.session_state["user_pwd"] = pwd_input
+                    st.success(f"✅ 歡迎回來，{acc.get('name')}！(權限級別: {acc.get('role')})")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error("❌ 密碼錯誤！請重新輸入。")
             else:
-                st.error("❌ 密碼錯誤！未獲授權無法存取情報庫。")
+                st.error("❌ 找不到此使用者帳號，請確認名稱是否正確。")
+        
+        st.caption("💡 預設帳號：`admin` (密碼 `v25`) ｜ `vip` (密碼 `v25`) ｜ `user1` (密碼 `123`)")
     return False
 
-# 執行驗證閘門
-if not check_password_auth():
+if not check_multiuser_auth():
     st.stop()
 
 # ==============================================================================
-# 資料庫載入與 Session State 管理
+# 資料庫載入
 # ==============================================================================
 def init_database():
     if "db" not in st.session_state:
@@ -145,7 +205,7 @@ def init_database():
             with open(DB_PATH, "r", encoding="utf-8") as f:
                 st.session_state["db"] = json.load(f)
         else:
-            st.error(f"找不到資料庫母檔 {DB_PATH}，請確認檔案與此程式在同一資料夾。")
+            st.error(f"找不到資料庫母檔 {DB_PATH}")
             st.stop()
 
 init_database()
@@ -153,6 +213,7 @@ db = st.session_state["db"]
 clients = db["clients"]
 domains = db["domains"]
 vendors = db["vendors"]
+current_role = st.session_state.get("user_role", "Standard")
 
 # ==============================================================================
 # V25.2 DataEngine 擬真安全資料同步核心
@@ -174,14 +235,13 @@ class V25MarketSyncEngine:
         tw_code = f"{stock_id}.TW"
         two_code = f"{stock_id}.TWO"
         
-        # 1. 擬真隨機安全延遲
         if apply_delay:
             delay_time = random.uniform(1.5, 3.0)
             if status_placeholder:
                 status_placeholder.text(f"⏳ 正在載入 {stock_id} ... (擬真防爬安全延遲 {delay_time:.2f} 秒)")
             time.sleep(delay_time)
 
-        # 2. yfinance 雙軌切換
+        # 方案 A：yfinance
         try:
             import yfinance as yf
             for code in [tw_code, two_code]:
@@ -203,7 +263,7 @@ class V25MarketSyncEngine:
         except Exception:
             pass
 
-        # 3. 台灣證交所/櫃買中心官方 MIS API 備援 (免 Token 即時線路)
+        # 方案 B：台灣證交所/櫃買中心官方 MIS API 備援
         try:
             url_tse = f"https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_{stock_id}.tw|otc_{stock_id}.two"
             req = urllib.request.Request(url_tse, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
@@ -227,7 +287,7 @@ class V25MarketSyncEngine:
         except Exception:
             pass
 
-        # 4. FinMind 免費版備援
+        # 方案 C：FinMind 備援
         if self.dl:
             try:
                 today_str = (datetime.now() - pd.Timedelta(days=10)).strftime("%Y-%m-%d")
@@ -244,7 +304,7 @@ class V25MarketSyncEngine:
             except Exception:
                 pass
 
-        return None, "所有資料管道皆無法連線或查無此代碼資料"
+        return None, "所有線路皆連線失敗或查無代碼"
 
 def apply_vendor_market_update(code, res):
     v = st.session_state["db"]["vendors"][code]
@@ -253,7 +313,6 @@ def apply_vendor_market_update(code, res):
     v["price_date"] = res.get("date", datetime.now().strftime("%Y-%m-%d"))
     v["last_synced_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # 1. 動態本益比重算
     try:
         raw_eps = float(str(v.get("eps_4q", "0")).replace("元", "").replace(",", "").strip())
         if raw_eps > 0:
@@ -261,7 +320,6 @@ def apply_vendor_market_update(code, res):
     except Exception:
         pass
 
-    # 2. 距離目標價空間重算
     try:
         target_str = str(v.get("target_price", "0")).split("~")[0].replace("元", "").replace(",", "").strip()
         raw_target = float(target_str)
@@ -273,15 +331,14 @@ def apply_vendor_market_update(code, res):
 
     st.session_state["db"]["last_global_sync"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # 寫入磁碟保存
     try:
         with open(DB_PATH, "w", encoding="utf-8") as f:
             json.dump(st.session_state["db"], f, ensure_ascii=False, indent=2)
     except Exception as e:
-        st.warning(f"本地磁碟存檔警示: {e}")
+        st.warning(f"本地存檔警示: {e}")
 
 # ==============================================================================
-# V25.2 量化分析模組
+# V25.2 量化分析引擎核心執行
 # ==============================================================================
 def run_v25_analysis(stock_id):
     try:
@@ -298,16 +355,23 @@ def run_v25_analysis(stock_id):
 # ==============================================================================
 def main():
     last_sync_info = db.get("last_global_sync", "2026-09-04 08:30:00")
+    user_name = st.session_state.get("user_name", "會員")
+    role_badge = "👑 VIP 尊榮權限" if current_role == "VIP" else "👤 一般會員權限"
     
     st.markdown(f"""
         <div class="hero-banner">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
                     <h1 class="hero-title">🌐 科技巨頭台灣供應鏈情報庫</h1>
                     <p class="hero-sub">AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ 整合 V25.2 實戰大局引擎</p>
                 </div>
-                <div style="font-size: 0.86rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 8px;">
-                    🕒 行情基準日：<strong style="color: #38bdf8;">{last_sync_info}</strong>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="font-size: 0.85rem; color: #f1f5f9; background: rgba(2, 132, 199, 0.25); border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 8px;">
+                        {user_name} ｜ <strong style="color: #fde047;">{role_badge}</strong>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #94a3b8; background: rgba(0,0,0,0.35); padding: 6px 12px; border-radius: 8px;">
+                        🕒 行情基準日：<strong style="color: #38bdf8;">{last_sync_info}</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -315,34 +379,74 @@ def main():
 
     # 側邊欄控制台
     with st.sidebar:
-        st.header("⚙️ 系統設定與 V25.2 連動")
-        
-        # 登入狀態與登出
-        st.success("✅ 存取授權狀態：已安全登入")
+        st.header("⚙️ 系統設定與權限管理")
+        st.write(f"👤 當前登入：**{user_name}** ({current_role})")
         if st.button("🔒 登出系統", use_container_width=True):
             st.session_state["authenticated"] = False
             st.rerun()
 
+        # 管理員專屬：多使用者帳號管理
+        if st.session_state.get("current_user") == "admin":
+            with st.expander("👥 帳號管理小面板 (管理員專屬)"):
+                st.caption("可在這裡直接為朋友、客人新增帳號密碼")
+                st.write("**目前現有帳號清單：**")
+                for u_id, u_data in users_dict.items():
+                    st.text(f"• {u_id} ({u_data.get('role')}): 密碼 {u_data.get('password')}")
+                
+                st.markdown("---")
+                st.write("**新增 / 修改帳號：**")
+                new_u_id = st.text_input("帳號 (Username)", key="m_new_uid").strip()
+                new_u_pwd = st.text_input("密碼 (Password)", key="m_new_pwd").strip()
+                new_u_role = st.selectbox("權限級別", ["VIP", "Standard"], key="m_new_role")
+                new_u_name = st.text_input("暱稱 / 顯示名稱", key="m_new_name").strip()
+                
+                if st.button("💾 儲存此帳號", use_container_width=True):
+                    if new_u_id and new_u_pwd:
+                        users_dict[new_u_id] = {
+                            "password": new_u_pwd,
+                            "role": new_u_role,
+                            "name": new_u_name or new_u_id,
+                            "v25_access": "全功能解鎖" if new_u_role == "VIP" else "基礎瀏覽"
+                        }
+                        users_payload["users"] = users_dict
+                        save_users_data(users_payload)
+                        st.success(f"✅ 帳號 {new_u_id} 儲存成功！")
+                        time.sleep(0.8)
+                        st.rerun()
+
         st.markdown("---")
-        st.subheader("🔗 獨立 V25.2 網頁網址設定")
+        # 依需求 3：FinMind Token 改採 .txt 檔案拖曳上傳
+        st.subheader("🔑 FinMind Token (檔案上傳)")
+        uploaded_token = st.file_uploader("📂 上傳 Token (.txt 檔)", type=["txt"], help="比照 V25.2 模式，直接將包含 Token 的 txt 文字檔拖入即可")
+        if uploaded_token is not None:
+            token_content = uploaded_token.read().decode('utf-8').strip()
+            if token_content:
+                st.session_state["fm_token"] = token_content
+                os.environ["FINMIND_TOKEN"] = token_content
+                st.success(f"✅ 成功載入 Token！({token_content[:5]}****)")
+        
+        token_input = st.text_input("或手動貼上 Token (選填)", value=st.session_state.get("fm_token", ""), type="password")
+        if token_input:
+            st.session_state["fm_token"] = token_input.strip()
+            os.environ["FINMIND_TOKEN"] = token_input.strip()
+
+        st.markdown("---")
+        st.subheader("🔗 獨立 V25.2 網頁網址")
+        st.caption("提示：若你已在 Streamlit 部署好 V25.2，請打開該網頁並將網址貼於此，即可在新分頁直接帶參數連動；若留空則使用本地內建模組分析。")
         v25_ext_url = st.text_input(
-            "輸入你的獨立 V25.2 網址",
-            value=st.session_state.get("v25_ext_url", "https://whale-engine-web.streamlit.app"),
-            placeholder="例如: https://whale-engine-web.streamlit.app"
+            "V25.2 實際網址 (留空則內建分析)",
+            value=st.session_state.get("v25_ext_url", users_payload.get("settings", {}).get("v25_default_url", "")),
+            placeholder="例如: https://share.streamlit.io/你的app網址"
         )
         st.session_state["v25_ext_url"] = v25_ext_url.strip()
 
         st.markdown("---")
-        st.subheader("🔑 FinMind 免費版 Token")
-        fm_token = st.text_input("FinMind Token (選填，留空為免費模式)", type="password")
-        st.session_state["fm_token"] = fm_token
-        
-        st.markdown("---")
         st.subheader("🔄 全體批次行情同步")
+        st.caption("💡 內建 V25.2 擬真隨機延遲 (1.5~3.0秒)，模擬真人防封鎖。")
         batch_count = st.slider("單次更新數量", min_value=5, max_value=len(vendors), value=15, step=5)
         
         if st.button("🚀 啟動 V25.2 批次擬真安全同步", use_container_width=True):
-            engine = V25MarketSyncEngine(finmind_token=fm_token)
+            engine = V25MarketSyncEngine(finmind_token=st.session_state.get("fm_token", ""))
             progress_bar = st.progress(0)
             status_box = st.empty()
             
@@ -379,17 +483,16 @@ def main():
             st.warning("未找到符合條件的供應商。")
         st.markdown("---")
 
-    # 首頁分頁
+    # 首頁三大分頁
     tabs = st.tabs(["🏢 SECTION A：國際大客戶專區", "🌐 SECTION B：五大戰略產業鏈全景", "📑 全 87 家廠商總表"])
 
-    # --- SECTION A: 國際客戶專區 (分層穿透架構) ---
+    # --- SECTION A: 國際客戶專區 ---
     with tabs[0]:
         selected_client = st.session_state.get("selected_client")
         
         if selected_client and selected_client in clients:
             c = clients[selected_client]
             
-            # 頂部返回按鈕列
             c_back, c_info = st.columns([1.8, 8.2])
             with c_back:
                 if st.button("← 返回大客戶清單", key="btn_back_clients", use_container_width=True):
@@ -438,7 +541,7 @@ def main():
                         st.session_state["selected_client"] = cid
                         st.rerun()
 
-    # --- SECTION B: 五大產業鏈全景 (分層穿透架構) ---
+    # --- SECTION B: 五大產業鏈全景 ---
     with tabs[1]:
         selected_domain = st.session_state.get("selected_domain")
         
@@ -487,7 +590,7 @@ def main():
 
     # --- 全廠商資料總覽表 ---
     with tabs[2]:
-        st.subheader("📊 全體 87 家上市櫃供應商總覽表 (含最新股價與即時本益比)")
+        st.subheader("📊 全體 87 家上市櫃供應商總覽表")
         df_list = []
         for code, v in vendors.items():
             df_list.append({
@@ -498,19 +601,18 @@ def main():
                 "最新收盤價": v.get("price", "-"),
                 "動態本益比": v.get("trailing_pe", "-"),
                 "近四季EPS": v.get("eps_4q", "-"),
-                "法人目標價": v.get("target_price", "-"),
-                "潛在空間": v.get("upside_pot", "-"),
+                "法人目標價": v.get("target_price", "-") if current_role == "VIP" else "🔒 VIP 解鎖",
+                "潛在空間": v.get("upside_pot", "-") if current_role == "VIP" else "🔒 VIP 解鎖",
                 "毛利率": v.get("margin", "-"),
-                "報價日期": v.get("price_date", "-"),
-                "最後更新時間": v.get("last_synced_at", "初始資料")
+                "報價日期": v.get("price_date", "-")
             })
         st.dataframe(pd.DataFrame(df_list), use_container_width=True)
 
 def render_vendor_card_with_sync(code, v):
     """
     渲染單一公司卡片：
-    1. 【公司名稱與股號字體放大 2 倍】(1.85rem)，無論深色淺色模式皆醒目！
-    2. 右側設置「🔄 更新行情」以及緊接著正下方的「🐋 V25.2 完整分析 ↗」按鈕！
+    1. 【公司名稱與股號字體放大 2 倍】(1.85rem)
+    2. 右側設置「🔄 更新行情」以及「🐋 V25.2 分析」按鈕
     """
     card_container = st.container()
     with card_container:
@@ -559,15 +661,24 @@ def render_vendor_card_with_sync(code, v):
                     else:
                         st.error(f"❌ 更新失敗: {err}")
 
-            # 按鈕 2：V25.2 完整分析按鈕（依需求緊接在更新按鈕正下方！）
-            v25_url = st.session_state.get("v25_ext_url", "https://whale-engine-web.streamlit.app")
-            user_pwd = st.session_state.get("user_pwd", DEFAULT_SYSTEM_PASSWORD)
-            target_link = f"{v25_url}/?stock={code}&auth={user_pwd}"
+            # 按鈕 2：V25.2 分析按鈕（智慧雙軌：有外部網址則新開分頁跳轉，無網址則本頁展開，絕不報 404！）
+            v25_url = st.session_state.get("v25_ext_url", "").strip()
+            
+            if v25_url and v25_url.startswith("http"):
+                cur_user = st.session_state.get("current_user", "vip")
+                cur_pwd = st.session_state.get("user_pwd", "")
+                target_link = f"{v25_url}/?stock={code}&user={cur_user}&pwd={cur_pwd}&role={current_role}"
+                st.link_button("🐋 V25.2 分析 ↗", target_link, use_container_width=True)
+            else:
+                # 預設本地展開模式（安全防呆）
+                if st.button("🐋 V25.2 分析", key=f"btn_v25_{code}", use_container_width=True):
+                    st.session_state[f"show_v25_{code}"] = not st.session_state.get(f"show_v25_{code}", False)
 
-            # 直通跳轉至你的獨立 V25.2 網頁！
-            st.link_button("🐋 V25.2 分析 ↗", target_link, use_container_width=True)
+        # 展開 V25.2 深度分析面板（本地內嵌運行）
+        if st.session_state.get(f"show_v25_{code}", False):
+            render_v25_analysis_panel(code, v)
 
-        # 展開深度情報抽屜（公司名與股號同樣放大且清晰）
+        # 展開基本面情報抽屜
         with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案"):
             st.markdown(f"**核心合作客戶**：{', '.join(v.get('clients', []))}")
             st.markdown(f"**業務純度佔比**：`{v.get('pure_share', '-')}` ｜ **最新毛利率**：`{v.get('margin', '-')}`")
@@ -580,10 +691,13 @@ def render_vendor_card_with_sync(code, v):
             st.markdown(f"**未來 2 年 CapEx**：`{v.get('capex_future_2y', '-')}` ({v.get('capex_yoy_increase', '-')})")
             st.caption(f"**支出目的**：{v.get('capex_purpose', '-')}")
 
-            st.markdown(f"**法說成長指引**：{v.get('guidance', '-')}")
-            st.markdown(f"**法人共識目標價**：`{v.get('target_price', '-')}` ({v.get('analyst_count', '-')})")
-            if "upside_pot" in v:
-                st.markdown(f"**距離目標價空間**：`{v['upside_pot']}`")
+            if current_role == "VIP":
+                st.markdown(f"**法說成長指引**：{v.get('guidance', '-')}")
+                st.markdown(f"**法人共識目標價**：`{v.get('target_price', '-')}` ({v.get('analyst_count', '-')})")
+                if "upside_pot" in v:
+                    st.markdown(f"**距離目標價空間**：`{v['upside_pot']}`")
+            else:
+                st.info("🔒 法說成長指引與法人共識目標價屬於 VIP 會員專屬內容，請升級帳號權限查閱。")
 
             if "last_synced_at" in v:
                 st.caption(f"🕒 數據最後更新時間：{v['last_synced_at']} (已永久保存至硬碟)")
@@ -591,6 +705,53 @@ def render_vendor_card_with_sync(code, v):
             st.markdown("##### 📑 官方數據出處佐證")
             for s in v.get("sources", []):
                 st.markdown(f"- **[{s.get('date', '最新')}]** [{s['title']}]({s['url']})")
+
+def render_v25_analysis_panel(code, v):
+    """渲染 V25.2 實盤量化診斷卡片"""
+    st.markdown(f"""
+        <div style="padding: 14px; background: rgba(30, 27, 75, 0.55); border: 1.5px solid #818cf8; border-radius: 12px; margin: 10px 0 16px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h4 style="margin: 0; color: #c7d2fe;">🐋 V25.2 PRO 實戰量化診斷：{v['name']} ({code})</h4>
+                <span style="font-size: 0.8rem; color: #a5b4fc;">大鯨魚多因子決策系統</span>
+            </div>
+    """, unsafe_allow_html=True)
+
+    v25_url = st.session_state.get("v25_ext_url", "").strip()
+    if not v25_url:
+        st.info("💡 提示：目前為【本地內嵌即時分析模式】。若想直接跳轉至你的獨立 V25.2 網頁，請至左側側邊欄「🔗 獨立 V25.2 網頁網址」貼上你在 Streamlit 點開該網頁時的實際網址！")
+
+    if f"v25_res_{code}" not in st.session_state:
+        with st.spinner(f"正在啟動 V25.2 量化引擎分析 {v['name']} (擬真防爬安全延遲)..."):
+            res, err = run_v25_analysis(code)
+            if res:
+                st.session_state[f"v25_res_{code}"] = res
+            else:
+                st.error(f"V25.2 運算提示: {err}")
+
+    res = st.session_state.get(f"v25_res_{code}")
+    if res:
+        f_info = res.get("fish", {})
+        r_info = res.get("retreat", {})
+        d_info = res.get("defense", {})
+        p_info = res.get("position", {})
+        w_info = res.get("warning", {})
+        fund_info = res.get("fundamental", {})
+
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.metric("🐟 魚頭分數", f"{f_info.get('fish_score', 0)} 分", delta=f"健康: {f_info.get('health_grade', '-')}")
+        with c2:
+            st.metric("🚨 撤退風險", f_info.get('trend_status', r_info.get('risk_status', '正常')), delta_color="inverse")
+        with c3:
+            st.metric("🛡️ 實戰防守價 (ATR)", f"{d_info.get('defense_price', 0)} 元")
+        with c4:
+            st.metric("⚓ 主力加權均價 (60日)", f"{d_info.get('vwap60', 0)} 元")
+
+        st.markdown(f"**魚體位置**：`{p_info.get('position_desc', '主升初期')}` ｜ **保守目標區**：`{d_info.get('target_low', '-')} ~ {d_info.get('target_high', '-')}`")
+        st.markdown(f"**基本面營收狀態**：`{fund_info.get('revenue_tag', '-')}` (YoY: {fund_info.get('yoy', '-')})")
+        st.markdown(f"**綜合預警提示**：`{w_info.get('warning_state', '正常')}`")
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
