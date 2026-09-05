@@ -97,9 +97,8 @@ DEFAULT_USERS_DATA = {
         "v25_default_url": ""
     },
     "users": {
-        "admin": {"password": "v25", "role": "VIP", "name": "巨鯨管理員"},
-        "vip": {"password": "v25", "role": "VIP", "name": "尊榮 VIP 會員"},
-        "user1": {"password": "123", "role": "Standard", "name": "一般體驗會員"}
+        "admin": {"password": "mkm400!!", "role": "VIP", "name": "巨鯨管理員"},
+    
     }
 }
 
@@ -156,8 +155,8 @@ def check_multiuser_auth():
             else:
                 st.error("❌ 找不到此使用者帳號，請確認名稱是否正確。")
         
-        st.caption("💡 預設測試帳號：`admin` (密碼 `v25`) ｜ `vip` (密碼 `v25`) ｜ `user1` (密碼 `123`)")
-    return False
+st.caption("🔒 專屬量化情報系統，請使用授權帳號密碼登入。")
+return False
 
 if not check_multiuser_auth():
     st.stop()
