@@ -27,6 +27,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+V25_APP_URL = "https://yiy6gksxghhs5mnc7ufxcs.streamlit.app"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "master_supply_chain_db.json")
 USERS_PATH = os.path.join(BASE_DIR, "users.json")
@@ -339,25 +340,10 @@ def main():
             st.rerun()
 
         st.markdown("---")
-        # V25.2 網址設定（自動保存）
-        st.subheader("🔗 巨鯨 V25.2 網頁直連網址")
-        saved_v25_url = users_payload.get("settings", {}).get("v25_default_url", "")
-        v25_ext_url = st.text_input(
-            "貼上你的 V25.2 網頁網址",
-            value=st.session_state.get("v25_ext_url", saved_v25_url),
-            placeholder="例如: https://xxx.streamlit.app"
-        ).strip()
-        
-        if v25_ext_url != saved_v25_url:
-            st.session_state["v25_ext_url"] = v25_ext_url
-            users_payload.setdefault("settings", {})["v25_default_url"] = v25_ext_url
-            save_users_data(users_payload)
-            st.success("✅ V25.2 網址已儲存更新！")
-
-        if not v25_ext_url:
-            st.warning("⚠️ 尚未設定 V25 網址，請先打開你的 V25.2 網頁並將網址複製貼在此處，按鈕即可自動連動！")
-        else:
-            st.caption(f"🎯 已綁定目標：`{v25_ext_url}`")
+        # V25.2 網址直連設定 (直接綁定，不需再輸入或詢問)
+        st.subheader("🔗 巨鯨 V25.2 系統直連")
+        st.caption(f"🎯 官方目標網址：`{V25_APP_URL}`")
+        st.info("💡 點擊任一廠商卡片旁的「前往 V25.2 分析」按鈕，即可直接以新分頁直連該網頁，由使用者自行在 V25 頁面輸入密碼登入。")
 
         # 管理員專屬：多使用者帳號管理
         if st.session_state.get("current_user") == "admin":
@@ -623,19 +609,9 @@ def render_vendor_card_with_sync(code, v):
                     else:
                         st.error(f"❌ 更新失敗: {err}")
 
-            # 按鈕 2：直通 V25.2 獨立網頁完整分析（依使用者要求，絕不跳 404）
-            v25_url = st.session_state.get("v25_ext_url", "").strip()
-            
-            if v25_url and v25_url.startswith("http"):
-                # 確保網址格式正確（去除結尾斜線，再加參數）
-                clean_base_url = v25_url.rstrip("/")
-                cur_user = st.session_state.get("current_user", "vip")
-                cur_pwd = st.session_state.get("user_pwd", "")
-                target_link = f"{clean_base_url}?stock={code}&user={cur_user}&pwd={cur_pwd}&role={current_role}"
-                st.link_button("🐋 前往 V25.2 分析 ↗", target_link, use_container_width=True)
-            else:
-                if st.button("🐋 前往 V25.2 分析", key=f"btn_v25_alert_{code}", use_container_width=True):
-                    st.info(f"💡 請先在左側側邊欄「🔗 巨鯨 V25.2 網頁直連網址」貼上你的 V25.2 真實網址，即可一鍵跳轉至該網頁為 {v['name']} ({code}) 進行完整分析！")
+            # 按鈕 2：直接連到 V25.2 網頁，不詢問、不帶密碼，由使用者在 V25 頁面自行 KEY 密碼
+            v25_link = f"{V25_APP_URL}/?stock={code}"
+            st.link_button("🐋 前往 V25.2 分析 ↗", v25_link, use_container_width=True)
 
         # 展開基本面情報抽屜
         with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案"):
