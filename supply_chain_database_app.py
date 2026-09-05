@@ -97,8 +97,9 @@ DEFAULT_USERS_DATA = {
         "v25_default_url": ""
     },
     "users": {
-        "ccchiu": {"password": "pwd001!", "role": "VIP", "name": "巨鯨管理員"},
-
+        "admin": {"password": "v25", "role": "VIP", "name": "巨鯨管理員"},
+        "vip": {"password": "v25", "role": "VIP", "name": "尊榮 VIP 會員"},
+        "user1": {"password": "123", "role": "Standard", "name": "一般體驗會員"}
     }
 }
 
