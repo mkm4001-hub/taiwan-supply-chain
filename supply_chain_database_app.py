@@ -1,19 +1,13 @@
 """
 ================================================================================
-科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦多用戶版 (第 4 次重大升級)
-根據使用者最新反饋升級：
-1. 【徹底修復 V25.2 按鈕 404 錯誤】：
-   - 404 是因外部網址未填寫所致；現已改為智慧防呆機制：
-     * 若未設定外部網址：點擊「V25.2 分析」直接在卡片下方【內建執行 V25.2 完整分析】，保證 100% 正常運算，絕不報 404！
-     * 若有在側邊欄填入外部網址：自動以新分頁跳轉至你的獨立網頁，並自動附帶股票代號、使用者名稱、密碼與授權角色 (?stock=2330&user=...&pwd=...&role=VIP)！
-2. 【多使用者帳號管理與權限同步】：
-   - 支援多帳號登入驗證（使用者名稱 ＋ 密碼），已預設 admin、vip、vip_user1、vip_user2、user1、user2 等多組帳號。
-   - 管理員登入後，可直接在側邊欄【👥 帳號管理小面板】即時新增、修改帳號與密碼，自動存入 users.json。
-   - 依權限（VIP / Standard）分級開放法說情報、資本支出與目標價。
-3. 【FinMind Token 支援 .txt 檔案拖曳上傳】：
-   - 側邊欄支援直接上傳包含 API Token 的 txt 文字檔，自動讀取並生效。
-4. 【公司名稱與股號字體放大 2 倍】：
-   - 1.85rem 高對比大字體，加粗呈現「公司名稱 (股號)」，完美適應深淺雙色模式。
+科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦正式版 (直通 V25 網頁版)
+根據使用者指示更新：
+1. 移除多餘的內建 V25 粗糙運算面板（避免因資料不足顯示 0 分雜訊）。
+2. 全面改為純粹乾淨的「直通 V25.2 獨立網頁」：
+   - 每家公司旁「更新行情」正下方，直接設置醒目的「🐋 前往 V25.2 完整分析 ↗」按鈕！
+   - 點擊後以新分頁直接開啟你的真實 V25.2 網頁，並自動帶入該檔股票代號（例如 ?stock=2330）。
+3. 提供智能網址自動儲存：在側邊欄貼上一次真實網址，系統自動寫入 users.json 永久記住！
+4. 保留多使用者登入驗證、FinMind Token 上傳、公司名稱字體放大 2 倍等完整功能。
 ================================================================================
 """
 
@@ -27,7 +21,7 @@ import pandas as pd
 from datetime import datetime
 
 st.set_page_config(
-    page_title="科技巨頭台灣供應鏈情報庫 (V25.2 整合版)",
+    page_title="科技巨頭台灣供應鏈情報庫 (V25.2 直連版)",
     page_icon="🌐",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -96,43 +90,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 多使用者系統載入與驗證閘門 (比照 V25.2 規格)
+# 多使用者帳號與設定檔管理
 # ==============================================================================
 DEFAULT_USERS_DATA = {
     "settings": {
         "v25_default_url": ""
     },
     "users": {
-        "admin": {
-            "password": "v25",
-            "role": "VIP",
-            "name": "巨鯨管理員",
-            "v25_access": "全功能解鎖"
-        },
-        "vip": {
-            "password": "v25",
-            "role": "VIP",
-            "name": "尊榮 VIP 會員",
-            "v25_access": "全功能解鎖"
-        },
-        "vip_user1": {
-            "password": "v25",
-            "role": "VIP",
-            "name": "VIP 操盤學員 1",
-            "v25_access": "全功能解鎖"
-        },
-        "vip_user2": {
-            "password": "v25",
-            "role": "VIP",
-            "name": "VIP 操盤學員 2",
-            "v25_access": "全功能解鎖"
-        },
-        "user1": {
-            "password": "123",
-            "role": "Standard",
-            "name": "一般體驗會員 1",
-            "v25_access": "基礎瀏覽"
-        }
+        "admin": {"password": "v25", "role": "VIP", "name": "巨鯨管理員"},
+        "vip": {"password": "v25", "role": "VIP", "name": "尊榮 VIP 會員"},
+        "user1": {"password": "123", "role": "Standard", "name": "一般體驗會員"}
     }
 }
 
@@ -156,7 +123,6 @@ users_payload = load_users_data()
 users_dict = users_payload.get("users", {})
 
 def check_multiuser_auth():
-    """雙欄位（使用者名稱 + 密碼）多權限驗證閘門"""
     if st.session_state.get("authenticated", False):
         return True
 
@@ -190,7 +156,7 @@ def check_multiuser_auth():
             else:
                 st.error("❌ 找不到此使用者帳號，請確認名稱是否正確。")
         
-        st.caption("💡 預設帳號：`admin` (密碼 `v25`) ｜ `vip` (密碼 `v25`) ｜ `user1` (密碼 `123`)")
+        st.caption("💡 預設測試帳號：`admin` (密碼 `v25`) ｜ `vip` (密碼 `v25`) ｜ `user1` (密碼 `123`)")
     return False
 
 if not check_multiuser_auth():
@@ -338,19 +304,6 @@ def apply_vendor_market_update(code, res):
         st.warning(f"本地存檔警示: {e}")
 
 # ==============================================================================
-# V25.2 量化分析引擎核心執行
-# ==============================================================================
-def run_v25_analysis(stock_id):
-    try:
-        import v25_engine_core as v25
-        fm_token = st.session_state.get("fm_token", "")
-        whale_eng = v25.WhaleEngine(token=fm_token)
-        res = whale_eng.analyze(stock_id=stock_id, mode='after_market')
-        return res, None
-    except Exception as e:
-        return None, str(e)
-
-# ==============================================================================
 # 主程式介面
 # ==============================================================================
 def main():
@@ -363,7 +316,7 @@ def main():
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
                     <h1 class="hero-title">🌐 科技巨頭台灣供應鏈情報庫</h1>
-                    <p class="hero-sub">AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ 整合 V25.2 實戰大局引擎</p>
+                    <p class="hero-sub">AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ 整合巨鯨 V25.2 系統直連</p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div style="font-size: 0.85rem; color: #f1f5f9; background: rgba(2, 132, 199, 0.25); border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 8px;">
@@ -379,22 +332,41 @@ def main():
 
     # 側邊欄控制台
     with st.sidebar:
-        st.header("⚙️ 系統設定與權限管理")
+        st.header("⚙️ 系統設定與 V25.2 直連")
         st.write(f"👤 當前登入：**{user_name}** ({current_role})")
         if st.button("🔒 登出系統", use_container_width=True):
             st.session_state["authenticated"] = False
             st.rerun()
 
+        st.markdown("---")
+        # V25.2 網址設定（自動保存）
+        st.subheader("🔗 巨鯨 V25.2 網頁直連網址")
+        saved_v25_url = users_payload.get("settings", {}).get("v25_default_url", "")
+        v25_ext_url = st.text_input(
+            "貼上你的 V25.2 網頁網址",
+            value=st.session_state.get("v25_ext_url", saved_v25_url),
+            placeholder="例如: https://xxx.streamlit.app"
+        ).strip()
+        
+        if v25_ext_url != saved_v25_url:
+            st.session_state["v25_ext_url"] = v25_ext_url
+            users_payload.setdefault("settings", {})["v25_default_url"] = v25_ext_url
+            save_users_data(users_payload)
+            st.success("✅ V25.2 網址已儲存更新！")
+
+        if not v25_ext_url:
+            st.warning("⚠️ 尚未設定 V25 網址，請先打開你的 V25.2 網頁並將網址複製貼在此處，按鈕即可自動連動！")
+        else:
+            st.caption(f"🎯 已綁定目標：`{v25_ext_url}`")
+
         # 管理員專屬：多使用者帳號管理
         if st.session_state.get("current_user") == "admin":
             with st.expander("👥 帳號管理小面板 (管理員專屬)"):
-                st.caption("可在這裡直接為朋友、客人新增帳號密碼")
-                st.write("**目前現有帳號清單：**")
+                st.caption("直接在此為學員或客戶新增帳號密碼")
                 for u_id, u_data in users_dict.items():
                     st.text(f"• {u_id} ({u_data.get('role')}): 密碼 {u_data.get('password')}")
                 
                 st.markdown("---")
-                st.write("**新增 / 修改帳號：**")
                 new_u_id = st.text_input("帳號 (Username)", key="m_new_uid").strip()
                 new_u_pwd = st.text_input("密碼 (Password)", key="m_new_pwd").strip()
                 new_u_role = st.selectbox("權限級別", ["VIP", "Standard"], key="m_new_role")
@@ -415,7 +387,7 @@ def main():
                         st.rerun()
 
         st.markdown("---")
-        # 依需求 3：FinMind Token 改採 .txt 檔案拖曳上傳
+        # FinMind Token 上傳
         st.subheader("🔑 FinMind Token (檔案上傳)")
         uploaded_token = st.file_uploader("📂 上傳 Token (.txt 檔)", type=["txt"], help="比照 V25.2 模式，直接將包含 Token 的 txt 文字檔拖入即可")
         if uploaded_token is not None:
@@ -429,16 +401,6 @@ def main():
         if token_input:
             st.session_state["fm_token"] = token_input.strip()
             os.environ["FINMIND_TOKEN"] = token_input.strip()
-
-        st.markdown("---")
-        st.subheader("🔗 獨立 V25.2 網頁網址")
-        st.caption("提示：若你已在 Streamlit 部署好 V25.2，請打開該網頁並將網址貼於此，即可在新分頁直接帶參數連動；若留空則使用本地內建模組分析。")
-        v25_ext_url = st.text_input(
-            "V25.2 實際網址 (留空則內建分析)",
-            value=st.session_state.get("v25_ext_url", users_payload.get("settings", {}).get("v25_default_url", "")),
-            placeholder="例如: https://share.streamlit.io/你的app網址"
-        )
-        st.session_state["v25_ext_url"] = v25_ext_url.strip()
 
         st.markdown("---")
         st.subheader("🔄 全體批次行情同步")
@@ -612,7 +574,7 @@ def render_vendor_card_with_sync(code, v):
     """
     渲染單一公司卡片：
     1. 【公司名稱與股號字體放大 2 倍】(1.85rem)
-    2. 右側設置「🔄 更新行情」以及「🐋 V25.2 分析」按鈕
+    2. 右側設置「🔄 更新行情」以及直通獨立 V25.2 的「🐋 前往 V25.2 完整分析 ↗」按鈕！
     """
     card_container = st.container()
     with card_container:
@@ -661,22 +623,19 @@ def render_vendor_card_with_sync(code, v):
                     else:
                         st.error(f"❌ 更新失敗: {err}")
 
-            # 按鈕 2：V25.2 分析按鈕（智慧雙軌：有外部網址則新開分頁跳轉，無網址則本頁展開，絕不報 404！）
+            # 按鈕 2：直通 V25.2 獨立網頁完整分析（依使用者要求，絕不跳 404）
             v25_url = st.session_state.get("v25_ext_url", "").strip()
             
             if v25_url and v25_url.startswith("http"):
+                # 確保網址格式正確（去除結尾斜線，再加參數）
+                clean_base_url = v25_url.rstrip("/")
                 cur_user = st.session_state.get("current_user", "vip")
                 cur_pwd = st.session_state.get("user_pwd", "")
-                target_link = f"{v25_url}/?stock={code}&user={cur_user}&pwd={cur_pwd}&role={current_role}"
-                st.link_button("🐋 V25.2 分析 ↗", target_link, use_container_width=True)
+                target_link = f"{clean_base_url}?stock={code}&user={cur_user}&pwd={cur_pwd}&role={current_role}"
+                st.link_button("🐋 前往 V25.2 分析 ↗", target_link, use_container_width=True)
             else:
-                # 預設本地展開模式（安全防呆）
-                if st.button("🐋 V25.2 分析", key=f"btn_v25_{code}", use_container_width=True):
-                    st.session_state[f"show_v25_{code}"] = not st.session_state.get(f"show_v25_{code}", False)
-
-        # 展開 V25.2 深度分析面板（本地內嵌運行）
-        if st.session_state.get(f"show_v25_{code}", False):
-            render_v25_analysis_panel(code, v)
+                if st.button("🐋 前往 V25.2 分析", key=f"btn_v25_alert_{code}", use_container_width=True):
+                    st.info(f"💡 請先在左側側邊欄「🔗 巨鯨 V25.2 網頁直連網址」貼上你的 V25.2 真實網址，即可一鍵跳轉至該網頁為 {v['name']} ({code}) 進行完整分析！")
 
         # 展開基本面情報抽屜
         with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案"):
@@ -705,53 +664,6 @@ def render_vendor_card_with_sync(code, v):
             st.markdown("##### 📑 官方數據出處佐證")
             for s in v.get("sources", []):
                 st.markdown(f"- **[{s.get('date', '最新')}]** [{s['title']}]({s['url']})")
-
-def render_v25_analysis_panel(code, v):
-    """渲染 V25.2 實盤量化診斷卡片"""
-    st.markdown(f"""
-        <div style="padding: 14px; background: rgba(30, 27, 75, 0.55); border: 1.5px solid #818cf8; border-radius: 12px; margin: 10px 0 16px 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <h4 style="margin: 0; color: #c7d2fe;">🐋 V25.2 PRO 實戰量化診斷：{v['name']} ({code})</h4>
-                <span style="font-size: 0.8rem; color: #a5b4fc;">大鯨魚多因子決策系統</span>
-            </div>
-    """, unsafe_allow_html=True)
-
-    v25_url = st.session_state.get("v25_ext_url", "").strip()
-    if not v25_url:
-        st.info("💡 提示：目前為【本地內嵌即時分析模式】。若想直接跳轉至你的獨立 V25.2 網頁，請至左側側邊欄「🔗 獨立 V25.2 網頁網址」貼上你在 Streamlit 點開該網頁時的實際網址！")
-
-    if f"v25_res_{code}" not in st.session_state:
-        with st.spinner(f"正在啟動 V25.2 量化引擎分析 {v['name']} (擬真防爬安全延遲)..."):
-            res, err = run_v25_analysis(code)
-            if res:
-                st.session_state[f"v25_res_{code}"] = res
-            else:
-                st.error(f"V25.2 運算提示: {err}")
-
-    res = st.session_state.get(f"v25_res_{code}")
-    if res:
-        f_info = res.get("fish", {})
-        r_info = res.get("retreat", {})
-        d_info = res.get("defense", {})
-        p_info = res.get("position", {})
-        w_info = res.get("warning", {})
-        fund_info = res.get("fundamental", {})
-
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            st.metric("🐟 魚頭分數", f"{f_info.get('fish_score', 0)} 分", delta=f"健康: {f_info.get('health_grade', '-')}")
-        with c2:
-            st.metric("🚨 撤退風險", f_info.get('trend_status', r_info.get('risk_status', '正常')), delta_color="inverse")
-        with c3:
-            st.metric("🛡️ 實戰防守價 (ATR)", f"{d_info.get('defense_price', 0)} 元")
-        with c4:
-            st.metric("⚓ 主力加權均價 (60日)", f"{d_info.get('vwap60', 0)} 元")
-
-        st.markdown(f"**魚體位置**：`{p_info.get('position_desc', '主升初期')}` ｜ **保守目標區**：`{d_info.get('target_low', '-')} ~ {d_info.get('target_high', '-')}`")
-        st.markdown(f"**基本面營收狀態**：`{fund_info.get('revenue_tag', '-')}` (YoY: {fund_info.get('yoy', '-')})")
-        st.markdown(f"**綜合預警提示**：`{w_info.get('warning_state', '正常')}`")
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
