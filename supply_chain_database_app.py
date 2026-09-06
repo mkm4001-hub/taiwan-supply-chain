@@ -21,7 +21,7 @@ import pandas as pd
 from datetime import datetime
 
 st.set_page_config(
-    page_title="科技巨頭台灣供應鏈情報庫 (V25.2 直連版)",
+    page_title="科技巨頭台灣供應鏈情報庫 (V13 / V25.5 估值重估聯動旗艦版)",
     page_icon="🌐",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -586,7 +586,11 @@ def render_vendor_card_with_sync(code, v):
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.92rem; color: #64748b; padding-top: 6px; border-top: 1px dashed rgba(2, 132, 199, 0.2);">
                         <span>最新股價: <strong style="color: #0284c7; font-size: 1.15rem;">{v.get('price', '-')}</strong></span>
-                        <span>動態本益比: <strong style="color: #059669; font-size: 1.15rem;">{v.get('trailing_pe', '-')}</strong></span>
+                        <span>預估本益比: <strong style="color: #059669; font-size: 1.15rem;">{v.get('forward_pe', v.get('trailing_pe', '-'))}</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #475569; margin-top: 5px; background: rgba(2, 132, 199, 0.06); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(2, 132, 199, 0.15);">
+                        <span>🎯 目標 PE: <strong style="color: #d97706; font-weight: 700;">{v.get('target_pe_range', '-')}</strong></span>
+                        <span>🚀 潛在空間: <strong style="color: #059669; font-weight: 700;">+{v.get('target_upside', '-')}</strong></span>
                     </div>
                     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
                         📅 報價日期: {date_badge}{ts_label}
@@ -626,11 +630,24 @@ def render_vendor_card_with_sync(code, v):
             st.markdown(f"**未來 2 年 CapEx**：`{v.get('capex_future_2y', '-')}` ({v.get('capex_yoy_increase', '-')})")
             st.caption(f"**支出目的**：{v.get('capex_purpose', '-')}")
 
+            st.markdown("---")
+            st.markdown("##### 🎯 法人估值與重估解析 (Valuation & Rerating)")
+            col_val1, col_val2, col_val3 = st.columns(3)
+            with col_val1:
+                st.metric("當前預估 PE", v.get("forward_pe", "-"))
+            with col_val2:
+                st.metric("法人目標 PE 區間", v.get("target_pe_range", "-"))
+            with col_val3:
+                up_val = f"+{v.get('target_upside')}" if v.get("target_upside") else "-"
+                st.metric("目標價潛在空間", up_val)
+
+            rerating_text = v.get("rerating_driver", "")
+            if rerating_text:
+                st.info(f"💡 **法人估值重估 (Rerating) 關鍵驅動力**：\n{rerating_text}")
+
             if current_role == "VIP":
                 st.markdown(f"**法說成長指引**：{v.get('guidance', '-')}")
                 st.markdown(f"**法人共識目標價**：`{v.get('target_price', '-')}` ({v.get('analyst_count', '-')})")
-                if "upside_pot" in v:
-                    st.markdown(f"**距離目標價空間**：`{v['upside_pot']}`")
             else:
                 st.info("🔒 法說成長指引與法人共識目標價屬於 VIP 會員專屬內容，請升級帳號權限查閱。")
 

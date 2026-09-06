@@ -1410,7 +1410,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "26.0 ~ 29.8 倍",
+      "target_upside": "32.4% ~ 52.0%",
+      "rerating_driver": "壟斷全球3nm/2nm先進製程與CoWoS產能，法說會指引未來5年AI處理器CAGR達50%，高定價權與龐大資本支出構築絕對護城河，獲外資賦予26~30倍頂級領導者估值。"
     },
     "3017": {
       "code": "3017",
@@ -1482,7 +1485,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "25.0 ~ 42.1 倍",
+      "target_upside": "16.1% ~ 95.2%",
+      "rerating_driver": "GB200/Rubin世代全面由氣冷轉向液冷，水冷板(Cold Plate)、分流歧管與CDU垂直自製率領先，單機價值量提升數倍，推動獲利質變與本益比顯著重估。"
     },
     "3324": {
       "code": "3324",
@@ -1560,7 +1566,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "27.9 ~ 32.3 倍",
+      "target_upside": "22.9% ~ 42.4%",
+      "rerating_driver": "散熱第一梯隊技術，泰國新廠建置強化海外供應鏈韌性，水冷板與冷卻歧管自製率持續攀升，受惠下半年新伺服器平台大量採用液冷，享有水冷族群溢價倍數。"
     },
     "2383": {
       "code": "2383",
@@ -1649,7 +1658,10 @@
           "share": 33,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "21.2 ~ 24.4 倍",
+      "target_upside": "17.2% ~ 34.5%",
+      "rerating_driver": "橫跨AI伺服器主板極低損耗CCL(M8等級)與低軌衛星PCB的雙棲材料霸主，市占全球第一，受惠美系衛星追加大單與ASIC/GPU伺服器放量雙引擎。"
     },
     "3665": {
       "code": "3665",
@@ -1739,7 +1751,10 @@
           "share": 16,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "36.2 ~ 40.0 倍",
+      "target_upside": "10.1% ~ 21.8%",
+      "rerating_driver": "成功切入AI資料中心機櫃內部NVLink高頻高速傳輸線束與PCIe 6.0，擺脫傳統車用線束低估值框架，轉型為HPC高速傳輸核心元件，迎來估值重估。"
     },
     "2308": {
       "code": "2308",
@@ -1842,7 +1857,10 @@
           "share": 43,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "52.4 ~ 66.7 倍",
+      "target_upside": "27.2% ~ 61.8%",
+      "rerating_driver": "AI資料中心推升機架Power Shelf電源瓦數激增數倍，具備高功率電源、液冷散熱與BBU電池備援一條龍解決方案，單機價值倍增，外資給予領導品牌高溢價。"
     },
     "2313": {
       "code": "2313",
@@ -1918,7 +1936,10 @@
           "share": 46,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "16.0 ~ 18.1 倍",
+      "target_upside": "21.7% ~ 37.6%",
+      "rerating_driver": "星鏈直連手機 (Direct to Cell) 次世代衛星天線與酬載主板主力供應商，高階任意層 HDI 與高頻板製程良率領先，受惠發射頻率翻倍成長。"
     },
     "6285": {
       "code": "6285",
@@ -1990,7 +2011,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "15.7 ~ 17.1 倍",
+      "target_upside": "19.7% ~ 30.3%",
+      "rerating_driver": "低軌衛星地面接收天線、Wi-Fi 7 路由器與資料中心交換器放量，網通與衛星雙軌出貨，全球市佔穩健。"
     },
     "3491": {
       "code": "3491",
@@ -2067,7 +2091,10 @@
           "share": 10,
           "color": "#94a3b8"
         }
-      ]
+      ],
+      "target_pe_range": "25.5 ~ 29.1 倍",
+      "target_upside": "15.1% ~ 31.5%",
+      "rerating_driver": "深耕低軌衛星本體酬載（Payload）關鍵微波通訊元件與地面站濾波器，毛利率突破50%，技術難以替代，直接受惠美系衛星客戶擴大採購。"
     },
     "2059": {
       "code": "2059",
@@ -2140,7 +2167,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "21.8 ~ 24.2 倍",
+      "target_upside": "20.5% ~ 33.9%",
+      "rerating_driver": "獨佔全球伺服器高載重導軌專利壁壘，GB200 NVL72 滑軌單機價值大增，市占率超八成，維持極高毛利率與護城河評價。"
     },
     "6805": {
       "code": "6805",
@@ -2199,7 +2229,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "26.2 ~ 30.5 倍",
+      "target_upside": "19.6% ~ 39.1%",
+      "rerating_driver": "富世達成功跨入液冷散熱關鍵「水冷快接頭 (QD)」認證並大舉擴產，高階精密轉接模組帶動獲利本益比評價雙重躍升。"
     },
     "8996": {
       "code": "8996",
@@ -2253,7 +2286,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "23.6 ~ 27.3 倍",
+      "target_upside": "13.0% ~ 30.4%",
+      "rerating_driver": "液冷冷卻分配單元 (CDU) 與熱交換器核心製造大廠，真空硬銲技術成熟，隨資料中心液冷滲透率突破50%直接迎來業績爆發。"
     },
     "3131": {
       "code": "3131",
@@ -2319,7 +2355,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "45.0 ~ 52.5 倍",
+      "target_upside": "8.6% ~ 26.7%",
+      "rerating_driver": "台積電 CoWoS 先進封裝濕製程清洗機台第一大本土供應商，訂單能見度直達後年，享有高本益比設備股溢價。"
     },
     "3583": {
       "code": "3583",
@@ -2385,7 +2424,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "26.8 ~ 31.2 倍",
+      "target_upside": "13.4% ~ 32.0%",
+      "rerating_driver": "先進封裝濕製程自製機台放量與再生晶圓需求強勁，在台積電先進封裝供應鏈佔據不可或缺地位。"
     },
     "6187": {
       "code": "6187",
@@ -2450,7 +2492,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "34.5 ~ 39.3 倍",
+      "target_upside": "11.5% ~ 26.9%",
+      "rerating_driver": "CoWoS 散熱片高精度貼合機與自動化點膠設備關鍵廠，打入一線封測與晶圓大廠，業績乘 CoWoS 擴產順風車。"
     },
     "8358": {
       "code": "8358",
@@ -2516,7 +2561,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "18.8 ~ 22.1 倍",
+      "target_upside": "21.0% ~ 42.0%",
+      "rerating_driver": "伺服器高速差分傳輸 RG 系列超低粗糙度銅箔主力供應商，獲高速 CCL 大廠認證採用，產品結構升級拉升毛利。"
     },
     "6514": {
       "code": "6514",
@@ -2581,7 +2629,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "16.7 ~ 18.6 倍",
+      "target_upside": "18.1% ~ 31.9%",
+      "rerating_driver": "受惠「高頻射頻同軸線纜模組 / 天線元件」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6584": {
       "code": "6584",
@@ -2647,7 +2698,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "22.6 ~ 26.1 倍",
+      "target_upside": "23.8% ~ 42.9%",
+      "rerating_driver": "躋身美系 CSP 雲端巨頭 AI 伺服器導軌供應鏈，產能開出帶動出貨動能大幅翻倍，重估獲利預期。"
     },
     "2317": {
       "code": "2317",
@@ -2727,7 +2781,10 @@
           "title": "經濟日報 - 鴻海法說：AI伺服器今年翻倍成長，市佔破四成",
           "url": "https://money.udn.com/money/story/2317"
         }
-      ]
+      ],
+      "target_pe_range": "14.9 ~ 17.1 倍",
+      "target_upside": "15.6% ~ 33.3%",
+      "rerating_driver": "輝達 GB200 NVL72 運算底板與整櫃組裝核心夥伴，具備垂直整合電源、散熱與自動化優勢，自傳統 EMS 升級為 AI 系統整合王者。"
     },
     "6669": {
       "code": "6669",
@@ -2793,7 +2850,10 @@
           "title": "鉅亨網 - 緯穎受惠水冷機架出貨，法人目標價看三字頭",
           "url": "https://www.cnyes.com/twstock/6669"
         }
-      ]
+      ],
+      "target_pe_range": "20.4 ~ 23.0 倍",
+      "target_upside": "20.2% ~ 35.7%",
+      "rerating_driver": "美系四大雲端 CSP 巨頭客製化 ASIC 與 GPU 液冷整櫃伺服器主力夥伴，高純度 AI 伺服器營收比重推升估值位階。"
     },
     "3231": {
       "code": "3231",
@@ -2860,7 +2920,10 @@
           "title": "永豐金證券 - 緯創AI底板出貨續旺，全年獲利創高",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/3231"
         }
-      ]
+      ],
+      "target_pe_range": "15.2 ~ 17.2 倍",
+      "target_upside": "21.1% ~ 36.7%",
+      "rerating_driver": "輝達 Blackwell GPU 運算底板 (Baseboard) 獨家或主要代工廠，掌握伺服器最核心運算模組，獲利體質顯著優化。"
     },
     "2376": {
       "code": "2376",
@@ -2921,7 +2984,10 @@
           "title": "經濟日報 - 技嘉AI伺服器占比過半，獲利高速奔馳",
           "url": "https://money.udn.com/money/story/2376"
         }
-      ]
+      ],
+      "target_pe_range": "16.2 ~ 18.3 倍",
+      "target_upside": "16.9% ~ 32.3%",
+      "rerating_driver": "靈活佈局企業級 AI 伺服器市場，雙軌支援輝達與 AMD 平台，並迅速跨入浸沒式與液冷散熱方案，營收動能充沛。"
     },
     "2356": {
       "code": "2356",
@@ -2981,7 +3047,10 @@
           "title": "鉅亨網 - 英業達伺服器主板出貨增溫，泰國廠加速放量",
           "url": "https://www.cnyes.com/twstock/2356"
         }
-      ]
+      ],
+      "target_pe_range": "21.2 ~ 24.4 倍",
+      "target_upside": "16.2% ~ 33.3%",
+      "rerating_driver": "Google TPU 伺服器主板關鍵代工廠，並獲美系主要雲端 CSP 客戶青睞，AI 伺服器出貨比重快速爬升。"
     },
     "4938": {
       "code": "4938",
@@ -3055,7 +3124,10 @@
           "title": "經濟日報 - 和碩車用與伺服器雙線並進，獲利體質改善",
           "url": "https://money.udn.com/money/story/4938"
         }
-      ]
+      ],
+      "target_pe_range": "16.2 ~ 18.8 倍",
+      "target_upside": "16.1% ~ 33.9%",
+      "rerating_driver": "掌握特斯拉車載中控電腦 ECU 與星鏈地面接收站，多元化佈局高毛利車用與航太領域，擺脫一般消費電子週期限制。"
     },
     "3711": {
       "code": "3711",
@@ -3128,7 +3200,10 @@
           "title": "永豐金證券 - 日月光投控先進封裝營收翻倍，擴大資本支出",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/3711"
         }
-      ]
+      ],
+      "target_pe_range": "17.2 ~ 19.6 倍",
+      "target_upside": "18.1% ~ 34.6%",
+      "rerating_driver": "全球半導體封測龍頭，承接台積電 oCoWoS 外包先進封裝與 VIPack 先進異質整合，提供一站式封裝測試服務。"
     },
     "3037": {
       "code": "3037",
@@ -3189,7 +3264,10 @@
           "title": "經濟日報 - 欣興高階載板需求轉強，光復廠產能滿載",
           "url": "https://money.udn.com/money/story/3037"
         }
-      ]
+      ],
+      "target_pe_range": "19.5 ~ 22.7 倍",
+      "target_upside": "22.0% ~ 41.5%",
+      "rerating_driver": "ABF 載板領導廠商，高層數、大面積 AI 伺服器載板放量出貨，受惠次世代晶片封裝規格升級循環。"
     },
     "3189": {
       "code": "3189",
@@ -3250,7 +3328,10 @@
           "title": "鉅亨網 - 景碩載板稼動率回升，下半年獲利看增",
           "url": "https://www.cnyes.com/twstock/3189"
         }
-      ]
+      ],
+      "target_pe_range": "18.4 ~ 20.6 倍",
+      "target_upside": "19.0% ~ 33.3%",
+      "rerating_driver": "高階 ABF 與 BT 載板產能到位，受惠美系晶片巨頭與記憶體升級，產能利用率持續回升。"
     },
     "3443": {
       "code": "3443",
@@ -3311,7 +3392,10 @@
           "title": "永豐金證券 - 創意法說：2奈米開案強勁，AI營收翻揚",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/3443"
         }
-      ]
+      ],
+      "target_pe_range": "32.4 ~ 36.7 倍",
+      "target_upside": "15.1% ~ 30.3%",
+      "rerating_driver": "台積電生態系 ASIC 設計服務巨擘，專精 3nm/2nm 先進製程與 HBM3e 介面 IP，享有極高智財權技術溢價。"
     },
     "6213": {
       "code": "6213",
@@ -3384,7 +3468,10 @@
           "title": "經濟日報 - 聯茂高階CCL占比拉高，泰國產能到位",
           "url": "https://money.udn.com/money/story/6213"
         }
-      ]
+      ],
+      "target_pe_range": "18.1 ~ 20.7 倍",
+      "target_upside": "18.6% ~ 35.6%",
+      "rerating_driver": "伺服器與交換器高階 CCL 關鍵材料商，泰國新廠建置強化全球佈局，切入次世代高速傳輸材料認證。"
     },
     "2421": {
       "code": "2421",
@@ -3451,7 +3538,10 @@
           "title": "永豐金證券 - 建準受惠AI伺服器風扇規格升級，獲利創高",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/2421"
         }
-      ]
+      ],
+      "target_pe_range": "16.7 ~ 18.7 倍",
+      "target_upside": "15.7% ~ 29.6%",
+      "rerating_driver": "高效能散熱風扇與馬達領導大廠，伺服器高轉速風扇技術成熟，積極佈局水冷板與液冷輔助風扇。"
     },
     "2301": {
       "code": "2301",
@@ -3518,7 +3608,10 @@
           "title": "經濟日報 - 光寶科AI伺服器電源強勁，毛利率維持高檔",
           "url": "https://money.udn.com/money/story/2301"
         }
-      ]
+      ],
+      "target_pe_range": "15.9 ~ 17.7 倍",
+      "target_upside": "16.1% ~ 29.5%",
+      "rerating_driver": "高功率伺服器電源關鍵供應商，推出支援 33kW+ 之 Power Shelf 機架電源與液冷模組，獲雲端巨頭認證採用。"
     },
     "2368": {
       "code": "2368",
@@ -3579,7 +3672,10 @@
           "title": "永豐金證券 - 金像電AI伺服器板滿載，泰國新廠挹注",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/2368"
         }
-      ]
+      ],
+      "target_pe_range": "19.4 ~ 21.9 倍",
+      "target_upside": "18.6% ~ 33.9%",
+      "rerating_driver": "高層數 AI 伺服器主板與 800G 交換器 PCB 市占龍頭，產能滿載且高階比重拉高，帶動毛利率與獲利同步改寫新高。"
     },
     "3044": {
       "code": "3044",
@@ -3644,7 +3740,10 @@
           "title": "經濟日報 - 健鼎越南廠產能開出，全年獲利拚新高",
           "url": "https://money.udn.com/money/story/3044"
         }
-      ]
+      ],
+      "target_pe_range": "14.6 ~ 16.3 倍",
+      "target_upside": "15.6% ~ 28.9%",
+      "rerating_driver": "全球伺服器 PCB 核心大廠，技術成熟度與良率深獲客戶信任，受惠全球資料中心升級潮。"
     },
     "8210": {
       "code": "8210",
@@ -3705,7 +3804,10 @@
           "title": "永豐金證券 - 勤誠AI機箱出貨暢旺，單月營收創新高",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/8210"
         }
-      ]
+      ],
+      "target_pe_range": "18.7 ~ 20.7 倍",
+      "target_upside": "20.0% ~ 32.9%",
+      "rerating_driver": "AI 伺服器機殼與模組化機構件領導品牌，深耕美系與中系 CSP 雲端客戶，受惠高客製化機箱商機。"
     },
     "3013": {
       "code": "3013",
@@ -3765,7 +3867,10 @@
           "title": "經濟日報 - 晟銘電泰國廠年底投產，全力衝刺水冷機櫃",
           "url": "https://money.udn.com/money/story/3013"
         }
-      ]
+      ],
+      "target_pe_range": "22.0 ~ 25.6 倍",
+      "target_upside": "24.1% ~ 44.8%",
+      "rerating_driver": "深耕伺服器機箱、冷水分配管路與整櫃機構件，取得大廠水冷認證，營收爆發力顯著。"
     },
     "3533": {
       "code": "3533",
@@ -3826,7 +3931,10 @@
           "title": "永豐金證券 - 嘉澤伺服器Socket滲透率走高，獲利締新猷",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/3533"
         }
-      ]
+      ],
+      "target_pe_range": "21.7 ~ 25.0 倍",
+      "target_upside": "16.1% ~ 33.9%",
+      "rerating_driver": "伺服器 CPU/GPU 關鍵連接器與 PCIe 插槽霸主，次世代 Socket 規格升級帶動 ASP 與毛利雙成長。"
     },
     "2345": {
       "code": "2345",
@@ -3893,7 +4001,10 @@
           "title": "經濟日報 - 智邦800G交換器出貨強勁，全年獲利看俏",
           "url": "https://money.udn.com/money/story/2345"
         }
-      ]
+      ],
+      "target_pe_range": "23.4 ~ 26.6 倍",
+      "target_upside": "15.4% ~ 30.8%",
+      "rerating_driver": "全球白牌 AI 交換機（400G/800G）領導廠商，掌握矽光子 CPO 整合前瞻技術，雲端資料中心訂單能見度清晰。"
     },
     "3105": {
       "code": "3105",
@@ -3960,7 +4071,10 @@
           "title": "鉅亨網 - 穩懋產能利用率回升，衛星與光通訊挹注",
           "url": "https://www.cnyes.com/twstock/3105"
         }
-      ]
+      ],
+      "target_pe_range": "20.6 ~ 23.5 倍",
+      "target_upside": "20.7% ~ 37.9%",
+      "rerating_driver": "全球砷化鎵晶圓代工龍頭，受惠光通訊雷射晶片與低軌衛星地面射頻元件需求增長。"
     },
     "8086": {
       "code": "8086",
@@ -4021,7 +4135,10 @@
           "title": "工商時報 - 宏捷科產能滿載，衛星與Wi-Fi 7放量",
           "url": "https://www.ctee.com.tw/news/8086"
         }
-      ]
+      ],
+      "target_pe_range": "18.1 ~ 20.6 倍",
+      "target_upside": "18.9% ~ 35.2%",
+      "rerating_driver": "受惠「砷化鎵 (GaAs) 晶圓代工 / 低軌衛星射頻 / VCSEL」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6526": {
       "code": "6526",
@@ -4087,7 +4204,10 @@
           "title": "永豐金證券 - 達發衛星定位與光纖晶片強勁成長",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/6526"
         }
-      ]
+      ],
+      "target_pe_range": "25.0 ~ 27.3 倍",
+      "target_upside": "21.0% ~ 32.3%",
+      "rerating_driver": "受惠「衛星導航 (GNSS) 訊號晶片 / 光纖寬頻與乙太網晶片」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2367": {
       "code": "2367",
@@ -4153,7 +4273,10 @@
           "title": "經濟日報 - 燿華通吃兩大衛星巨頭，下半年獲利看旺",
           "url": "https://money.udn.com/money/story/2367"
         }
-      ]
+      ],
+      "target_pe_range": "11.8 ~ 14.5 倍",
+      "target_upside": "23.3% ~ 50.7%",
+      "rerating_driver": "受惠「低軌衛星天上本體板 / 地面接收器 HDI 板 / 車用板」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2355": {
       "code": "2355",
@@ -4220,7 +4343,10 @@
           "title": "工商時報 - 敬鵬車用訂單持穩，泰國廠擴產效益浮現",
           "url": "https://www.ctee.com.tw/news/2355"
         }
-      ]
+      ],
+      "target_pe_range": "12.2 ~ 13.8 倍",
+      "target_upside": "22.2% ~ 37.8%",
+      "rerating_driver": "受惠「車載全方位電路板 / 低軌衛星地面通訊設備板」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6282": {
       "code": "6282",
@@ -4292,7 +4418,10 @@
           "title": "經濟日報 - 康舒星鏈電源出貨暢旺，併購綜效顯現",
           "url": "https://money.udn.com/money/story/6282"
         }
-      ]
+      ],
+      "target_pe_range": "17.1 ~ 19.6 倍",
+      "target_upside": "24.7% ~ 42.9%",
+      "rerating_driver": "受惠「低軌衛星抗突波電源 / 電動車充電系統 / 伺服器電源」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6190": {
       "code": "6190",
@@ -4357,7 +4486,10 @@
           "title": "工商時報 - 萬泰科星鏈線材出貨衝高，獲利看增",
           "url": "https://www.ctee.com.tw/news/6190"
         }
-      ]
+      ],
+      "target_pe_range": "14.5 ~ 16.8 倍",
+      "target_upside": "18.4% ~ 36.8%",
+      "rerating_driver": "受惠「低軌衛星戶外抗紫外線耐候線 / 資料中心內部高速銅纜」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2312": {
       "code": "2312",
@@ -4417,7 +4549,10 @@
           "title": "經濟日報 - 金寶泰國廠產能滿載，星鏈出貨動能強勁",
           "url": "https://money.udn.com/money/story/2312"
         }
-      ]
+      ],
+      "target_pe_range": "14.7 ~ 17.4 倍",
+      "target_upside": "14.3% ~ 34.7%",
+      "rerating_driver": "受惠「SpaceX Starlink 地面接收碟天線 (User Terminal) 整機製造」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6640": {
       "code": "6640",
@@ -4477,7 +4612,10 @@
           "title": "工商時報 - 均華手握CoWoS大單，挑揀機訂單排至明年底",
           "url": "https://www.ctee.com.tw/news/6640"
         }
-      ]
+      ],
+      "target_pe_range": "27.6 ~ 31.6 倍",
+      "target_upside": "14.1% ~ 30.4%",
+      "rerating_driver": "半導體高精度晶片挑揀機 (Die Sorter) 龍頭，全面切入台積電 CoWoS 先進封裝產線，業績能見度高。"
     },
     "6515": {
       "code": "6515",
@@ -4538,7 +4676,10 @@
           "title": "永豐金證券 - 穎崴受惠AI晶片測試需求，獲利創歷史新猷",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/6515"
         }
-      ]
+      ],
+      "target_pe_range": "24.1 ~ 27.6 倍",
+      "target_upside": "14.8% ~ 31.1%",
+      "rerating_driver": "高效能運算 (HPC) 晶片測試座 (Socket) 領導大廠，支援 3nm 先進封裝同軸探針測試，享有高度技術門檻溢價。"
     },
     "6223": {
       "code": "6223",
@@ -4599,7 +4740,10 @@
           "title": "經濟日報 - 外資目標價喊破千元！旺矽憑什麼躋身千金股？",
           "url": "https://money.udn.com/money/story/6223"
         }
-      ]
+      ],
+      "target_pe_range": "28.6 ~ 33.3 倍",
+      "target_upside": "11.1% ~ 29.6%",
+      "rerating_driver": "高階探針卡 (VPC) 龍頭，垂直探針卡受惠 AI GPU 與 ASIC 大量晶圓測試需求，外資維持高度正向評價。"
     },
     "1815": {
       "code": "1815",
@@ -4660,7 +4804,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "18.1 ~ 21.4 倍",
+      "target_upside": "20.6% ~ 42.9%",
+      "rerating_driver": "受惠「電子級高階玻纖紗與玻纖布 (Low Dk / Low Df)」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6230": {
       "code": "6230",
@@ -4720,7 +4867,10 @@
           "title": "鉅亨網 - 超眾受惠Nidec資源挹注，伺服器水冷動能增",
           "url": "https://www.cnyes.com/twstock/6230"
         }
-      ]
+      ],
+      "target_pe_range": "17.4 ~ 19.5 倍",
+      "target_upside": "16.2% ~ 30.3%",
+      "rerating_driver": "受惠「伺服器散熱模組 / 熱導管與熱板 / 液冷 CDU 散熱」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6275": {
       "code": "6275",
@@ -4785,7 +4935,10 @@
           "title": "經濟日報 - 元山仁武新廠投產，車用與伺服器雙引擎發威",
           "url": "https://money.udn.com/money/story/6275"
         }
-      ]
+      ],
+      "target_pe_range": "12.9 ~ 15.0 倍",
+      "target_upside": "18.1% ~ 37.1%",
+      "rerating_driver": "受惠「車載散熱風扇 / 伺服器液冷散熱模組」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "3211": {
       "code": "3211",
@@ -4845,7 +4998,10 @@
           "title": "工商時報 - 順達BBU伺服器電池大出貨，獲利締新猷",
           "url": "https://www.ctee.com.tw/news/3211"
         }
-      ]
+      ],
+      "target_pe_range": "11.0 ~ 12.8 倍",
+      "target_upside": "18.5% ~ 37.0%",
+      "rerating_driver": "受惠「伺服器 BBU 電池備援模組 / 輕型電動載具電池」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6121": {
       "code": "6121",
@@ -4912,7 +5068,10 @@
           "title": "經濟日報 - 新普受惠AES伺服器BBU大爆發，獲利穩健攀升",
           "url": "https://money.udn.com/money/story/6121"
         }
-      ]
+      ],
+      "target_pe_range": "12.0 ~ 13.0 倍",
+      "target_upside": "15.8% ~ 26.3%",
+      "rerating_driver": "受惠「旗下 AES-KY 雲端 BBU 電池備援 / 輕型電動車電池」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "3707": {
       "code": "3707",
@@ -4984,7 +5143,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "26.8 ~ 30.4 倍",
+      "target_upside": "20.0% ~ 36.0%",
+      "rerating_driver": "受惠「第三代半導體 SiC / GaN 晶圓代工」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "3016": {
       "code": "3016",
@@ -5049,7 +5211,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "25.8 ~ 29.2 倍",
+      "target_upside": "19.2% ~ 34.6%",
+      "rerating_driver": "受惠「車用第三代半導體磊晶 (Epitaxy)」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "8255": {
       "code": "8255",
@@ -5116,7 +5281,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "18.3 ~ 20.4 倍",
+      "target_upside": "17.0% ~ 30.3%",
+      "rerating_driver": "受惠「車用發電機二極體 / IGBT / SiC 功率模組」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "3653": {
       "code": "3653",
@@ -5189,7 +5357,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "32.7 ~ 40.0 倍",
+      "target_upside": "18.4% ~ 44.7%",
+      "rerating_driver": "高階均熱片 (Heat Sink) 與車用散熱扣件龍頭，全面切入伺服器與電動車水冷熱管理系統，獲利爆發性強。"
     },
     "3715": {
       "code": "3715",
@@ -5254,7 +5425,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "15.4 ~ 17.6 倍",
+      "target_upside": "22.1% ~ 39.5%",
+      "rerating_driver": "車用高階 HDI 與 AI 伺服器電路板成長雙引擎，泰國新生產基地投產開拓全球 Tier 1 客戶。"
     },
     "6605": {
       "code": "6605",
@@ -5320,7 +5494,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "13.0 ~ 14.4 倍",
+      "target_upside": "19.1% ~ 31.9%",
+      "rerating_driver": "北美售後車燈龍頭，切入智慧 LED 車燈與自駕感測鏡頭整合模組，獲利長期穩健。"
     },
     "6271": {
       "code": "6271",
@@ -5386,7 +5563,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "19.0 ~ 21.0 倍",
+      "target_upside": "21.2% ~ 33.3%",
+      "rerating_driver": "受惠「車用 CIS 影像感測器封裝 / 陶瓷基板」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2258": {
       "code": "2258",
@@ -5452,7 +5632,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "34.7 ~ 40.0 倍",
+      "target_upside": "19.5% ~ 37.9%",
+      "rerating_driver": "受惠「電動車整車平台整合 / 電控系統 (MIH)」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "1560": {
       "code": "1560",
@@ -5513,7 +5696,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "26.3 ~ 29.7 倍",
+      "target_upside": "19.5% ~ 35.1%",
+      "rerating_driver": "台積電先進製程鑽石碟 (Diamond Disk) 與再生晶圓主力夥伴，伴隨 3nm/2nm 投片量持續倍增。"
     },
     "8028": {
       "code": "8028",
@@ -5574,7 +5760,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "22.6 ~ 26.2 倍",
+      "target_upside": "21.7% ~ 41.4%",
+      "rerating_driver": "晶圓薄化與再生晶圓大廠，受惠 3D IC 與先進封裝晶圓研磨需求，產能擴張順利。"
     },
     "5340": {
       "code": "5340",
@@ -5635,7 +5824,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "21.9 ~ 26.0 倍",
+      "target_upside": "21.4% ~ 44.5%",
+      "rerating_driver": "受惠「極低介電損耗 (Low Dk) 電子級玻纖布」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6488": {
       "code": "6488",
@@ -5697,7 +5889,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "16.2 ~ 18.6 倍",
+      "target_upside": "19.3% ~ 36.8%",
+      "rerating_driver": "受惠「12吋先進半導體矽晶圓 / SiC 碳化矽晶圓」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "4749": {
       "code": "4749",
@@ -5752,7 +5947,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "32.7 ~ 38.2 倍",
+      "target_upside": "17.6% ~ 37.3%",
+      "rerating_driver": "受惠「先進微影製程特化品 / 光阻表面處理劑 / 先進封裝材料」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "4770": {
       "code": "4770",
@@ -5807,7 +6005,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "17.2 ~ 19.6 倍",
+      "target_upside": "18.1% ~ 34.9%",
+      "rerating_driver": "受惠「高純度氟素樹脂 (Teflon) 內襯化學品儲存與輸送設備」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "8021": {
       "code": "8021",
@@ -5882,7 +6083,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "28.1 ~ 32.4 倍",
+      "target_upside": "13.3% ~ 30.7%",
+      "rerating_driver": "受惠「PCB 精密微型鑽針 / 銑刀 / 鑽孔代工服務」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2404": {
       "code": "2404",
@@ -5943,7 +6147,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "29.8 ~ 33.7 倍",
+      "target_upside": "9.2% ~ 23.2%",
+      "rerating_driver": "高科技廠房無塵室與機電工程龍頭，深度承接台積電國內外先進製程建廠大單，在手訂單維持歷史高檔。"
     },
     "6139": {
       "code": "6139",
@@ -5998,7 +6205,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "16.1 ~ 18.2 倍",
+      "target_upside": "19.2% ~ 34.6%",
+      "rerating_driver": "受惠「兩岸與東南亞無塵室機電工程 / 生化潔淨工程」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2467": {
       "code": "2467",
@@ -6054,7 +6264,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "28.2 ~ 32.7 倍",
+      "target_upside": "19.2% ~ 38.5%",
+      "rerating_driver": "受惠「CoWoS 先進封裝熱處理設備 / 載板真空壓膜機」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "6664": {
       "code": "6664",
@@ -6110,7 +6323,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "19.5 ~ 22.3 倍",
+      "target_upside": "17.8% ~ 34.2%",
+      "rerating_driver": "受惠「高階 ABF 載板滾輪塗布烘烤線 / 垂直烘烤爐」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "3030": {
       "code": "3030",
@@ -6178,7 +6394,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "17.5 ~ 20.0 倍",
+      "target_upside": "19.5% ~ 36.6%",
+      "rerating_driver": "受惠「SMT 電路板 3D AOI / 半導體與伺服器高精度檢測機台」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2360": {
       "code": "2360",
@@ -6246,7 +6465,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "22.7 ~ 25.4 倍",
+      "target_upside": "20.4% ~ 34.7%",
+      "rerating_driver": "受惠「AI 資料中心高壓電力測試 / 水冷液冷量測 / 半導體測試」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "3081": {
       "code": "3081",
@@ -6320,7 +6542,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "80.0 ~ 93.3 倍",
+      "target_upside": "6.0% ~ 23.7%",
+      "rerating_driver": "磷化銦 (InP) 雷射磊晶關鍵大廠，掌握矽光子與 800G/1.6T CW Laser 光源核心材料，技術壁壘極高。"
     },
     "6442": {
       "code": "6442",
@@ -6388,7 +6613,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "40.0 ~ 47.3 倍",
+      "target_upside": "20.9% ~ 42.9%",
+      "rerating_driver": "美系資料中心高密度光纖跳接線與光收發模組直供大廠，受惠光通訊傳輸架構升級大單。"
     },
     "3450": {
       "code": "3450",
@@ -6456,7 +6684,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "33.5 ~ 38.9 倍",
+      "target_upside": "19.2% ~ 38.5%",
+      "rerating_driver": "光通訊封裝與矽光子 CPO 模組代工大廠，攜手國際晶片巨擘佈局次世代以光代電架構。"
     },
     "4979": {
       "code": "4979",
@@ -6519,7 +6750,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "30.8 ~ 36.5 倍",
+      "target_upside": "8.1% ~ 28.4%",
+      "rerating_driver": "高速光收發晶片與光模組重要廠商，受惠美系雲端巨頭資料中心 800G 傳輸規格大量採用。"
     },
     "3363": {
       "code": "3363",
@@ -6580,7 +6814,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "33.3 ~ 40.0 倍",
+      "target_upside": "17.6% ~ 41.2%",
+      "rerating_driver": "台積電矽光子聯盟核心夥伴，微型光纖連接器與光纖對準技術居領先地位，備受法人長線矚目。"
     },
     "3163": {
       "code": "3163",
@@ -6636,7 +6873,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "21.0 ~ 23.8 倍",
+      "target_upside": "20.9% ~ 37.4%",
+      "rerating_driver": "受惠「光纖分波多工器 (WDM) / 光跳接線 / CPO 光纖排線」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2455": {
       "code": "2455",
@@ -6692,7 +6932,10 @@
           "share": 35,
           "color": "#64748b"
         }
-      ]
+      ],
+      "target_pe_range": "31.7 ~ 36.7 倍",
+      "target_upside": "15.2% ~ 33.3%",
+      "rerating_driver": "受惠「光通訊接收端 PIN/APD 磊晶片 / 射頻微波磊晶」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。"
     },
     "2382": {
       "code": "2382",
@@ -6773,7 +7016,10 @@
           "title": "經濟日報 - 廣達AI伺服器大單湧入，獲利創歷史新高",
           "url": "https://money.udn.com/money/story/2382"
         }
-      ]
+      ],
+      "target_pe_range": "16.5 ~ 19.1 倍",
+      "target_upside": "13.4% ~ 31.3%",
+      "rerating_driver": "全球伺服器代工霸主，在輝達 GB200 NVL72 整櫃式伺服器取得巨大份額，系統整合與出貨速度居冠。"
     },
     "2464": {
       "code": "2464",
@@ -6845,7 +7091,10 @@
           "title": "CMoney - 盟立切入人形機器人諧波減速機獲利結構分析",
           "url": "https://www.cmoney.tw/forum/readmo/da4437b5-c76a-4e3f-af06-d5929fdf0154"
         }
-      ]
+      ],
+      "target_pe_range": "24.0 ~ 28.1 倍",
+      "target_upside": "21.7% ~ 42.9%",
+      "rerating_driver": "深耕半導體自動化搬運與智慧物流設備，跨足機器人關節與協作手臂，受惠智慧工廠升級潮。"
     },
     "2049": {
       "code": "2049",
@@ -6928,7 +7177,10 @@
           "title": "理財寶 - 上銀機器人整合螺桿與減速機差異化分析",
           "url": "https://www.cmoney.tw/forum/readmo/576ec36a-f800-49a1-a22c-cee2b01c84c2"
         }
-      ]
+      ],
+      "target_pe_range": "43.7 ~ 48.4 倍",
+      "target_upside": "18.6% ~ 31.4%",
+      "rerating_driver": "傳動元件與滾珠螺桿/線性滑軌國際大廠，切入工業機器人與次世代人形機器人精密關節部件。"
     },
     "2359": {
       "code": "2359",
@@ -7001,7 +7253,10 @@
           "title": "群益投顧 - 輝達GTC大會效應，所羅門AI機器人視覺商機",
           "url": "https://www.capitalim.com.tw/newsite/stock-news/stock-news/dbc5bf69-4eda-41c2-8d30-f33ee78b5a48"
         }
-      ]
+      ],
+      "target_pe_range": "28.6 ~ 33.6 倍",
+      "target_upside": "19.0% ~ 39.9%",
+      "rerating_driver": "以 AI 3D 視覺與視覺感測演算法為核心，獲輝達黃仁勳點名合作，成為智慧機器人關鍵視覺解決方案代表。"
     },
     "6188": {
       "code": "6188",
@@ -7073,7 +7328,10 @@
           "title": "萬寶週刊 - 所羅門第二的AI機器人：廣明與達明",
           "url": "https://www.marboweekly.com.tw/report/2200.html"
         }
-      ]
+      ],
+      "target_pe_range": "22.1 ~ 25.7 倍",
+      "target_upside": "20.0% ~ 40.0%",
+      "rerating_driver": "達明機器人母公司，協作型機器人全球第二大，內建 AI 視覺與智慧工廠整合能力，享有機器人概念溢價。"
     },
     "2395": {
       "code": "2395",
@@ -7144,9 +7402,12 @@
           "title": "永豐金證券 - 研華邊緣AI與機器人平台長線布局分析",
           "url": "https://www.sinotrade.com.tw/richclub/hotstock/2395"
         }
-      ]
+      ],
+      "target_pe_range": "24.9 ~ 28.1 倍",
+      "target_upside": "13.6% ~ 28.4%",
+      "rerating_driver": "全球工業電腦龍頭，積極佈局邊緣 AI (Edge AI) 與自主移動機器人 (AMR) 軟硬體平台，營收獲利體質極佳。"
     }
   },
-  "version": "1.0-V24-READY",
-  "updated_at": "2026-09-03 14:30:00"
+  "version": "V13-2026-VALUATION-PRO",
+  "updated_at": "2026-09-06 21:50:00"
 }
