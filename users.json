@@ -4,37 +4,37 @@
   },
   "users": {
     "admin": {
-      "password": "v25",
+      "password": "Mkm400!!",
       "role": "VIP",
       "name": "巨鯨管理員",
       "v25_access": "全功能解鎖 (多因子透視 + 集保大戶 + ATR實戰防守)"
     },
     "vip": {
-      "password": "v25",
+      "password": "v25!!@",
       "role": "VIP",
       "name": "尊榮 VIP 會員",
       "v25_access": "全功能解鎖 (多因子透視 + 集保大戶 + ATR實戰防守)"
     },
     "vip_user1": {
-      "password": "v25",
+      "password": "v25!!#",
       "role": "VIP",
       "name": "VIP 操盤學員 1",
       "v25_access": "全功能解鎖 (多因子透視 + 集保大戶 + ATR實戰防守)"
     },
     "vip_user2": {
-      "password": "v25",
+      "password": "v25!!#@",
       "role": "VIP",
       "name": "VIP 操盤學員 2",
       "v25_access": "全功能解鎖 (多因子透視 + 集保大戶 + ATR實戰防守)"
     },
     "user1": {
-      "password": "123",
+      "password": "123!!@#",
       "role": "Standard",
       "name": "一般體驗會員 1",
       "v25_access": "基礎瀏覽 (五大產業鏈圖譜 + 基本報價)"
     },
     "user2": {
-      "password": "123",
+      "password": "123!!##@@",
       "role": "Standard",
       "name": "一般體驗會員 2",
       "v25_access": "基礎瀏覽 (五大產業鏈圖譜 + 基本報價)"
