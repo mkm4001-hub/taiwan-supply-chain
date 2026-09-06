@@ -27,6 +27,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
+_RENDERED_KEYS = set()
+
+def get_unique_key(base_key: str) -> str:
+    global _RENDERED_KEYS
+    if base_key not in _RENDERED_KEYS:
+        _RENDERED_KEYS.add(base_key)
+        return base_key
+    i = 1
+    while f"{base_key}_{i}" in _RENDERED_KEYS:
+        i += 1
+    unique_k = f"{base_key}_{i}"
+    _RENDERED_KEYS.add(unique_k)
+    return unique_k
+
 V25_APP_URL = "https://yiy6gksxghhs5mnc7ufxcs.streamlit.app"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "master_supply_chain_db.json")
@@ -308,6 +323,8 @@ def apply_vendor_market_update(code, res):
 # 主程式介面
 # ==============================================================================
 def main():
+    global _RENDERED_KEYS
+    _RENDERED_KEYS.clear()
     last_sync_info = db.get("last_global_sync", "2026-09-04 08:30:00")
     user_name = st.session_state.get("user_name", "會員")
     role_badge = "👑 VIP 尊榮權限" if current_role == "VIP" else "👤 一般會員權限"
@@ -425,8 +442,8 @@ def main():
         st.subheader(f"🔍 搜尋結果：'{search_query}'")
         matched = {c: v for c, v in vendors.items() if search_query in c or search_query in v["name"] or search_query in v.get("products", "")}
         if matched:
-            for c, v in matched.items():
-                render_vendor_card_with_sync(c, v)
+            for idx, (c, v) in enumerate(matched.items()):
+                render_vendor_card_with_sync(c, v, prefix=f"search_{idx}_{c}")
         else:
             st.warning("未找到符合條件的供應商。")
         st.markdown("---")
@@ -468,7 +485,7 @@ def main():
                         v = vendors.get(scode)
                         if v:
                             with cols[idx % 2]:
-                                render_vendor_card_with_sync(scode, v)
+                                render_vendor_card_with_sync(scode, v, prefix=f"client_{tier}_{idx}_{scode}")
         else:
             st.markdown("""
                 <div style="padding: 14px 18px; background: rgba(2, 132, 199, 0.06); border: 1.5px solid rgba(2, 132, 199, 0.35); border-radius: 14px; margin-bottom: 20px;">
@@ -516,7 +533,7 @@ def main():
                             v = vendors.get(code)
                             if v:
                                 with v_cols[idx % 2]:
-                                    render_vendor_card_with_sync(code, v)
+                                    render_vendor_card_with_sync(code, v, prefix=f"domain_{tier.get('tier_name', '')}_{cat.get('cat_name', '')}_{idx}_{code}")
         else:
             st.markdown("""
                 <div style="padding: 14px 18px; background: rgba(124, 58, 237, 0.06); border: 1.5px solid rgba(124, 58, 237, 0.35); border-radius: 14px; margin-bottom: 20px;">
@@ -556,7 +573,7 @@ def main():
             })
         st.dataframe(pd.DataFrame(df_list), use_container_width=True)
 
-def render_vendor_card_with_sync(code, v):
+def render_vendor_card_with_sync(code, v, prefix=''):
     """
     渲染單一公司卡片：
     1. 【公司名稱與股號字體放大 2 倍】(1.85rem)
@@ -601,7 +618,8 @@ def render_vendor_card_with_sync(code, v):
         with col_btn:
             st.write("")
             # 按鈕 1：更新行情
-            if st.button("🔄 更新行情", key=f"btn_sync_{code}", use_container_width=True):
+            sync_btn_key = get_unique_key(f"btn_sync_{code}_{prefix}" if prefix else f"btn_sync_{code}")
+            if st.button("🔄 更新行情", key=sync_btn_key, use_container_width=True):
                 engine = V25MarketSyncEngine(finmind_token=st.session_state.get("fm_token", ""))
                 with st.spinner(f"連網更新 {v['name']} ({code}) ..."):
                     res, err = engine.fetch_single_stock_price(code, apply_delay=False)
