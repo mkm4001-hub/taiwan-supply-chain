@@ -123,7 +123,13 @@ def load_users_data():
     if os.path.exists(USERS_PATH):
         try:
             with open(USERS_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+            # 啟動時自動全量對齊各指標
+            for c, v in data.get("vendors", {}).items():
+                p_val = float(str(v.get("price", "0")).replace("元", "").replace(",", "").strip()) if str(v.get("price", "0")).replace("元", "").replace(",", "").strip().replace(".", "").isdigit() else 0
+                if p_val > 0:
+                    recalculate_vendor_metrics(v, p_val)
+            return data
         except Exception:
             return DEFAULT_USERS_DATA
     return DEFAULT_USERS_DATA
@@ -288,13 +294,18 @@ class V25MarketSyncEngine:
 
         return None, "所有線路皆連線失敗或查無代碼"
 
-def apply_vendor_market_update(code, res):
-    v = st.session_state["db"]["vendors"][code]
-    raw_price = res["raw_price"]
-    v["price"] = res["price"]
-    v["price_date"] = res.get("date", datetime.now().strftime("%Y-%m-%d"))
-    v["last_synced_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+def recalculate_vendor_metrics(v, raw_price):
+    """
+    全自動連動計算：
+    1. 動態本益比 (Trailing P/E) = raw_price / eps_4q
+    2. 預估本益比 (Forward P/E) = raw_price / forward_eps
+    3. 法人目標本益比區間 (Target P/E Range) = target_price / forward_eps
+    4. 目標價潛在空間 (Target Upside) = (target_price - raw_price) / raw_price
+    """
+    if not raw_price or raw_price <= 0:
+        return
 
+    # 1. Trailing P/E
     try:
         raw_eps = float(str(v.get("eps_4q", "0")).replace("元", "").replace(",", "").strip())
         if raw_eps > 0:
@@ -302,14 +313,56 @@ def apply_vendor_market_update(code, res):
     except Exception:
         pass
 
+    # 2. Forward P/E
     try:
-        target_str = str(v.get("target_price", "0")).split("~")[0].replace("元", "").replace(",", "").strip()
-        raw_target = float(target_str)
-        if raw_target > 0:
-            upside = round(((raw_target - raw_price) / raw_price) * 100, 1)
-            v["upside_pot"] = f"{'+' if upside >= 0 else ''}{upside}%"
+        raw_fwd_eps = float(str(v.get("forward_eps", "0")).replace("元", "").replace(",", "").strip())
+        if raw_fwd_eps > 0:
+            v["forward_pe"] = f"{round(raw_price / raw_fwd_eps, 1)} 倍"
     except Exception:
         pass
+
+    # 3. Target P/E Range & Target Upside
+    try:
+        target_str = str(v.get("target_price", "0")).replace("元", "").strip()
+        raw_fwd_eps = float(str(v.get("forward_eps", "0")).replace("元", "").replace(",", "").strip())
+        parts = target_str.split("~")
+        
+        if len(parts) == 2:
+            t_low = float(parts[0].replace(",", "").strip())
+            t_high = float(parts[1].replace(",", "").strip())
+            
+            if raw_fwd_eps > 0:
+                pe_low = round(t_low / raw_fwd_eps, 1)
+                pe_high = round(t_high / raw_fwd_eps, 1)
+                v["target_pe_range"] = f"{pe_low} ~ {pe_high} 倍" if pe_low != pe_high else f"{pe_low} 倍"
+            
+            up_low = round(((t_low - raw_price) / raw_price) * 100, 1)
+            up_high = round(((t_high - raw_price) / raw_price) * 100, 1)
+            sign_low = "+" if up_low >= 0 else ""
+            sign_high = "+" if up_high >= 0 else ""
+            v["target_upside"] = f"{sign_low}{up_low}% ~ {sign_high}{up_high}%"
+            v["upside_pot"] = v["target_upside"]
+            
+        elif len(parts) == 1 and parts[0]:
+            t_val = float(parts[0].replace(",", "").strip())
+            if raw_fwd_eps > 0:
+                v["target_pe_range"] = f"{round(t_val / raw_fwd_eps, 1)} 倍"
+            up_val = round(((t_val - raw_price) / raw_price) * 100, 1)
+            sign = "+" if up_val >= 0 else ""
+            v["target_upside"] = f"{sign}{up_val}%"
+            v["upside_pot"] = v["target_upside"]
+    except Exception:
+        pass
+
+def apply_vendor_market_update(code, res):
+    v = st.session_state["db"]["vendors"][code]
+    raw_price = res["raw_price"]
+    v["price"] = res["price"]
+    v["price_date"] = res.get("date", datetime.now().strftime("%Y-%m-%d"))
+    v["last_synced_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # 全面連動重新計算本益比與目標價空間
+    recalculate_vendor_metrics(v, raw_price)
 
     st.session_state["db"]["last_global_sync"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -318,7 +371,6 @@ def apply_vendor_market_update(code, res):
             json.dump(st.session_state["db"], f, ensure_ascii=False, indent=2)
     except Exception as e:
         st.warning(f"本地存檔警示: {e}")
-
 # ==============================================================================
 # 主程式介面
 # ==============================================================================
@@ -556,24 +608,113 @@ def main():
     # --- 全廠商資料總覽表 ---
     with tabs[2]:
         st.subheader("📊 全體 87 家上市櫃供應商總覽表")
+
+        # 支援 URL query parameter (例如 ?stock=8996 或 ?stock=2330)
+        url_stock = st.query_params.get("stock")
+        if url_stock and url_stock in vendors:
+            st.session_state["active_table_stock"] = url_stock
+
+        # 頂部快速搜尋與操作控制列
+        col_t_search, col_t_btn = st.columns([7, 3])
+        with col_t_search:
+            vendor_options = ["-- 點選此處下拉搜尋 / 選擇廠商直調情報專頁 --"] + [
+                f"{c} {v['name']} ｜ {v.get('sub_segment', '')} ({v.get('tier', '')})" for c, v in vendors.items()
+            ]
+            picked_vendor = st.selectbox("🎯 快速選擇供應商穿透檢視：", vendor_options, key="table_vendor_picker")
+            if picked_vendor != "-- 點選此處下拉搜尋 / 選擇廠商直調情報專頁 --":
+                st.session_state["active_table_stock"] = picked_vendor.split(" ")[0]
+
+        with col_t_btn:
+            st.write("")
+            st.write("")
+            if st.session_state.get("active_table_stock"):
+                if st.button("✕ 關閉當前檔案 / 返回總表", key="btn_close_active_stock", use_container_width=True):
+                    st.session_state["active_table_stock"] = None
+                    if "stock" in st.query_params:
+                        st.query_params.clear()
+                    st.rerun()
+
+        # 置頂呈現：選定廠商的深度戰略情報專頁（點擊總表任一列或選單後立即置頂開展！）
+        target_stock_code = st.session_state.get("active_table_stock")
+        if target_stock_code and target_stock_code in vendors:
+            target_v = vendors[target_stock_code]
+            st.markdown(f"""
+                <div style="padding: 16px 20px; background: linear-gradient(135deg, rgba(2, 132, 199, 0.14), rgba(99, 102, 241, 0.16)); border: 2px solid #0284c7; border-radius: 14px; margin: 12px 0 20px 0; box-shadow: 0 4px 18px rgba(2, 132, 199, 0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <h3 style="margin: 0; color: #0284c7; display: flex; align-items: center; gap: 8px; font-size: 1.35rem; font-weight: 800;">
+                            <span>📑</span> 【{target_v['name']} ({target_stock_code})】深度戰略情報檔案專頁
+                        </h3>
+                        <span style="font-size: 0.8rem; color: #059669; background: rgba(5, 150, 105, 0.15); border: 1px solid rgba(5, 150, 105, 0.35); padding: 3px 8px; border-radius: 6px; font-weight: 700;">
+                            ✅ 已成功直調專屬檔案
+                        </span>
+                    </div>
+                    <p style="margin: 6px 0 0 0; color: #475569; font-size: 0.88rem;">
+                        以下為從總表直接穿透調出的深度檔案，包含最新股價、動態/預估本益比、法人目標PE、潛在空間、即時行情更新與直通 V25.2 分析。
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            render_vendor_card_with_sync(target_stock_code, target_v, prefix=f"top_detail_{target_stock_code}", default_expanded=True)
+            st.markdown("---")
+
+        # 互動提示說明
+        st.markdown("""
+            <div style="padding: 10px 14px; background: rgba(2, 132, 199, 0.05); border-left: 3px solid #0284c7; border-radius: 0 8px 8px 0; margin-bottom: 12px; font-size: 0.88rem; color: #334155;">
+                👉 <strong>操作提示</strong>：在下方總表中<strong>點擊任一列（例如高力、台積電）</strong>或點擊<strong>「點此進入情報」</strong>連結，即可直接置頂調出該公司的完整深度情報網頁！
+            </div>
+        """, unsafe_allow_html=True)
+
+        # 整理總表資料
         df_list = []
-        for code, v in vendors.items():
+        for code_item, v in vendors.items():
             df_list.append({
-                "股票代號": code,
+                "股票代號": code_item,
                 "公司名稱": v["name"],
+                "點此進入情報": f"?stock={code_item}",
                 "次領域環節": v.get("sub_segment", "-"),
                 "產業層級": v.get("tier", "-"),
                 "最新收盤價": v.get("price", "-"),
                 "動態本益比": v.get("trailing_pe", "-"),
                 "近四季EPS": v.get("eps_4q", "-"),
+                "預估本益比": v.get("forward_pe", "-"),
+                "法人預估EPS": v.get("forward_eps", "-"),
                 "法人目標價": v.get("target_price", "-") if current_role == "VIP" else "🔒 VIP 解鎖",
-                "潛在空間": v.get("upside_pot", "-") if current_role == "VIP" else "🔒 VIP 解鎖",
+                "目標本益比": v.get("target_pe_range", "-"),
+                "潛在空間": v.get("target_upside", v.get("upside_pot", "-")) if current_role == "VIP" else "🔒 VIP 解鎖",
                 "毛利率": v.get("margin", "-"),
                 "報價日期": v.get("price_date", "-")
             })
-        st.dataframe(pd.DataFrame(df_list), use_container_width=True)
 
-def render_vendor_card_with_sync(code, v, prefix=''):
+        df_display = pd.DataFrame(df_list)
+
+        col_configs = {
+            "點此進入情報": st.column_config.LinkColumn(
+                "點此進入情報",
+                display_text="🔍 進入情報專頁 ↗",
+                help="點擊即可直接調閱此公司完整戰略檔案"
+            )
+        }
+
+        # 啟用表格點選互動事件 (單擊任一列立即觸發)
+        event = st.dataframe(
+            df_display,
+            use_container_width=True,
+            selection_mode="single-row",
+            on_select="rerun",
+            column_config=col_configs,
+            key="overview_vendor_dataframe"
+        )
+
+        # 當使用者點擊表格任一列
+        if event and hasattr(event, "selection") and event.selection.rows:
+            sel_row_idx = event.selection.rows[0]
+            if 0 <= sel_row_idx < len(df_display):
+                clicked_code = str(df_display.iloc[sel_row_idx]["股票代號"]).strip()
+                if clicked_code != st.session_state.get("active_table_stock"):
+                    st.session_state["active_table_stock"] = clicked_code
+                    st.rerun()
+
+
+def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
     """
     渲染單一公司卡片：
     1. 【公司名稱與股號字體放大 2 倍】(1.85rem)
@@ -603,11 +744,11 @@ def render_vendor_card_with_sync(code, v, prefix=''):
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.92rem; color: #64748b; padding-top: 6px; border-top: 1px dashed rgba(2, 132, 199, 0.2);">
                         <span>最新股價: <strong style="color: #0284c7; font-size: 1.15rem;">{v.get('price', '-')}</strong></span>
-                        <span>預估本益比: <strong style="color: #059669; font-size: 1.15rem;">{v.get('forward_pe', v.get('trailing_pe', '-'))}</strong></span>
+                        <span>動態PE: <strong style="color: #059669; font-size: 1.05rem;">{v.get('trailing_pe', '-')}</strong> ｜ 預估PE: <strong style="color: #0284c7; font-size: 1.05rem;">{v.get('forward_pe', '-')}</strong></span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #475569; margin-top: 5px; background: rgba(2, 132, 199, 0.06); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(2, 132, 199, 0.15);">
                         <span>🎯 目標 PE: <strong style="color: #d97706; font-weight: 700;">{v.get('target_pe_range', '-')}</strong></span>
-                        <span>🚀 潛在空間: <strong style="color: #059669; font-weight: 700;">+{v.get('target_upside', '-')}</strong></span>
+                        <span>🚀 潛在空間: <strong style="color: #059669; font-weight: 700;">{v.get('target_upside', '-')}</strong></span>
                     </div>
                     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
                         📅 報價日期: {date_badge}{ts_label}
@@ -636,7 +777,7 @@ def render_vendor_card_with_sync(code, v, prefix=''):
             st.link_button("🐋 前往 V25.2 分析 ↗", v25_link, use_container_width=True)
 
         # 展開基本面情報抽屜
-        with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案"):
+        with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案", expanded=(default_expanded or prefix.startswith("top_detail") or prefix.startswith("table_detail"))):
             st.markdown(f"**核心合作客戶**：{', '.join(v.get('clients', []))}")
             st.markdown(f"**業務純度佔比**：`{v.get('pure_share', '-')}` ｜ **最新毛利率**：`{v.get('margin', '-')}`")
 
