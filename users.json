@@ -4,13 +4,13 @@
   },
   "users": {
     "admin": {
-      "password": "Mkm400!!",
+      "password": "v25",
       "role": "VIP",
       "name": "系統管理員",
       "v25_access": "全功能解鎖"
     },
     "user": {
-      "password": "vgfkfk25",
+      "password": "v25",
       "role": "VIP",
       "name": "VIP 使用者",
       "v25_access": "全功能解鎖"
