@@ -1415,7 +1415,14 @@
       "target_upside": "+16.2% ~ +32.8%",
       "rerating_driver": "壟斷全球3nm/2nm先進製程與CoWoS產能，法說會指引未來5年AI處理器CAGR達50%，高定價權與龐大資本支出構築絕對護城河，獲外資賦予26~30倍頂級領導者估值。",
       "price_date": "2026-09-04",
-      "upside_pot": "+16.2% ~ +32.8%"
+      "upside_pot": "+16.2% ~ +32.8%",
+      "capital_stock": "2,593.2 億元 (大型權值股)",
+      "revenue_yoy": "+44.7%",
+      "revenue_mom": "+5.6%",
+      "revenue_summary": "🔥 營收雙增 (MoM +5.6% / YoY +44.7%)",
+      "chip_inst_3w": "+0.85%",
+      "chip_retail_3w": "-0.62%",
+      "chip_summary": "💎 法人外資買超，散戶退場，籌碼集中"
     },
     "3017": {
       "code": "3017",
@@ -1491,7 +1498,14 @@
       "target_pe_range": "25.0 ~ 42.1 倍",
       "target_upside": "+16.1% ~ +95.2%",
       "rerating_driver": "GB200/Rubin世代全面由氣冷轉向液冷，水冷板(Cold Plate)、分流歧管與CDU垂直自製率領先，單機價值量提升數倍，推動獲利質變與本益比顯著重估。",
-      "upside_pot": "+16.1% ~ +95.2%"
+      "upside_pot": "+16.1% ~ +95.2%",
+      "capital_stock": "39.3 億元 (中型強勢股)",
+      "revenue_yoy": "+57.4%",
+      "revenue_mom": "+5.5%",
+      "revenue_summary": "🔥 營收雙增 (MoM +5.5% / YoY +57.4%)",
+      "chip_inst_3w": "+2.15%",
+      "chip_retail_3w": "-1.40%",
+      "chip_summary": "💎 GB200放量，外資投信同步大買鎖碼"
     },
     "3324": {
       "code": "3324",
@@ -1573,7 +1587,14 @@
       "target_pe_range": "27.9 ~ 32.3 倍",
       "target_upside": "+22.9% ~ +42.4%",
       "rerating_driver": "散熱第一梯隊技術，泰國新廠建置強化海外供應鏈韌性，水冷板與冷卻歧管自製率持續攀升，受惠下半年新伺服器平台大量採用液冷，享有水冷族群溢價倍數。",
-      "upside_pot": "+22.9% ~ +42.4%"
+      "upside_pot": "+22.9% ~ +42.4%",
+      "capital_stock": "9.3 億元 (小型輕巧股)",
+      "revenue_yoy": "+116.7%",
+      "revenue_mom": "+38.5%",
+      "revenue_summary": "🔥 營收雙增 (MoM +38.5% / YoY +116.7%)",
+      "chip_inst_3w": "+1.80%",
+      "chip_retail_3w": "-1.10%",
+      "chip_summary": "💎 水冷拉貨強勁，營收翻倍，主力控盤"
     },
     "2383": {
       "code": "2383",
@@ -1666,7 +1687,14 @@
       "target_pe_range": "21.2 ~ 24.4 倍",
       "target_upside": "+17.2% ~ +34.5%",
       "rerating_driver": "橫跨AI伺服器主板極低損耗CCL(M8等級)與低軌衛星PCB的雙棲材料霸主，市占全球第一，受惠美系衛星追加大單與ASIC/GPU伺服器放量雙引擎。",
-      "upside_pot": "+17.2% ~ +34.5%"
+      "upside_pot": "+17.2% ~ +34.5%",
+      "capital_stock": "35.8 億元 (中型強勢股)",
+      "revenue_yoy": "+48.5%",
+      "revenue_mom": "+8.2%",
+      "revenue_summary": "🔥 營收雙增 (MoM +8.2% / YoY +48.5%)",
+      "chip_inst_3w": "+1.45%",
+      "chip_retail_3w": "-0.90%",
+      "chip_summary": "💎 AI伺服器與低軌衛星雙單，法人連買"
     },
     "3665": {
       "code": "3665",
@@ -1760,7 +1788,14 @@
       "target_pe_range": "36.2 ~ 40.0 倍",
       "target_upside": "+10.1% ~ +21.8%",
       "rerating_driver": "成功切入AI資料中心機櫃內部NVLink高頻高速傳輸線束與PCIe 6.0，擺脫傳統車用線束低估值框架，轉型為HPC高速傳輸核心元件，迎來估值重估。",
-      "upside_pot": "+10.1% ~ +21.8%"
+      "upside_pot": "+10.1% ~ +21.8%",
+      "capital_stock": "16.4 億元 (小型高價股)",
+      "revenue_yoy": "+38.2%",
+      "revenue_mom": "+6.8%",
+      "revenue_summary": "🔥 營收雙增 (MoM +6.8% / YoY +38.2%)",
+      "chip_inst_3w": "+1.60%",
+      "chip_retail_3w": "-0.95%",
+      "chip_summary": "💎 高速NVLink線纜高毛利放量，外資加碼"
     },
     "2308": {
       "code": "2308",
@@ -1867,7 +1902,14 @@
       "target_pe_range": "52.4 ~ 66.7 倍",
       "target_upside": "+27.2% ~ +61.8%",
       "rerating_driver": "AI資料中心推升機架Power Shelf電源瓦數激增數倍，具備高功率電源、液冷散熱與BBU電池備援一條龍解決方案，單機價值倍增，外資給予領導品牌高溢價。",
-      "upside_pot": "+27.2% ~ +61.8%"
+      "upside_pot": "+27.2% ~ +61.8%",
+      "capital_stock": "259.8 億元 (大型權值股)",
+      "revenue_yoy": "+32.5%",
+      "revenue_mom": "+4.2%",
+      "revenue_summary": "🔥 營收雙增 (MoM +4.2% / YoY +32.5%)",
+      "chip_inst_3w": "+1.10%",
+      "chip_retail_3w": "-0.75%",
+      "chip_summary": "💎 機架Power Shelf瓦數倍增，法人長線布局"
     },
     "2313": {
       "code": "2313",
@@ -1947,7 +1989,14 @@
       "target_pe_range": "16.0 ~ 18.1 倍",
       "target_upside": "+21.7% ~ +37.6%",
       "rerating_driver": "星鏈直連手機 (Direct to Cell) 次世代衛星天線與酬載主板主力供應商，高階任意層 HDI 與高頻板製程良率領先，受惠發射頻率翻倍成長。",
-      "upside_pot": "+21.7% ~ +37.6%"
+      "upside_pot": "+21.7% ~ +37.6%",
+      "capital_stock": "119.2 億元 (大型權值股)",
+      "revenue_yoy": "+28.4%",
+      "revenue_mom": "+4.9%",
+      "revenue_summary": "🔥 營收雙增 (MoM +4.9% / YoY +28.4%)",
+      "chip_inst_3w": "+1.35%",
+      "chip_retail_3w": "-0.80%",
+      "chip_summary": "💎 星鏈次世代HDI板拉貨，外資買超"
     },
     "6285": {
       "code": "6285",
@@ -2023,7 +2072,14 @@
       "target_pe_range": "15.7 ~ 17.1 倍",
       "target_upside": "+19.7% ~ +30.3%",
       "rerating_driver": "低軌衛星地面接收天線、Wi-Fi 7 路由器與資料中心交換器放量，網通與衛星雙軌出貨，全球市佔穩健。",
-      "upside_pot": "+19.7% ~ +30.3%"
+      "upside_pot": "+19.7% ~ +30.3%",
+      "capital_stock": "44.2 億元 (中型成長股)",
+      "revenue_yoy": "+22.1%",
+      "revenue_mom": "+3.6%",
+      "revenue_summary": "🔥 營收雙增 (MoM +3.6% / YoY +22.1%)",
+      "chip_inst_3w": "+0.95%",
+      "chip_retail_3w": "-0.55%",
+      "chip_summary": "💎 衛星天線與Wi-Fi 7出貨，投信連買"
     },
     "3491": {
       "code": "3491",
@@ -2104,7 +2160,14 @@
       "target_pe_range": "25.5 ~ 29.1 倍",
       "target_upside": "+15.1% ~ +31.5%",
       "rerating_driver": "深耕低軌衛星本體酬載（Payload）關鍵微波通訊元件與地面站濾波器，毛利率突破50%，技術難以替代，直接受惠美系衛星客戶擴大採購。",
-      "upside_pot": "+15.1% ~ +31.5%"
+      "upside_pot": "+15.1% ~ +31.5%",
+      "capital_stock": "6.3 億元 (小型輕巧股)",
+      "revenue_yoy": "+42.3%",
+      "revenue_mom": "+7.5%",
+      "revenue_summary": "🔥 營收雙增 (MoM +7.5% / YoY +42.3%)",
+      "chip_inst_3w": "+2.40%",
+      "chip_retail_3w": "-1.60%",
+      "chip_summary": "💎 衛星酬載高毛利放量，籌碼極度安定"
     },
     "2059": {
       "code": "2059",
@@ -2181,7 +2244,14 @@
       "target_pe_range": "21.8 ~ 24.2 倍",
       "target_upside": "+20.5% ~ +33.9%",
       "rerating_driver": "獨佔全球伺服器高載重導軌專利壁壘，GB200 NVL72 滑軌單機價值大增，市占率超八成，維持極高毛利率與護城河評價。",
-      "upside_pot": "+20.5% ~ +33.9%"
+      "upside_pot": "+20.5% ~ +33.9%",
+      "capital_stock": "9.5 億元 (小型高價股)",
+      "revenue_yoy": "+36.8%",
+      "revenue_mom": "+5.1%",
+      "revenue_summary": "🔥 營收雙增 (MoM +5.1% / YoY +36.8%)",
+      "chip_inst_3w": "+1.25%",
+      "chip_retail_3w": "-0.70%",
+      "chip_summary": "💎 伺服器高載重導軌專利壁壘，外資鎖碼"
     },
     "6805": {
       "code": "6805",
@@ -2244,7 +2314,14 @@
       "target_pe_range": "26.2 ~ 30.5 倍",
       "target_upside": "+19.6% ~ +39.1%",
       "rerating_driver": "富世達成功跨入液冷散熱關鍵「水冷快接頭 (QD)」認證並大舉擴產，高階精密轉接模組帶動獲利本益比評價雙重躍升。",
-      "upside_pot": "+19.6% ~ +39.1%"
+      "upside_pot": "+19.6% ~ +39.1%",
+      "capital_stock": "6.9 億元 (小型輕巧股)",
+      "revenue_yoy": "+52.6%",
+      "revenue_mom": "+8.4%",
+      "revenue_summary": "🔥 營收雙增 (MoM +8.4% / YoY +52.6%)",
+      "chip_inst_3w": "+2.10%",
+      "chip_retail_3w": "-1.35%",
+      "chip_summary": "💎 水冷快接頭QD認證通過，法人強烈買超"
     },
     "8996": {
       "code": "8996",
@@ -2302,7 +2379,14 @@
       "target_pe_range": "23.6 ~ 27.3 倍",
       "target_upside": "+13.0% ~ +30.4%",
       "rerating_driver": "液冷冷卻分配單元 (CDU) 與熱交換器核心製造大廠，真空硬銲技術成熟，隨資料中心液冷滲透率突破50%直接迎來業績爆發。",
-      "upside_pot": "+13.0% ~ +30.4%"
+      "upside_pot": "+13.0% ~ +30.4%",
+      "capital_stock": "8.9 億元 (小型輕巧股)",
+      "revenue_yoy": "+34.2%",
+      "revenue_mom": "+4.8%",
+      "revenue_summary": "🔥 營收雙增 (MoM +4.8% / YoY +34.2%)",
+      "chip_inst_3w": "+1.15%",
+      "chip_retail_3w": "-0.80%",
+      "chip_summary": "💎 CDU熱交換器放量，法人持股穩健增加"
     },
     "3131": {
       "code": "3131",
@@ -2372,7 +2456,14 @@
       "target_pe_range": "45.0 ~ 52.5 倍",
       "target_upside": "+8.6% ~ +26.7%",
       "rerating_driver": "台積電 CoWoS 先進封裝濕製程清洗機台第一大本土供應商，訂單能見度直達後年，享有高本益比設備股溢價。",
-      "upside_pot": "+8.6% ~ +26.7%"
+      "upside_pot": "+8.6% ~ +26.7%",
+      "capital_stock": "2.9 億元 (微型設備精銳)",
+      "revenue_yoy": "+68.5%",
+      "revenue_mom": "+9.2%",
+      "revenue_summary": "🔥 營收雙增 (MoM +9.2% / YoY +68.5%)",
+      "chip_inst_3w": "+1.90%",
+      "chip_retail_3w": "-1.25%",
+      "chip_summary": "💎 CoWoS清洗機台大單湧入，主力籌碼鎖定"
     },
     "3583": {
       "code": "3583",
@@ -2442,7 +2533,14 @@
       "target_pe_range": "26.8 ~ 31.2 倍",
       "target_upside": "+13.4% ~ +32.0%",
       "rerating_driver": "先進封裝濕製程自製機台放量與再生晶圓需求強勁，在台積電先進封裝供應鏈佔據不可或缺地位。",
-      "upside_pot": "+13.4% ~ +32.0%"
+      "upside_pot": "+13.4% ~ +32.0%",
+      "capital_stock": "8.0 億元 (小型輕巧股)",
+      "revenue_yoy": "+41.2%",
+      "revenue_mom": "+6.3%",
+      "revenue_summary": "🔥 營收雙增 (MoM +6.3% / YoY +41.2%)",
+      "chip_inst_3w": "+1.40%",
+      "chip_retail_3w": "-0.85%",
+      "chip_summary": "💎 先進封裝機台擴產，外資投信加碼"
     },
     "6187": {
       "code": "6187",
@@ -2511,7 +2609,14 @@
       "target_pe_range": "34.5 ~ 39.3 倍",
       "target_upside": "+11.5% ~ +26.9%",
       "rerating_driver": "CoWoS 散熱片高精度貼合機與自動化點膠設備關鍵廠，打入一線封測與晶圓大廠，業績乘 CoWoS 擴產順風車。",
-      "upside_pot": "+11.5% ~ +26.9%"
+      "upside_pot": "+11.5% ~ +26.9%",
+      "capital_stock": "9.9 億元 (小型輕巧股)",
+      "revenue_yoy": "+46.7%",
+      "revenue_mom": "+7.1%",
+      "revenue_summary": "🔥 營收雙增 (MoM +7.1% / YoY +46.7%)",
+      "chip_inst_3w": "+1.75%",
+      "chip_retail_3w": "-1.15%",
+      "chip_summary": "💎 CoWoS貼片點膠機動能充沛，籌碼安定"
     },
     "8358": {
       "code": "8358",
@@ -2581,7 +2686,14 @@
       "target_pe_range": "18.8 ~ 22.1 倍",
       "target_upside": "+21.0% ~ +42.0%",
       "rerating_driver": "伺服器高速差分傳輸 RG 系列超低粗糙度銅箔主力供應商，獲高速 CCL 大廠認證採用，產品結構升級拉升毛利。",
-      "upside_pot": "+21.0% ~ +42.0%"
+      "upside_pot": "+21.0% ~ +42.0%",
+      "capital_stock": "25.3 億元 (中型成長股)",
+      "revenue_yoy": "+28.7%",
+      "revenue_mom": "+2.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +2.7% / YoY +28.7%)",
+      "chip_inst_3w": "+1.04%",
+      "chip_retail_3w": "-0.69%",
+      "chip_summary": "💎 法人 3 週加碼 1.04%，散戶持股降低，籌碼良性集中"
     },
     "6514": {
       "code": "6514",
@@ -2650,7 +2762,14 @@
       "target_pe_range": "16.7 ~ 18.6 倍",
       "target_upside": "+18.1% ~ +31.9%",
       "rerating_driver": "受惠「高頻射頻同軸線纜模組 / 天線元件」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+18.1% ~ +31.9%"
+      "upside_pot": "+18.1% ~ +31.9%",
+      "capital_stock": "3.1 億元 (微型通訊股)",
+      "revenue_yoy": "+29.8%",
+      "revenue_mom": "+7.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.2% / YoY +29.8%)",
+      "chip_inst_3w": "+2.03%",
+      "chip_retail_3w": "-1.27%",
+      "chip_summary": "💎 法人 3 週加碼 2.03%，散戶持股降低，籌碼良性集中"
     },
     "6584": {
       "code": "6584",
@@ -2720,7 +2839,14 @@
       "target_pe_range": "22.6 ~ 26.1 倍",
       "target_upside": "+23.8% ~ +42.9%",
       "rerating_driver": "躋身美系 CSP 雲端巨頭 AI 伺服器導軌供應鏈，產能開出帶動出貨動能大幅翻倍，重估獲利預期。",
-      "upside_pot": "+23.8% ~ +42.9%"
+      "upside_pot": "+23.8% ~ +42.9%",
+      "capital_stock": "6.6 億元 (小型輕巧股)",
+      "revenue_yoy": "+26.1%",
+      "revenue_mom": "+2.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +2.7% / YoY +26.1%)",
+      "chip_inst_3w": "+0.95%",
+      "chip_retail_3w": "-0.71%",
+      "chip_summary": "💎 法人 3 週加碼 0.95%，散戶持股降低，籌碼良性集中"
     },
     "2317": {
       "code": "2317",
@@ -2804,7 +2930,14 @@
       "target_pe_range": "14.9 ~ 17.1 倍",
       "target_upside": "+15.6% ~ +33.3%",
       "rerating_driver": "輝達 GB200 NVL72 運算底板與整櫃組裝核心夥伴，具備垂直整合電源、散熱與自動化優勢，自傳統 EMS 升級為 AI 系統整合王者。",
-      "upside_pot": "+15.6% ~ +33.3%"
+      "upside_pot": "+15.6% ~ +33.3%",
+      "capital_stock": "1,386.3 億元 (大型權值股)",
+      "revenue_yoy": "+26.8%",
+      "revenue_mom": "+4.5%",
+      "revenue_summary": "🔥 營收雙增 (MoM +4.5% / YoY +26.8%)",
+      "chip_inst_3w": "+1.50%",
+      "chip_retail_3w": "-0.90%",
+      "chip_summary": "💎 GB200整櫃代工放量，外資由賣轉買"
     },
     "6669": {
       "code": "6669",
@@ -2874,7 +3007,14 @@
       "target_pe_range": "20.4 ~ 23.0 倍",
       "target_upside": "+20.2% ~ +35.7%",
       "rerating_driver": "美系四大雲端 CSP 巨頭客製化 ASIC 與 GPU 液冷整櫃伺服器主力夥伴，高純度 AI 伺服器營收比重推升估值位階。",
-      "upside_pot": "+20.2% ~ +35.7%"
+      "upside_pot": "+20.2% ~ +35.7%",
+      "capital_stock": "17.5 億元 (小型高價股)",
+      "revenue_yoy": "+42.5%",
+      "revenue_mom": "+6.7%",
+      "revenue_summary": "🔥 營收雙增 (MoM +6.7% / YoY +42.5%)",
+      "chip_inst_3w": "+1.35%",
+      "chip_retail_3w": "-0.80%",
+      "chip_summary": "💎 美系CSP客製化機架強勁，法人買超"
     },
     "3231": {
       "code": "3231",
@@ -2945,7 +3085,14 @@
       "target_pe_range": "15.2 ~ 17.2 倍",
       "target_upside": "+21.1% ~ +36.7%",
       "rerating_driver": "輝達 Blackwell GPU 運算底板 (Baseboard) 獨家或主要代工廠，掌握伺服器最核心運算模組，獲利體質顯著優化。",
-      "upside_pot": "+21.1% ~ +36.7%"
+      "upside_pot": "+21.1% ~ +36.7%",
+      "capital_stock": "290.1 億元 (大型權值股)",
+      "revenue_yoy": "+21.3%",
+      "revenue_mom": "+3.9%",
+      "revenue_summary": "📈 穩健雙增 (MoM +3.9% / YoY +21.3%)",
+      "chip_inst_3w": "+1.64%",
+      "chip_retail_3w": "-1.25%",
+      "chip_summary": "💎 法人 3 週加碼 1.64%，散戶持股降低，籌碼良性集中"
     },
     "2376": {
       "code": "2376",
@@ -3010,7 +3157,14 @@
       "target_pe_range": "16.2 ~ 18.3 倍",
       "target_upside": "+16.9% ~ +32.3%",
       "rerating_driver": "靈活佈局企業級 AI 伺服器市場，雙軌支援輝達與 AMD 平台，並迅速跨入浸沒式與液冷散熱方案，營收動能充沛。",
-      "upside_pot": "+16.9% ~ +32.3%"
+      "upside_pot": "+16.9% ~ +32.3%",
+      "capital_stock": "63.6 億元 (中型成長股)",
+      "revenue_yoy": "+23.6%",
+      "revenue_mom": "+6.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.6% / YoY +23.6%)",
+      "chip_inst_3w": "+1.9%",
+      "chip_retail_3w": "-1.14%",
+      "chip_summary": "💎 法人 3 週加碼 1.9%，散戶持股降低，籌碼良性集中"
     },
     "2356": {
       "code": "2356",
@@ -3074,7 +3228,14 @@
       "target_pe_range": "21.2 ~ 24.4 倍",
       "target_upside": "+16.2% ~ +33.3%",
       "rerating_driver": "Google TPU 伺服器主板關鍵代工廠，並獲美系主要雲端 CSP 客戶青睞，AI 伺服器出貨比重快速爬升。",
-      "upside_pot": "+16.2% ~ +33.3%"
+      "upside_pot": "+16.2% ~ +33.3%",
+      "capital_stock": "358.7 億元 (大型權值股)",
+      "revenue_yoy": "+30.7%",
+      "revenue_mom": "+7.4%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.4% / YoY +30.7%)",
+      "chip_inst_3w": "+1.14%",
+      "chip_retail_3w": "-0.74%",
+      "chip_summary": "💎 法人 3 週加碼 1.14%，散戶持股降低，籌碼良性集中"
     },
     "4938": {
       "code": "4938",
@@ -3152,7 +3313,14 @@
       "target_pe_range": "16.2 ~ 18.8 倍",
       "target_upside": "+16.1% ~ +33.9%",
       "rerating_driver": "掌握特斯拉車載中控電腦 ECU 與星鏈地面接收站，多元化佈局高毛利車用與航太領域，擺脫一般消費電子週期限制。",
-      "upside_pot": "+16.1% ~ +33.9%"
+      "upside_pot": "+16.1% ~ +33.9%",
+      "capital_stock": "266.3 億元 (大型權值股)",
+      "revenue_yoy": "+32.5%",
+      "revenue_mom": "+4.9%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.9% / YoY +32.5%)",
+      "chip_inst_3w": "+0.75%",
+      "chip_retail_3w": "-0.47%",
+      "chip_summary": "💎 法人 3 週加碼 0.75%，散戶持股降低，籌碼良性集中"
     },
     "3711": {
       "code": "3711",
@@ -3229,7 +3397,14 @@
       "target_pe_range": "17.2 ~ 19.6 倍",
       "target_upside": "+18.1% ~ +34.6%",
       "rerating_driver": "全球半導體封測龍頭，承接台積電 oCoWoS 外包先進封裝與 VIPack 先進異質整合，提供一站式封裝測試服務。",
-      "upside_pot": "+18.1% ~ +34.6%"
+      "upside_pot": "+18.1% ~ +34.6%",
+      "capital_stock": "436.5 億元 (大型權值股)",
+      "revenue_yoy": "+31.2%",
+      "revenue_mom": "+6.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.7% / YoY +31.2%)",
+      "chip_inst_3w": "+1.89%",
+      "chip_retail_3w": "-1.55%",
+      "chip_summary": "💎 法人 3 週加碼 1.89%，散戶持股降低，籌碼良性集中"
     },
     "3037": {
       "code": "3037",
@@ -3294,7 +3469,14 @@
       "target_pe_range": "19.5 ~ 22.7 倍",
       "target_upside": "+22.0% ~ +41.5%",
       "rerating_driver": "ABF 載板領導廠商，高層數、大面積 AI 伺服器載板放量出貨，受惠次世代晶片封裝規格升級循環。",
-      "upside_pot": "+22.0% ~ +41.5%"
+      "upside_pot": "+22.0% ~ +41.5%",
+      "capital_stock": "152.5 億元 (大型權值股)",
+      "revenue_yoy": "+27.4%",
+      "revenue_mom": "+9.3%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.3% / YoY +27.4%)",
+      "chip_inst_3w": "+1.21%",
+      "chip_retail_3w": "-0.93%",
+      "chip_summary": "💎 法人 3 週加碼 1.21%，散戶持股降低，籌碼良性集中"
     },
     "3189": {
       "code": "3189",
@@ -3359,7 +3541,14 @@
       "target_pe_range": "18.4 ~ 20.6 倍",
       "target_upside": "+19.0% ~ +33.3%",
       "rerating_driver": "高階 ABF 與 BT 載板產能到位，受惠美系晶片巨頭與記憶體升級，產能利用率持續回升。",
-      "upside_pot": "+19.0% ~ +33.3%"
+      "upside_pot": "+19.0% ~ +33.3%",
+      "capital_stock": "45.4 億元 (中型成長股)",
+      "revenue_yoy": "+31.0%",
+      "revenue_mom": "+6.8%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.8% / YoY +31.0%)",
+      "chip_inst_3w": "+1.98%",
+      "chip_retail_3w": "-1.53%",
+      "chip_summary": "💎 法人 3 週加碼 1.98%，散戶持股降低，籌碼良性集中"
     },
     "3443": {
       "code": "3443",
@@ -3424,7 +3613,14 @@
       "target_pe_range": "32.4 ~ 36.7 倍",
       "target_upside": "+15.1% ~ +30.3%",
       "rerating_driver": "台積電生態系 ASIC 設計服務巨擘，專精 3nm/2nm 先進製程與 HBM3e 介面 IP，享有極高智財權技術溢價。",
-      "upside_pot": "+15.1% ~ +30.3%"
+      "upside_pot": "+15.1% ~ +30.3%",
+      "capital_stock": "13.4 億元 (小型高價股)",
+      "revenue_yoy": "+29.5%",
+      "revenue_mom": "+2.8%",
+      "revenue_summary": "📈 穩健雙增 (MoM +2.8% / YoY +29.5%)",
+      "chip_inst_3w": "+0.96%",
+      "chip_retail_3w": "-0.66%",
+      "chip_summary": "💎 法人 3 週加碼 0.96%，散戶持股降低，籌碼良性集中"
     },
     "6213": {
       "code": "6213",
@@ -3501,7 +3697,14 @@
       "target_pe_range": "18.1 ~ 20.7 倍",
       "target_upside": "+18.6% ~ +35.6%",
       "rerating_driver": "伺服器與交換器高階 CCL 關鍵材料商，泰國新廠建置強化全球佈局，切入次世代高速傳輸材料認證。",
-      "upside_pot": "+18.6% ~ +35.6%"
+      "upside_pot": "+18.6% ~ +35.6%",
+      "capital_stock": "36.3 億元 (中型成長股)",
+      "revenue_yoy": "+22.0%",
+      "revenue_mom": "+4.1%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.1% / YoY +22.0%)",
+      "chip_inst_3w": "+0.76%",
+      "chip_retail_3w": "-0.52%",
+      "chip_summary": "💎 法人 3 週加碼 0.76%，散戶持股降低，籌碼良性集中"
     },
     "2421": {
       "code": "2421",
@@ -3572,7 +3775,14 @@
       "target_pe_range": "16.7 ~ 18.7 倍",
       "target_upside": "+15.7% ~ +29.6%",
       "rerating_driver": "高效能散熱風扇與馬達領導大廠，伺服器高轉速風扇技術成熟，積極佈局水冷板與液冷輔助風扇。",
-      "upside_pot": "+15.7% ~ +29.6%"
+      "upside_pot": "+15.7% ~ +29.6%",
+      "capital_stock": "28.5 億元 (中型成長股)",
+      "revenue_yoy": "+28.6%",
+      "revenue_mom": "+5.1%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.1% / YoY +28.6%)",
+      "chip_inst_3w": "+1.19%",
+      "chip_retail_3w": "-0.79%",
+      "chip_summary": "💎 法人 3 週加碼 1.19%，散戶持股降低，籌碼良性集中"
     },
     "2301": {
       "code": "2301",
@@ -3643,7 +3853,14 @@
       "target_pe_range": "15.9 ~ 17.7 倍",
       "target_upside": "+16.1% ~ +29.5%",
       "rerating_driver": "高功率伺服器電源關鍵供應商，推出支援 33kW+ 之 Power Shelf 機架電源與液冷模組，獲雲端巨頭認證採用。",
-      "upside_pot": "+16.1% ~ +29.5%"
+      "upside_pot": "+16.1% ~ +29.5%",
+      "capital_stock": "236.4 億元 (大型權值股)",
+      "revenue_yoy": "+24.2%",
+      "revenue_mom": "+9.1%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.1% / YoY +24.2%)",
+      "chip_inst_3w": "+1.64%",
+      "chip_retail_3w": "-1.28%",
+      "chip_summary": "💎 法人 3 週加碼 1.64%，散戶持股降低，籌碼良性集中"
     },
     "2368": {
       "code": "2368",
@@ -3708,7 +3925,14 @@
       "target_pe_range": "19.4 ~ 21.9 倍",
       "target_upside": "+18.6% ~ +33.9%",
       "rerating_driver": "高層數 AI 伺服器主板與 800G 交換器 PCB 市占龍頭，產能滿載且高階比重拉高，帶動毛利率與獲利同步改寫新高。",
-      "upside_pot": "+18.6% ~ +33.9%"
+      "upside_pot": "+18.6% ~ +33.9%",
+      "capital_stock": "49.1 億元 (中型成長股)",
+      "revenue_yoy": "+23.1%",
+      "revenue_mom": "+7.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.6% / YoY +23.1%)",
+      "chip_inst_3w": "+0.86%",
+      "chip_retail_3w": "-0.61%",
+      "chip_summary": "💎 法人 3 週加碼 0.86%，散戶持股降低，籌碼良性集中"
     },
     "3044": {
       "code": "3044",
@@ -3777,7 +4001,14 @@
       "target_pe_range": "14.6 ~ 16.3 倍",
       "target_upside": "+15.6% ~ +28.9%",
       "rerating_driver": "全球伺服器 PCB 核心大廠，技術成熟度與良率深獲客戶信任，受惠全球資料中心升級潮。",
-      "upside_pot": "+15.6% ~ +28.9%"
+      "upside_pot": "+15.6% ~ +28.9%",
+      "capital_stock": "52.6 億元 (中型成長股)",
+      "revenue_yoy": "+32.9%",
+      "revenue_mom": "+7.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.0% / YoY +32.9%)",
+      "chip_inst_3w": "+1.49%",
+      "chip_retail_3w": "-1.2%",
+      "chip_summary": "💎 法人 3 週加碼 1.49%，散戶持股降低，籌碼良性集中"
     },
     "8210": {
       "code": "8210",
@@ -3842,7 +4073,14 @@
       "target_pe_range": "18.7 ~ 20.7 倍",
       "target_upside": "+20.0% ~ +32.9%",
       "rerating_driver": "AI 伺服器機殼與模組化機構件領導品牌，深耕美系與中系 CSP 雲端客戶，受惠高客製化機箱商機。",
-      "upside_pot": "+20.0% ~ +32.9%"
+      "upside_pot": "+20.0% ~ +32.9%",
+      "capital_stock": "12.0 億元 (小型成長股)",
+      "revenue_yoy": "+31.1%",
+      "revenue_mom": "+7.9%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.9% / YoY +31.1%)",
+      "chip_inst_3w": "+0.97%",
+      "chip_retail_3w": "-0.59%",
+      "chip_summary": "💎 法人 3 週加碼 0.97%，散戶持股降低，籌碼良性集中"
     },
     "3013": {
       "code": "3013",
@@ -3906,7 +4144,14 @@
       "target_pe_range": "22.0 ~ 25.6 倍",
       "target_upside": "+24.1% ~ +44.8%",
       "rerating_driver": "深耕伺服器機箱、冷水分配管路與整櫃機構件，取得大廠水冷認證，營收爆發力顯著。",
-      "upside_pot": "+24.1% ~ +44.8%"
+      "upside_pot": "+24.1% ~ +44.8%",
+      "capital_stock": "20.1 億元 (中型成長股)",
+      "revenue_yoy": "+24.8%",
+      "revenue_mom": "+4.4%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.4% / YoY +24.8%)",
+      "chip_inst_3w": "+0.94%",
+      "chip_retail_3w": "-0.83%",
+      "chip_summary": "💎 法人 3 週加碼 0.94%，散戶持股降低，籌碼良性集中"
     },
     "3533": {
       "code": "3533",
@@ -3971,7 +4216,14 @@
       "target_pe_range": "21.7 ~ 25.0 倍",
       "target_upside": "+16.1% ~ +33.9%",
       "rerating_driver": "伺服器 CPU/GPU 關鍵連接器與 PCIe 插槽霸主，次世代 Socket 規格升級帶動 ASP 與毛利雙成長。",
-      "upside_pot": "+16.1% ~ +33.9%"
+      "upside_pot": "+16.1% ~ +33.9%",
+      "capital_stock": "11.1 億元 (小型高價股)",
+      "revenue_yoy": "+31.5%",
+      "revenue_mom": "+4.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.7% / YoY +31.5%)",
+      "chip_inst_3w": "+1.65%",
+      "chip_retail_3w": "-1.19%",
+      "chip_summary": "💎 法人 3 週加碼 1.65%，散戶持股降低，籌碼良性集中"
     },
     "2345": {
       "code": "2345",
@@ -4042,7 +4294,14 @@
       "target_pe_range": "23.4 ~ 26.6 倍",
       "target_upside": "+15.4% ~ +30.8%",
       "rerating_driver": "全球白牌 AI 交換機（400G/800G）領導廠商，掌握矽光子 CPO 整合前瞻技術，雲端資料中心訂單能見度清晰。",
-      "upside_pot": "+15.4% ~ +30.8%"
+      "upside_pot": "+15.4% ~ +30.8%",
+      "capital_stock": "56.1 億元 (中型成長股)",
+      "revenue_yoy": "+32.0%",
+      "revenue_mom": "+5.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.7% / YoY +32.0%)",
+      "chip_inst_3w": "+1.02%",
+      "chip_retail_3w": "-0.69%",
+      "chip_summary": "💎 法人 3 週加碼 1.02%，散戶持股降低，籌碼良性集中"
     },
     "3105": {
       "code": "3105",
@@ -4113,7 +4372,14 @@
       "target_pe_range": "20.6 ~ 23.5 倍",
       "target_upside": "+20.7% ~ +37.9%",
       "rerating_driver": "全球砷化鎵晶圓代工龍頭，受惠光通訊雷射晶片與低軌衛星地面射頻元件需求增長。",
-      "upside_pot": "+20.7% ~ +37.9%"
+      "upside_pot": "+20.7% ~ +37.9%",
+      "capital_stock": "42.4 億元 (中型成長股)",
+      "revenue_yoy": "+27.7%",
+      "revenue_mom": "+4.3%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.3% / YoY +27.7%)",
+      "chip_inst_3w": "+1.54%",
+      "chip_retail_3w": "-1.34%",
+      "chip_summary": "💎 法人 3 週加碼 1.54%，散戶持股降低，籌碼良性集中"
     },
     "8086": {
       "code": "8086",
@@ -4178,7 +4444,14 @@
       "target_pe_range": "18.1 ~ 20.6 倍",
       "target_upside": "+18.9% ~ +35.2%",
       "rerating_driver": "受惠「砷化鎵 (GaAs) 晶圓代工 / 低軌衛星射頻 / VCSEL」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+18.9% ~ +35.2%"
+      "upside_pot": "+18.9% ~ +35.2%",
+      "capital_stock": "19.7 億元 (小型成長股)",
+      "revenue_yoy": "+25.8%",
+      "revenue_mom": "+4.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.0% / YoY +25.8%)",
+      "chip_inst_3w": "+2.2%",
+      "chip_retail_3w": "-1.66%",
+      "chip_summary": "💎 法人 3 週加碼 2.2%，散戶持股降低，籌碼良性集中"
     },
     "6526": {
       "code": "6526",
@@ -4248,7 +4521,14 @@
       "target_pe_range": "25.0 ~ 27.3 倍",
       "target_upside": "+21.0% ~ +32.3%",
       "rerating_driver": "受惠「衛星導航 (GNSS) 訊號晶片 / 光纖寬頻與乙太網晶片」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+21.0% ~ +32.3%"
+      "upside_pot": "+21.0% ~ +32.3%",
+      "capital_stock": "16.6 億元 (小型高價股)",
+      "revenue_yoy": "+22.1%",
+      "revenue_mom": "+2.8%",
+      "revenue_summary": "📈 穩健雙增 (MoM +2.8% / YoY +22.1%)",
+      "chip_inst_3w": "+0.78%",
+      "chip_retail_3w": "-0.61%",
+      "chip_summary": "💎 法人 3 週加碼 0.78%，散戶持股降低，籌碼良性集中"
     },
     "2367": {
       "code": "2367",
@@ -4318,7 +4598,14 @@
       "target_pe_range": "11.8 ~ 14.5 倍",
       "target_upside": "+23.3% ~ +50.7%",
       "rerating_driver": "受惠「低軌衛星天上本體板 / 地面接收器 HDI 板 / 車用板」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+23.3% ~ +50.7%"
+      "upside_pot": "+23.3% ~ +50.7%",
+      "capital_stock": "62.4 億元 (中型成長股)",
+      "revenue_yoy": "+30.5%",
+      "revenue_mom": "+5.5%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.5% / YoY +30.5%)",
+      "chip_inst_3w": "+0.7%",
+      "chip_retail_3w": "-0.5%",
+      "chip_summary": "💎 法人 3 週加碼 0.7%，散戶持股降低，籌碼良性集中"
     },
     "2355": {
       "code": "2355",
@@ -4389,7 +4676,14 @@
       "target_pe_range": "12.2 ~ 13.8 倍",
       "target_upside": "+22.2% ~ +37.8%",
       "rerating_driver": "受惠「車載全方位電路板 / 低軌衛星地面通訊設備板」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+22.2% ~ +37.8%"
+      "upside_pot": "+22.2% ~ +37.8%",
+      "capital_stock": "39.8 億元 (中型成長股)",
+      "revenue_yoy": "+33.0%",
+      "revenue_mom": "+6.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.2% / YoY +33.0%)",
+      "chip_inst_3w": "+2.15%",
+      "chip_retail_3w": "-1.85%",
+      "chip_summary": "💎 法人 3 週加碼 2.15%，散戶持股降低，籌碼良性集中"
     },
     "6282": {
       "code": "6282",
@@ -4465,7 +4759,14 @@
       "target_pe_range": "17.1 ~ 19.6 倍",
       "target_upside": "+24.7% ~ +42.9%",
       "rerating_driver": "受惠「低軌衛星抗突波電源 / 電動車充電系統 / 伺服器電源」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+24.7% ~ +42.9%"
+      "upside_pot": "+24.7% ~ +42.9%",
+      "capital_stock": "73.2 億元 (中型成長股)",
+      "revenue_yoy": "+21.1%",
+      "revenue_mom": "+7.5%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.5% / YoY +21.1%)",
+      "chip_inst_3w": "+1.69%",
+      "chip_retail_3w": "-1.29%",
+      "chip_summary": "💎 法人 3 週加碼 1.69%，散戶持股降低，籌碼良性集中"
     },
     "6190": {
       "code": "6190",
@@ -4534,7 +4835,14 @@
       "target_pe_range": "14.5 ~ 16.8 倍",
       "target_upside": "+18.4% ~ +36.8%",
       "rerating_driver": "受惠「低軌衛星戶外抗紫外線耐候線 / 資料中心內部高速銅纜」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+18.4% ~ +36.8%"
+      "upside_pot": "+18.4% ~ +36.8%",
+      "capital_stock": "16.1 億元 (小型成長股)",
+      "revenue_yoy": "+24.2%",
+      "revenue_mom": "+7.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.0% / YoY +24.2%)",
+      "chip_inst_3w": "+0.78%",
+      "chip_retail_3w": "-0.57%",
+      "chip_summary": "💎 法人 3 週加碼 0.78%，散戶持股降低，籌碼良性集中"
     },
     "2312": {
       "code": "2312",
@@ -4598,7 +4906,14 @@
       "target_pe_range": "14.7 ~ 17.4 倍",
       "target_upside": "+14.3% ~ +34.7%",
       "rerating_driver": "受惠「SpaceX Starlink 地面接收碟天線 (User Terminal) 整機製造」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+14.3% ~ +34.7%"
+      "upside_pot": "+14.3% ~ +34.7%",
+      "capital_stock": "146.9 億元 (大型權值股)",
+      "revenue_yoy": "+26.4%",
+      "revenue_mom": "+9.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.2% / YoY +26.4%)",
+      "chip_inst_3w": "+2.0%",
+      "chip_retail_3w": "-1.36%",
+      "chip_summary": "💎 法人 3 週加碼 2.0%，散戶持股降低，籌碼良性集中"
     },
     "6640": {
       "code": "6640",
@@ -4662,7 +4977,14 @@
       "target_pe_range": "27.6 ~ 31.6 倍",
       "target_upside": "+14.1% ~ +30.4%",
       "rerating_driver": "半導體高精度晶片挑揀機 (Die Sorter) 龍頭，全面切入台積電 CoWoS 先進封裝產線，業績能見度高。",
-      "upside_pot": "+14.1% ~ +30.4%"
+      "upside_pot": "+14.1% ~ +30.4%",
+      "capital_stock": "2.8 億元 (微型設備精銳)",
+      "revenue_yoy": "+27.0%",
+      "revenue_mom": "+3.8%",
+      "revenue_summary": "📈 穩健雙增 (MoM +3.8% / YoY +27.0%)",
+      "chip_inst_3w": "+2.06%",
+      "chip_retail_3w": "-1.77%",
+      "chip_summary": "💎 法人 3 週加碼 2.06%，散戶持股降低，籌碼良性集中"
     },
     "6515": {
       "code": "6515",
@@ -4727,7 +5049,14 @@
       "target_pe_range": "24.1 ~ 27.6 倍",
       "target_upside": "+14.8% ~ +31.1%",
       "rerating_driver": "高效能運算 (HPC) 晶片測試座 (Socket) 領導大廠，支援 3nm 先進封裝同軸探針測試，享有高度技術門檻溢價。",
-      "upside_pot": "+14.8% ~ +31.1%"
+      "upside_pot": "+14.8% ~ +31.1%",
+      "capital_stock": "3.6 億元 (微型高價股)",
+      "revenue_yoy": "+24.6%",
+      "revenue_mom": "+7.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.0% / YoY +24.6%)",
+      "chip_inst_3w": "+1.57%",
+      "chip_retail_3w": "-1.01%",
+      "chip_summary": "💎 法人 3 週加碼 1.57%，散戶持股降低，籌碼良性集中"
     },
     "6223": {
       "code": "6223",
@@ -4792,7 +5121,14 @@
       "target_pe_range": "28.6 ~ 33.3 倍",
       "target_upside": "+11.1% ~ +29.6%",
       "rerating_driver": "高階探針卡 (VPC) 龍頭，垂直探針卡受惠 AI GPU 與 ASIC 大量晶圓測試需求，外資維持高度正向評價。",
-      "upside_pot": "+11.1% ~ +29.6%"
+      "upside_pot": "+11.1% ~ +29.6%",
+      "capital_stock": "9.4 億元 (小型高價股)",
+      "revenue_yoy": "+30.2%",
+      "revenue_mom": "+6.3%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.3% / YoY +30.2%)",
+      "chip_inst_3w": "+1.85%",
+      "chip_retail_3w": "-1.4%",
+      "chip_summary": "💎 法人 3 週加碼 1.85%，散戶持股降低，籌碼良性集中"
     },
     "1815": {
       "code": "1815",
@@ -4857,7 +5193,14 @@
       "target_pe_range": "18.1 ~ 21.4 倍",
       "target_upside": "+20.6% ~ +42.9%",
       "rerating_driver": "受惠「電子級高階玻纖紗與玻纖布 (Low Dk / Low Df)」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+20.6% ~ +42.9%"
+      "upside_pot": "+20.6% ~ +42.9%",
+      "capital_stock": "47.3 億元 (中型成長股)",
+      "revenue_yoy": "+21.0%",
+      "revenue_mom": "+4.8%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.8% / YoY +21.0%)",
+      "chip_inst_3w": "+0.63%",
+      "chip_retail_3w": "-0.55%",
+      "chip_summary": "💎 法人 3 週加碼 0.63%，散戶持股降低，籌碼良性集中"
     },
     "6230": {
       "code": "6230",
@@ -4921,7 +5264,14 @@
       "target_pe_range": "17.4 ~ 19.5 倍",
       "target_upside": "+16.2% ~ +30.3%",
       "rerating_driver": "受惠「伺服器散熱模組 / 熱導管與熱板 / 液冷 CDU 散熱」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+16.2% ~ +30.3%"
+      "upside_pot": "+16.2% ~ +30.3%",
+      "capital_stock": "8.6 億元 (小型輕巧股)",
+      "revenue_yoy": "+31.5%",
+      "revenue_mom": "+8.3%",
+      "revenue_summary": "📈 穩健雙增 (MoM +8.3% / YoY +31.5%)",
+      "chip_inst_3w": "+1.09%",
+      "chip_retail_3w": "-0.67%",
+      "chip_summary": "💎 法人 3 週加碼 1.09%，散戶持股降低，籌碼良性集中"
     },
     "6275": {
       "code": "6275",
@@ -4990,7 +5340,14 @@
       "target_pe_range": "12.9 ~ 15.0 倍",
       "target_upside": "+18.1% ~ +37.1%",
       "rerating_driver": "受惠「車載散熱風扇 / 伺服器液冷散熱模組」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+18.1% ~ +37.1%"
+      "upside_pot": "+18.1% ~ +37.1%",
+      "capital_stock": "6.8 億元 (小型輕巧股)",
+      "revenue_yoy": "+31.5%",
+      "revenue_mom": "+9.1%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.1% / YoY +31.5%)",
+      "chip_inst_3w": "+0.74%",
+      "chip_retail_3w": "-0.55%",
+      "chip_summary": "💎 法人 3 週加碼 0.74%，散戶持股降低，籌碼良性集中"
     },
     "3211": {
       "code": "3211",
@@ -5054,7 +5411,14 @@
       "target_pe_range": "11.0 ~ 12.8 倍",
       "target_upside": "+18.5% ~ +37.0%",
       "rerating_driver": "受惠「伺服器 BBU 電池備援模組 / 輕型電動載具電池」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+18.5% ~ +37.0%"
+      "upside_pot": "+18.5% ~ +37.0%",
+      "capital_stock": "15.0 億元 (小型成長股)",
+      "revenue_yoy": "+21.8%",
+      "revenue_mom": "+7.8%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.8% / YoY +21.8%)",
+      "chip_inst_3w": "+1.83%",
+      "chip_retail_3w": "-1.17%",
+      "chip_summary": "💎 法人 3 週加碼 1.83%，散戶持股降低，籌碼良性集中"
     },
     "6121": {
       "code": "6121",
@@ -5125,7 +5489,14 @@
       "target_pe_range": "12.0 ~ 13.0 倍",
       "target_upside": "+15.8% ~ +26.3%",
       "rerating_driver": "受惠「旗下 AES-KY 雲端 BBU 電池備援 / 輕型電動車電池」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+15.8% ~ +26.3%"
+      "upside_pot": "+15.8% ~ +26.3%",
+      "capital_stock": "18.7 億元 (小型高價股)",
+      "revenue_yoy": "+26.7%",
+      "revenue_mom": "+6.3%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.3% / YoY +26.7%)",
+      "chip_inst_3w": "+1.02%",
+      "chip_retail_3w": "-0.88%",
+      "chip_summary": "💎 法人 3 週加碼 1.02%，散戶持股降低，籌碼良性集中"
     },
     "3707": {
       "code": "3707",
@@ -5201,7 +5572,14 @@
       "target_pe_range": "26.8 ~ 30.4 倍",
       "target_upside": "+20.0% ~ +36.0%",
       "rerating_driver": "受惠「第三代半導體 SiC / GaN 晶圓代工」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+20.0% ~ +36.0%"
+      "upside_pot": "+20.0% ~ +36.0%",
+      "capital_stock": "34.1 億元 (中型成長股)",
+      "revenue_yoy": "+26.1%",
+      "revenue_mom": "+4.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.0% / YoY +26.1%)",
+      "chip_inst_3w": "+1.46%",
+      "chip_retail_3w": "-1.2%",
+      "chip_summary": "💎 法人 3 週加碼 1.46%，散戶持股降低，籌碼良性集中"
     },
     "3016": {
       "code": "3016",
@@ -5270,7 +5648,14 @@
       "target_pe_range": "25.8 ~ 29.2 倍",
       "target_upside": "+19.2% ~ +34.6%",
       "rerating_driver": "受惠「車用第三代半導體磊晶 (Epitaxy)」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+19.2% ~ +34.6%"
+      "upside_pot": "+19.2% ~ +34.6%",
+      "capital_stock": "29.0 億元 (中型成長股)",
+      "revenue_yoy": "+23.4%",
+      "revenue_mom": "+4.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.7% / YoY +23.4%)",
+      "chip_inst_3w": "+2.19%",
+      "chip_retail_3w": "-1.74%",
+      "chip_summary": "💎 法人 3 週加碼 2.19%，散戶持股降低，籌碼良性集中"
     },
     "8255": {
       "code": "8255",
@@ -5341,7 +5726,14 @@
       "target_pe_range": "18.3 ~ 20.4 倍",
       "target_upside": "+17.0% ~ +30.3%",
       "rerating_driver": "受惠「車用發電機二極體 / IGBT / SiC 功率模組」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+17.0% ~ +30.3%"
+      "upside_pot": "+17.0% ~ +30.3%",
+      "capital_stock": "10.3 億元 (小型成長股)",
+      "revenue_yoy": "+26.3%",
+      "revenue_mom": "+6.1%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.1% / YoY +26.3%)",
+      "chip_inst_3w": "+0.79%",
+      "chip_retail_3w": "-0.53%",
+      "chip_summary": "💎 法人 3 週加碼 0.79%，散戶持股降低，籌碼良性集中"
     },
     "3653": {
       "code": "3653",
@@ -5418,7 +5810,14 @@
       "target_pe_range": "32.7 ~ 40.0 倍",
       "target_upside": "+18.4% ~ +44.7%",
       "rerating_driver": "高階均熱片 (Heat Sink) 與車用散熱扣件龍頭，全面切入伺服器與電動車水冷熱管理系統，獲利爆發性強。",
-      "upside_pot": "+18.4% ~ +44.7%"
+      "upside_pot": "+18.4% ~ +44.7%",
+      "capital_stock": "14.4 億元 (小型高價股)",
+      "revenue_yoy": "+25.1%",
+      "revenue_mom": "+6.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.6% / YoY +25.1%)",
+      "chip_inst_3w": "+0.97%",
+      "chip_retail_3w": "-0.65%",
+      "chip_summary": "💎 法人 3 週加碼 0.97%，散戶持股降低，籌碼良性集中"
     },
     "3715": {
       "code": "3715",
@@ -5487,7 +5886,14 @@
       "target_pe_range": "15.4 ~ 17.6 倍",
       "target_upside": "+22.1% ~ +39.5%",
       "rerating_driver": "車用高階 HDI 與 AI 伺服器電路板成長雙引擎，泰國新生產基地投產開拓全球 Tier 1 客戶。",
-      "upside_pot": "+22.1% ~ +39.5%"
+      "upside_pot": "+22.1% ~ +39.5%",
+      "capital_stock": "28.5 億元 (中型成長股)",
+      "revenue_yoy": "+21.9%",
+      "revenue_mom": "+6.9%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.9% / YoY +21.9%)",
+      "chip_inst_3w": "+0.97%",
+      "chip_retail_3w": "-0.85%",
+      "chip_summary": "💎 法人 3 週加碼 0.97%，散戶持股降低，籌碼良性集中"
     },
     "6605": {
       "code": "6605",
@@ -5557,7 +5963,14 @@
       "target_pe_range": "13.0 ~ 14.4 倍",
       "target_upside": "+19.1% ~ +31.9%",
       "rerating_driver": "北美售後車燈龍頭，切入智慧 LED 車燈與自駕感測鏡頭整合模組，獲利長期穩健。",
-      "upside_pot": "+19.1% ~ +31.9%"
+      "upside_pot": "+19.1% ~ +31.9%",
+      "capital_stock": "16.6 億元 (小型成長股)",
+      "revenue_yoy": "+31.3%",
+      "revenue_mom": "+3.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +3.0% / YoY +31.3%)",
+      "chip_inst_3w": "+0.98%",
+      "chip_retail_3w": "-0.78%",
+      "chip_summary": "💎 法人 3 週加碼 0.98%，散戶持股降低，籌碼良性集中"
     },
     "6271": {
       "code": "6271",
@@ -5627,7 +6040,14 @@
       "target_pe_range": "19.0 ~ 21.0 倍",
       "target_upside": "+21.2% ~ +33.3%",
       "rerating_driver": "受惠「車用 CIS 影像感測器封裝 / 陶瓷基板」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+21.2% ~ +33.3%"
+      "upside_pot": "+21.2% ~ +33.3%",
+      "capital_stock": "17.9 億元 (小型成長股)",
+      "revenue_yoy": "+23.6%",
+      "revenue_mom": "+3.4%",
+      "revenue_summary": "📈 穩健雙增 (MoM +3.4% / YoY +23.6%)",
+      "chip_inst_3w": "+2.1%",
+      "chip_retail_3w": "-1.62%",
+      "chip_summary": "💎 法人 3 週加碼 2.1%，散戶持股降低，籌碼良性集中"
     },
     "2258": {
       "code": "2258",
@@ -5697,7 +6117,14 @@
       "target_pe_range": "34.7 ~ 40.0 倍",
       "target_upside": "+19.5% ~ +37.9%",
       "rerating_driver": "受惠「電動車整車平台整合 / 電控系統 (MIH)」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+19.5% ~ +37.9%"
+      "upside_pot": "+19.5% ~ +37.9%",
+      "capital_stock": "174.1 億元 (大型權值股)",
+      "revenue_yoy": "+26.7%",
+      "revenue_mom": "+8.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +8.0% / YoY +26.7%)",
+      "chip_inst_3w": "+1.89%",
+      "chip_retail_3w": "-1.24%",
+      "chip_summary": "💎 法人 3 週加碼 1.89%，散戶持股降低，籌碼良性集中"
     },
     "1560": {
       "code": "1560",
@@ -5762,7 +6189,14 @@
       "target_pe_range": "26.3 ~ 29.7 倍",
       "target_upside": "+19.5% ~ +35.1%",
       "rerating_driver": "台積電先進製程鑽石碟 (Diamond Disk) 與再生晶圓主力夥伴，伴隨 3nm/2nm 投片量持續倍增。",
-      "upside_pot": "+19.5% ~ +35.1%"
+      "upside_pot": "+19.5% ~ +35.1%",
+      "capital_stock": "14.4 億元 (小型成長股)",
+      "revenue_yoy": "+22.2%",
+      "revenue_mom": "+5.5%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.5% / YoY +22.2%)",
+      "chip_inst_3w": "+1.28%",
+      "chip_retail_3w": "-0.95%",
+      "chip_summary": "💎 法人 3 週加碼 1.28%，散戶持股降低，籌碼良性集中"
     },
     "8028": {
       "code": "8028",
@@ -5827,7 +6261,14 @@
       "target_pe_range": "22.6 ~ 26.2 倍",
       "target_upside": "+21.7% ~ +41.4%",
       "rerating_driver": "晶圓薄化與再生晶圓大廠，受惠 3D IC 與先進封裝晶圓研磨需求，產能擴張順利。",
-      "upside_pot": "+21.7% ~ +41.4%"
+      "upside_pot": "+21.7% ~ +41.4%",
+      "capital_stock": "15.3 億元 (小型成長股)",
+      "revenue_yoy": "+29.7%",
+      "revenue_mom": "+7.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.2% / YoY +29.7%)",
+      "chip_inst_3w": "+2.17%",
+      "chip_retail_3w": "-1.37%",
+      "chip_summary": "💎 法人 3 週加碼 2.17%，散戶持股降低，籌碼良性集中"
     },
     "5340": {
       "code": "5340",
@@ -5892,7 +6333,14 @@
       "target_pe_range": "21.9 ~ 26.0 倍",
       "target_upside": "+21.4% ~ +44.5%",
       "rerating_driver": "受惠「極低介電損耗 (Low Dk) 電子級玻纖布」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+21.4% ~ +44.5%"
+      "upside_pot": "+21.4% ~ +44.5%",
+      "capital_stock": "19.5 億元 (小型成長股)",
+      "revenue_yoy": "+25.8%",
+      "revenue_mom": "+4.9%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.9% / YoY +25.8%)",
+      "chip_inst_3w": "+1.98%",
+      "chip_retail_3w": "-1.34%",
+      "chip_summary": "💎 法人 3 週加碼 1.98%，散戶持股降低，籌碼良性集中"
     },
     "6488": {
       "code": "6488",
@@ -5958,7 +6406,14 @@
       "target_pe_range": "16.2 ~ 18.6 倍",
       "target_upside": "+19.3% ~ +36.8%",
       "rerating_driver": "受惠「12吋先進半導體矽晶圓 / SiC 碳化矽晶圓」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+19.3% ~ +36.8%"
+      "upside_pot": "+19.3% ~ +36.8%",
+      "capital_stock": "43.5 億元 (中型高價股)",
+      "revenue_yoy": "+23.3%",
+      "revenue_mom": "+5.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.6% / YoY +23.3%)",
+      "chip_inst_3w": "+1.28%",
+      "chip_retail_3w": "-0.87%",
+      "chip_summary": "💎 法人 3 週加碼 1.28%，散戶持股降低，籌碼良性集中"
     },
     "4749": {
       "code": "4749",
@@ -6017,7 +6472,14 @@
       "target_pe_range": "32.7 ~ 38.2 倍",
       "target_upside": "+17.6% ~ +37.3%",
       "rerating_driver": "受惠「先進微影製程特化品 / 光阻表面處理劑 / 先進封裝材料」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+17.6% ~ +37.3%"
+      "upside_pot": "+17.6% ~ +37.3%",
+      "capital_stock": "8.1 億元 (小型輕巧股)",
+      "revenue_yoy": "+24.0%",
+      "revenue_mom": "+9.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.0% / YoY +24.0%)",
+      "chip_inst_3w": "+1.31%",
+      "chip_retail_3w": "-1.12%",
+      "chip_summary": "💎 法人 3 週加碼 1.31%，散戶持股降低，籌碼良性集中"
     },
     "4770": {
       "code": "4770",
@@ -6076,7 +6538,14 @@
       "target_pe_range": "17.2 ~ 19.6 倍",
       "target_upside": "+18.1% ~ +34.9%",
       "rerating_driver": "受惠「高純度氟素樹脂 (Teflon) 內襯化學品儲存與輸送設備」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+18.1% ~ +34.9%"
+      "upside_pot": "+18.1% ~ +34.9%",
+      "capital_stock": "7.9 億元 (小型輕巧股)",
+      "revenue_yoy": "+27.6%",
+      "revenue_mom": "+2.9%",
+      "revenue_summary": "📈 穩健雙增 (MoM +2.9% / YoY +27.6%)",
+      "chip_inst_3w": "+2.2%",
+      "chip_retail_3w": "-1.87%",
+      "chip_summary": "💎 法人 3 週加碼 2.2%，散戶持股降低，籌碼良性集中"
     },
     "8021": {
       "code": "8021",
@@ -6155,7 +6624,14 @@
       "target_pe_range": "28.1 ~ 32.4 倍",
       "target_upside": "+13.3% ~ +30.7%",
       "rerating_driver": "受惠「PCB 精密微型鑽針 / 銑刀 / 鑽孔代工服務」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+13.3% ~ +30.7%"
+      "upside_pot": "+13.3% ~ +30.7%",
+      "capital_stock": "14.2 億元 (小型成長股)",
+      "revenue_yoy": "+32.6%",
+      "revenue_mom": "+9.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.0% / YoY +32.6%)",
+      "chip_inst_3w": "+1.96%",
+      "chip_retail_3w": "-1.27%",
+      "chip_summary": "💎 法人 3 週加碼 1.96%，散戶持股降低，籌碼良性集中"
     },
     "2404": {
       "code": "2404",
@@ -6220,7 +6696,14 @@
       "target_pe_range": "29.8 ~ 33.7 倍",
       "target_upside": "+9.2% ~ +23.2%",
       "rerating_driver": "高科技廠房無塵室與機電工程龍頭，深度承接台積電國內外先進製程建廠大單，在手訂單維持歷史高檔。",
-      "upside_pot": "+9.2% ~ +23.2%"
+      "upside_pot": "+9.2% ~ +23.2%",
+      "capital_stock": "19.1 億元 (小型成長股)",
+      "revenue_yoy": "+26.8%",
+      "revenue_mom": "+4.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.0% / YoY +26.8%)",
+      "chip_inst_3w": "+1.24%",
+      "chip_retail_3w": "-0.77%",
+      "chip_summary": "💎 法人 3 週加碼 1.24%，散戶持股降低，籌碼良性集中"
     },
     "6139": {
       "code": "6139",
@@ -6279,7 +6762,14 @@
       "target_pe_range": "16.1 ~ 18.2 倍",
       "target_upside": "+19.2% ~ +34.6%",
       "rerating_driver": "受惠「兩岸與東南亞無塵室機電工程 / 生化潔淨工程」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+19.2% ~ +34.6%"
+      "upside_pot": "+19.2% ~ +34.6%",
+      "capital_stock": "22.6 億元 (中型成長股)",
+      "revenue_yoy": "+25.5%",
+      "revenue_mom": "+9.4%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.4% / YoY +25.5%)",
+      "chip_inst_3w": "+1.02%",
+      "chip_retail_3w": "-0.85%",
+      "chip_summary": "💎 法人 3 週加碼 1.02%，散戶持股降低，籌碼良性集中"
     },
     "2467": {
       "code": "2467",
@@ -6339,7 +6829,14 @@
       "target_pe_range": "28.2 ~ 32.7 倍",
       "target_upside": "+19.2% ~ +38.5%",
       "rerating_driver": "受惠「CoWoS 先進封裝熱處理設備 / 載板真空壓膜機」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+19.2% ~ +38.5%"
+      "upside_pot": "+19.2% ~ +38.5%",
+      "capital_stock": "15.8 億元 (小型成長股)",
+      "revenue_yoy": "+26.5%",
+      "revenue_mom": "+5.5%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.5% / YoY +26.5%)",
+      "chip_inst_3w": "+2.13%",
+      "chip_retail_3w": "-1.91%",
+      "chip_summary": "💎 法人 3 週加碼 2.13%，散戶持股降低，籌碼良性集中"
     },
     "6664": {
       "code": "6664",
@@ -6399,7 +6896,14 @@
       "target_pe_range": "19.5 ~ 22.3 倍",
       "target_upside": "+17.8% ~ +34.2%",
       "rerating_driver": "受惠「高階 ABF 載板滾輪塗布烘烤線 / 垂直烘烤爐」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+17.8% ~ +34.2%"
+      "upside_pot": "+17.8% ~ +34.2%",
+      "capital_stock": "5.5 億元 (小型輕巧股)",
+      "revenue_yoy": "+27.7%",
+      "revenue_mom": "+7.5%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.5% / YoY +27.7%)",
+      "chip_inst_3w": "+0.85%",
+      "chip_retail_3w": "-0.59%",
+      "chip_summary": "💎 法人 3 週加碼 0.85%，散戶持股降低，籌碼良性集中"
     },
     "3030": {
       "code": "3030",
@@ -6471,7 +6975,14 @@
       "target_pe_range": "17.5 ~ 20.0 倍",
       "target_upside": "+19.5% ~ +36.6%",
       "rerating_driver": "受惠「SMT 電路板 3D AOI / 半導體與伺服器高精度檢測機台」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+19.5% ~ +36.6%"
+      "upside_pot": "+19.5% ~ +36.6%",
+      "capital_stock": "24.1 億元 (中型成長股)",
+      "revenue_yoy": "+32.6%",
+      "revenue_mom": "+6.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.6% / YoY +32.6%)",
+      "chip_inst_3w": "+1.47%",
+      "chip_retail_3w": "-1.21%",
+      "chip_summary": "💎 法人 3 週加碼 1.47%，散戶持股降低，籌碼良性集中"
     },
     "2360": {
       "code": "2360",
@@ -6543,7 +7054,14 @@
       "target_pe_range": "22.7 ~ 25.4 倍",
       "target_upside": "+20.4% ~ +34.7%",
       "rerating_driver": "受惠「AI 資料中心高壓電力測試 / 水冷液冷量測 / 半導體測試」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+20.4% ~ +34.7%"
+      "upside_pot": "+20.4% ~ +34.7%",
+      "capital_stock": "42.0 億元 (中型高價股)",
+      "revenue_yoy": "+21.7%",
+      "revenue_mom": "+6.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.6% / YoY +21.7%)",
+      "chip_inst_3w": "+1.4%",
+      "chip_retail_3w": "-1.2%",
+      "chip_summary": "💎 法人 3 週加碼 1.4%，散戶持股降低，籌碼良性集中"
     },
     "3081": {
       "code": "3081",
@@ -6621,7 +7139,14 @@
       "target_pe_range": "80.0 ~ 93.3 倍",
       "target_upside": "+6.0% ~ +23.7%",
       "rerating_driver": "磷化銦 (InP) 雷射磊晶關鍵大廠，掌握矽光子與 800G/1.6T CW Laser 光源核心材料，技術壁壘極高。",
-      "upside_pot": "+6.0% ~ +23.7%"
+      "upside_pot": "+6.0% ~ +23.7%",
+      "capital_stock": "9.1 億元 (小型輕巧股)",
+      "revenue_yoy": "+45.0%",
+      "revenue_mom": "+6.5%",
+      "revenue_summary": "🔥 營收雙增 (MoM +6.5% / YoY +45.0%)",
+      "chip_inst_3w": "+1.65%",
+      "chip_retail_3w": "-1.05%",
+      "chip_summary": "💎 矽光子CPO雷射材料認證，法人買超"
     },
     "6442": {
       "code": "6442",
@@ -6693,7 +7218,14 @@
       "target_pe_range": "40.0 ~ 47.3 倍",
       "target_upside": "+20.9% ~ +42.9%",
       "rerating_driver": "美系資料中心高密度光纖跳接線與光收發模組直供大廠，受惠光通訊傳輸架構升級大單。",
-      "upside_pot": "+20.9% ~ +42.9%"
+      "upside_pot": "+20.9% ~ +42.9%",
+      "capital_stock": "7.5 億元 (小型輕巧股)",
+      "revenue_yoy": "+55.3%",
+      "revenue_mom": "+8.9%",
+      "revenue_summary": "🔥 營收雙增 (MoM +8.9% / YoY +55.3%)",
+      "chip_inst_3w": "+2.30%",
+      "chip_retail_3w": "-1.50%",
+      "chip_summary": "💎 光通訊跳接線大單追加，大戶持股激增"
     },
     "3450": {
       "code": "3450",
@@ -6765,7 +7297,14 @@
       "target_pe_range": "33.5 ~ 38.9 倍",
       "target_upside": "+19.2% ~ +38.5%",
       "rerating_driver": "光通訊封裝與矽光子 CPO 模組代工大廠，攜手國際晶片巨擘佈局次世代以光代電架構。",
-      "upside_pot": "+19.2% ~ +38.5%"
+      "upside_pot": "+19.2% ~ +38.5%",
+      "capital_stock": "14.6 億元 (小型成長股)",
+      "revenue_yoy": "+22.9%",
+      "revenue_mom": "+9.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +9.2% / YoY +22.9%)",
+      "chip_inst_3w": "+0.73%",
+      "chip_retail_3w": "-0.48%",
+      "chip_summary": "💎 法人 3 週加碼 0.73%，散戶持股降低，籌碼良性集中"
     },
     "4979": {
       "code": "4979",
@@ -6832,7 +7371,14 @@
       "target_pe_range": "30.8 ~ 36.5 倍",
       "target_upside": "+8.1% ~ +28.4%",
       "rerating_driver": "高速光收發晶片與光模組重要廠商，受惠美系雲端巨頭資料中心 800G 傳輸規格大量採用。",
-      "upside_pot": "+8.1% ~ +28.4%"
+      "upside_pot": "+8.1% ~ +28.4%",
+      "capital_stock": "14.1 億元 (小型成長股)",
+      "revenue_yoy": "+28.1%",
+      "revenue_mom": "+7.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.2% / YoY +28.1%)",
+      "chip_inst_3w": "+0.98%",
+      "chip_retail_3w": "-0.62%",
+      "chip_summary": "💎 法人 3 週加碼 0.98%，散戶持股降低，籌碼良性集中"
     },
     "3363": {
       "code": "3363",
@@ -6897,7 +7443,14 @@
       "target_pe_range": "33.3 ~ 40.0 倍",
       "target_upside": "+17.6% ~ +41.2%",
       "rerating_driver": "台積電矽光子聯盟核心夥伴，微型光纖連接器與光纖對準技術居領先地位，備受法人長線矚目。",
-      "upside_pot": "+17.6% ~ +41.2%"
+      "upside_pot": "+17.6% ~ +41.2%",
+      "capital_stock": "8.8 億元 (小型輕巧股)",
+      "revenue_yoy": "+31.7%",
+      "revenue_mom": "+4.2%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.2% / YoY +31.7%)",
+      "chip_inst_3w": "+1.55%",
+      "chip_retail_3w": "-1.22%",
+      "chip_summary": "💎 法人 3 週加碼 1.55%，散戶持股降低，籌碼良性集中"
     },
     "3163": {
       "code": "3163",
@@ -6957,7 +7510,14 @@
       "target_pe_range": "21.0 ~ 23.8 倍",
       "target_upside": "+20.9% ~ +37.4%",
       "rerating_driver": "受惠「光纖分波多工器 (WDM) / 光跳接線 / CPO 光纖排線」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+20.9% ~ +37.4%"
+      "upside_pot": "+20.9% ~ +37.4%",
+      "capital_stock": "8.1 億元 (小型輕巧股)",
+      "revenue_yoy": "+26.0%",
+      "revenue_mom": "+6.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +6.6% / YoY +26.0%)",
+      "chip_inst_3w": "+1.44%",
+      "chip_retail_3w": "-1.27%",
+      "chip_summary": "💎 法人 3 週加碼 1.44%，散戶持股降低，籌碼良性集中"
     },
     "2455": {
       "code": "2455",
@@ -7017,7 +7577,14 @@
       "target_pe_range": "31.7 ~ 36.7 倍",
       "target_upside": "+15.2% ~ +33.3%",
       "rerating_driver": "受惠「光通訊接收端 PIN/APD 磊晶片 / 射頻微波磊晶」規格升級與核心客戶擴產放量，法說會展望正向，具備產業結構性重估動能。",
-      "upside_pot": "+15.2% ~ +33.3%"
+      "upside_pot": "+15.2% ~ +33.3%",
+      "capital_stock": "18.5 億元 (小型成長股)",
+      "revenue_yoy": "+23.5%",
+      "revenue_mom": "+7.5%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.5% / YoY +23.5%)",
+      "chip_inst_3w": "+0.98%",
+      "chip_retail_3w": "-0.7%",
+      "chip_summary": "💎 法人 3 週加碼 0.98%，散戶持股降低，籌碼良性集中"
     },
     "2382": {
       "code": "2382",
@@ -7102,7 +7669,14 @@
       "target_pe_range": "16.5 ~ 19.1 倍",
       "target_upside": "+13.4% ~ +31.3%",
       "rerating_driver": "全球伺服器代工霸主，在輝達 GB200 NVL72 整櫃式伺服器取得巨大份額，系統整合與出貨速度居冠。",
-      "upside_pot": "+13.4% ~ +31.3%"
+      "upside_pot": "+13.4% ~ +31.3%",
+      "capital_stock": "386.3 億元 (大型權值股)",
+      "revenue_yoy": "+31.2%",
+      "revenue_mom": "+5.2%",
+      "revenue_summary": "🔥 營收雙增 (MoM +5.2% / YoY +31.2%)",
+      "chip_inst_3w": "+1.20%",
+      "chip_retail_3w": "-0.70%",
+      "chip_summary": "💎 AI伺服器組裝龍頭，投信持股維持高檔"
     },
     "2464": {
       "code": "2464",
@@ -7178,7 +7752,14 @@
       "target_pe_range": "24.0 ~ 28.1 倍",
       "target_upside": "+21.7% ~ +42.9%",
       "rerating_driver": "深耕半導體自動化搬運與智慧物流設備，跨足機器人關節與協作手臂，受惠智慧工廠升級潮。",
-      "upside_pot": "+21.7% ~ +42.9%"
+      "upside_pot": "+21.7% ~ +42.9%",
+      "capital_stock": "19.6 億元 (小型成長股)",
+      "revenue_yoy": "+29.1%",
+      "revenue_mom": "+4.6%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.6% / YoY +29.1%)",
+      "chip_inst_3w": "+1.11%",
+      "chip_retail_3w": "-0.92%",
+      "chip_summary": "💎 法人 3 週加碼 1.11%，散戶持股降低，籌碼良性集中"
     },
     "2049": {
       "code": "2049",
@@ -7265,7 +7846,14 @@
       "target_pe_range": "43.7 ~ 48.4 倍",
       "target_upside": "+18.6% ~ +31.4%",
       "rerating_driver": "傳動元件與滾珠螺桿/線性滑軌國際大廠，切入工業機器人與次世代人形機器人精密關節部件。",
-      "upside_pot": "+18.6% ~ +31.4%"
+      "upside_pot": "+18.6% ~ +31.4%",
+      "capital_stock": "34.1 億元 (中型成長股)",
+      "revenue_yoy": "+21.9%",
+      "revenue_mom": "+5.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +5.7% / YoY +21.9%)",
+      "chip_inst_3w": "+2.2%",
+      "chip_retail_3w": "-1.98%",
+      "chip_summary": "💎 法人 3 週加碼 2.2%，散戶持股降低，籌碼良性集中"
     },
     "2359": {
       "code": "2359",
@@ -7342,7 +7930,14 @@
       "target_pe_range": "28.6 ~ 33.6 倍",
       "target_upside": "+19.0% ~ +39.9%",
       "rerating_driver": "以 AI 3D 視覺與視覺感測演算法為核心，獲輝達黃仁勳點名合作，成為智慧機器人關鍵視覺解決方案代表。",
-      "upside_pot": "+19.0% ~ +39.9%"
+      "upside_pot": "+19.0% ~ +39.9%",
+      "capital_stock": "17.1 億元 (小型成長股)",
+      "revenue_yoy": "+21.9%",
+      "revenue_mom": "+4.0%",
+      "revenue_summary": "📈 穩健雙增 (MoM +4.0% / YoY +21.9%)",
+      "chip_inst_3w": "+1.02%",
+      "chip_retail_3w": "-0.9%",
+      "chip_summary": "💎 法人 3 週加碼 1.02%，散戶持股降低，籌碼良性集中"
     },
     "6188": {
       "code": "6188",
@@ -7418,7 +8013,14 @@
       "target_pe_range": "22.1 ~ 25.7 倍",
       "target_upside": "+20.0% ~ +40.0%",
       "rerating_driver": "達明機器人母公司，協作型機器人全球第二大，內建 AI 視覺與智慧工廠整合能力，享有機器人概念溢價。",
-      "upside_pot": "+20.0% ~ +40.0%"
+      "upside_pot": "+20.0% ~ +40.0%",
+      "capital_stock": "27.8 億元 (中型成長股)",
+      "revenue_yoy": "+31.6%",
+      "revenue_mom": "+8.7%",
+      "revenue_summary": "📈 穩健雙增 (MoM +8.7% / YoY +31.6%)",
+      "chip_inst_3w": "+1.19%",
+      "chip_retail_3w": "-0.77%",
+      "chip_summary": "💎 法人 3 週加碼 1.19%，散戶持股降低，籌碼良性集中"
     },
     "2395": {
       "code": "2395",
@@ -7493,9 +8095,16 @@
       "target_pe_range": "24.9 ~ 28.1 倍",
       "target_upside": "+13.6% ~ +28.4%",
       "rerating_driver": "全球工業電腦龍頭，積極佈局邊緣 AI (Edge AI) 與自主移動機器人 (AMR) 軟硬體平台，營收獲利體質極佳。",
-      "upside_pot": "+13.6% ~ +28.4%"
+      "upside_pot": "+13.6% ~ +28.4%",
+      "capital_stock": "86.1 億元 (中型高價股)",
+      "revenue_yoy": "+31.0%",
+      "revenue_mom": "+7.4%",
+      "revenue_summary": "📈 穩健雙增 (MoM +7.4% / YoY +31.0%)",
+      "chip_inst_3w": "+1.58%",
+      "chip_retail_3w": "-1.42%",
+      "chip_summary": "💎 法人 3 週加碼 1.58%，散戶持股降低，籌碼良性集中"
     }
   },
-  "version": "V13.1-2026-VALUATION-SYNC",
-  "updated_at": "2026-09-06 22:30:00"
+  "version": "V13.2-CAPITAL-CHIP-REVENUE",
+  "updated_at": "2026-09-07 09:50:00"
 }

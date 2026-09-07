@@ -1,3 +1,4 @@
+import textwrap
 """
 ================================================================================
 科技巨頭台灣供應鏈情報庫 - Streamlit 旗艦正式版 (直通 V25 網頁版)
@@ -380,8 +381,8 @@ def render_single_vendor_page(code, v):
     獨立單一公司戰略情報網頁專屬視圖：
     1. 不與其他公司混在同一畫面，純粹呈現該公司的全套深度情報檔案。
     2. 頂部與底部皆設有「← 返回前一頁 (供應商總覽)」按鈕。
-    3. 包含最新行情、動態/預估PE、目標PE區間、潛在空間、即時更新行情、直通 V25.2 分析、CapEx、法說會指引與出處。
-    4. 完全在 Streamlit 內部 session 狀態下運作，不會觸發登入重導向。
+    3. 全面採用 Streamlit 原生卡片與指標元件 (st.metric / st.columns)，杜絕 Markdown 縮排代碼塊渲染錯誤。
+    4. 包含最新行情、動態/預估PE、目標PE區間、潛在空間、實收股本、最新月營收YoY/MoM、近3週籌碼集中度。
     """
     # 頂部導航列
     col_nav_back, col_nav_meta = st.columns([2.8, 7.2])
@@ -390,66 +391,78 @@ def render_single_vendor_page(code, v):
             st.session_state["selected_vendor_code"] = None
             st.rerun()
     with col_nav_meta:
-        st.markdown(f"""
-            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding-top: 6px;">
-                <span style="color: #64748b; font-size: 0.88rem;">所屬產業鏈：<strong>{v.get('tier', '供應鏈')}</strong></span>
-                <span style="color: #cbd5e1;">｜</span>
-                <span style="color: #0284c7; font-size: 0.88rem; font-weight: 700; background: rgba(2, 132, 199, 0.08); padding: 2px 8px; border-radius: 6px;">{v.get('sub_segment', '-')}</span>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f"<div style='display:flex; justify-content:flex-end; align-items:center; gap:8px; padding-top:6px;'>"
+            f"<span style='color:#64748b; font-size:0.88rem;'>所屬產業鏈：<strong>{v.get('tier', '供應鏈')}</strong></span>"
+            f"<span style='color:#cbd5e1;'>｜</span>"
+            f"<span style='color:#0284c7; font-size:0.88rem; font-weight:700; background:rgba(2,132,199,0.08); padding:2px 8px; border-radius:6px;'>{v.get('sub_segment', '-')}</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
 
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    st.write("")
 
-    # 主公司 Banner 資訊卡
+    # 1. 主公司頂部 Header 卡片 (乾淨 HTML，無多餘空行與縮排)
+    header_html = (
+        f"<div style='padding:20px 24px; background:linear-gradient(135deg, rgba(2,132,199,0.08), rgba(99,102,241,0.08)); border:1.5px solid #0284c7; border-radius:16px; margin-bottom:14px;'>"
+        f"<div style='display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;'>"
+        f"<div>"
+        f"<h1 style='margin:0; font-size:2.2rem; font-weight:800; color:#0284c7; letter-spacing:-0.01em;'>"
+        f"{v['name']} <span style='font-size:1.45rem; color:#6366f1; font-weight:700;'>({code})</span>"
+        f"</h1>"
+        f"<div style='font-size:0.95rem; color:#475569; margin-top:6px; font-weight:500;'>{v.get('products', '-')}</div>"
+        f"</div>"
+        f"<div style='font-size:0.82rem; color:#059669; background:rgba(5,150,105,0.12); border:1px solid rgba(5,150,105,0.3); padding:4px 10px; border-radius:8px; font-weight:700;'>"
+        f"{v.get('role_type', '領頭羊主供應商')}"
+        f"</div>"
+        f"</div>"
+        f"</div>"
+    )
+    st.markdown(header_html, unsafe_allow_html=True)
+
+    # 2. 核心 5 大行情與估值指標 (採用 Streamlit 原生 st.columns + st.metric，100% 免疫 Markdown 程式碼塊問題)
+    m1, m2, m3, m4, m5 = st.columns(5)
+    with m1:
+        st.metric("最新收盤價", v.get("price", "-"))
+    with m2:
+        st.metric("動態本益比", v.get("trailing_pe", "-"), help=f"依據近四季EPS: {v.get('eps_4q', '-')} 計算")
+    with m3:
+        st.metric("預估本益比", v.get("forward_pe", "-"), help=f"依據法人預估EPS: {v.get('forward_eps', '-')} 計算")
+    with m4:
+        st.metric("🎯 目標 PE 區間", v.get("target_pe_range", "-"))
+    with m5:
+        up_raw = str(v.get("target_upside", "-")).strip()
+        up_val = f"+{up_raw}" if up_raw and not up_raw.startswith("+") and not up_raw.startswith("-") else up_raw
+        st.metric("🚀 目標價潛在空間", up_val)
+
     date_badge = v.get('price_date', '最新')
     sync_ts = v.get('last_synced_at', '')
     ts_label = f" (更新於: {sync_ts.split(' ')[1]})" if sync_ts else ""
+    st.caption(f"📅 報價基準日：{date_badge}{ts_label}")
 
-    st.markdown(f"""
-        <div style="padding: 24px 28px; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(99, 102, 241, 0.08)); border: 1.5px solid #0284c7; border-radius: 18px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(2, 132, 199, 0.12);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
-                <div>
-                    <h1 style="margin: 0; font-size: 2.2rem; font-weight: 800; color: #0284c7; letter-spacing: -0.01em;">
-                        {v['name']} <span style="font-size: 1.5rem; color: #6366f1; font-weight: 700;">({code})</span>
-                    </h1>
-                    <div style="font-size: 0.95rem; color: #475569; margin-top: 6px; font-weight: 500;">
-                        {v.get('products', '-')}
-                    </div>
-                </div>
-                <div style="font-size: 0.82rem; color: #059669; background: rgba(5, 150, 105, 0.12); border: 1px solid rgba(5, 150, 105, 0.3); padding: 4px 10px; border-radius: 8px; font-weight: 700;">
-                    {v.get('role_type', '領頭羊主供應商')}
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(2, 132, 199, 0.25);">
-                <div>
-                    <span style="font-size: 0.78rem; color: #64748b;">最新收盤價</span><br>
-                    <strong style="color: #0284c7; font-size: 1.45rem;">{v.get('price', '-')}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.78rem; color: #64748b;">動態本益比 (近四季EPS: {v.get('eps_4q', '-')})</span><br>
-                    <strong style="color: #059669; font-size: 1.45rem;">{v.get('trailing_pe', '-')}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.78rem; color: #64748b;">預估本益比 (法人預估EPS: {v.get('forward_eps', '-')})</span><br>
-                    <strong style="color: #0284c7; font-size: 1.45rem;">{v.get('forward_pe', '-')}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.78rem; color: #64748b;">🎯 法人目標 PE 區間</span><br>
-                    <strong style="color: #d97706; font-size: 1.45rem;">{v.get('target_pe_range', '-')}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.78rem; color: #64748b;">🚀 目標價潛在空間</span><br>
-                    <strong style="color: #059669; font-size: 1.45rem;">+{v.get('target_upside', '-')}</strong>
-                </div>
-            </div>
-            <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 10px;">
-                📅 報價基準日：{date_badge}{ts_label}
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.write("")
 
-    # 兩大快捷操作按鈕
+    # 3. 核心新功能：【目前實收股本】＋【最新月營收 YoY / MoM】＋【近 3 週法人與散戶籌碼變化】
+    sub1, sub2, sub3 = st.columns(3)
+    with sub1:
+        with st.container(border=True):
+            st.caption("🏢 目前實收資本額 (股本)")
+            st.markdown(f"<h4 style='margin:0; color:#0284c7; font-weight:800;'>{v.get('capital_stock', '評估中')}</h4>", unsafe_allow_html=True)
+            st.caption("評估籌碼流動性與股本輕重")
+    with sub2:
+        with st.container(border=True):
+            st.caption("📈 最新月營收動能 (YoY / MoM)")
+            st.markdown(f"<h4 style='margin:0; color:#059669; font-weight:800;'>YoY {v.get('revenue_yoy', '-')} ｜ MoM {v.get('revenue_mom', '-')}</h4>", unsafe_allow_html=True)
+            st.caption(v.get('revenue_summary', '營收增長中'))
+    with sub3:
+        with st.container(border=True):
+            st.caption("💎 近 3 週籌碼集中度變化")
+            st.markdown(f"<h4 style='margin:0; color:#d97706; font-weight:800;'>法人 {v.get('chip_inst_3w', '-')} ｜ 散戶 {v.get('chip_retail_3w', '-')}</h4>", unsafe_allow_html=True)
+            st.caption(v.get('chip_summary', '籌碼安定'))
+
+    st.write("")
+
+    # 4. 兩大快捷操作按鈕
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
         if st.button("🔄 即時連網更新此股行情", key="btn_sync_single_stock", use_container_width=True):
@@ -470,13 +483,12 @@ def render_single_vendor_page(code, v):
 
     st.markdown("---")
 
-    # 深度基本面情報卡片 (直接展開展示，不與其他公司混合)
+    # 5. 深度戰略情報檔案 (直接全開展示，不與其他公司混合)
     st.markdown("### 📋 完整深度戰略情報檔案")
 
     st.markdown(f"**🤝 核心合作客戶**： {' '.join([f'`{c}`' for c in v.get('clients', [])])}")
     st.markdown(f"**🎯 業務純度佔比**：`{v.get('pure_share', '-')}` ｜ **最新毛利率**：`{v.get('margin', '-')}`")
 
-    # 業務拆解進度條
     st.markdown("##### 📊 各戰略領域營收比重拆解")
     domain_list = v.get("domain_breakdown", [])
     if domain_list:
@@ -499,12 +511,12 @@ def render_single_vendor_page(code, v):
     with c2:
         st.metric("法人目標 PE 區間", v.get("target_pe_range", "-"))
     with c3:
-        up_val = f"+{v.get('target_upside')}" if v.get("target_upside") else "-"
-        st.metric("目標價潛在空間", up_val)
+        up_val_c3 = f"+{v.get('target_upside')}" if v.get("target_upside") and not str(v.get("target_upside")).startswith("+") else v.get("target_upside", "-")
+        st.metric("目標價潛在空間", up_val_c3)
 
     rerating_text = v.get("rerating_driver", "")
     if rerating_text:
-        st.info(f"💡 **法人估值重估 (Rerating) 關鍵驅動力**：\n\n{rerating_text}")
+        st.info(f"💡 **法人估值重估 (Rerating) 關鍵驅動力**：\\n\\n{rerating_text}")
 
     if current_role == "VIP":
         st.markdown(f"**法說成長指引**：{v.get('guidance', '-')}")
@@ -786,8 +798,11 @@ def main():
             df_list.append({
                 "股票代號": code_item,
                 "公司名稱": v["name"],
-                "次領域環節": v.get("sub_segment", "-"),
-                "產業層級": v.get("tier", "-"),
+                "實收股本": v.get("capital_stock", "-"),
+                "營收 YoY": v.get("revenue_yoy", "-"),
+                "營收 MoM": v.get("revenue_mom", "-"),
+                "3週法人持股": v.get("chip_inst_3w", "-"),
+                "3週散戶持股": v.get("chip_retail_3w", "-"),
                 "最新收盤價": v.get("price", "-"),
                 "動態本益比": v.get("trailing_pe", "-"),
                 "近四季EPS": v.get("eps_4q", "-"),
@@ -796,6 +811,8 @@ def main():
                 "法人目標價": v.get("target_price", "-") if current_role == "VIP" else "🔒 VIP 解鎖",
                 "目標本益比": v.get("target_pe_range", "-"),
                 "潛在空間": v.get("target_upside", v.get("upside_pot", "-")) if current_role == "VIP" else "🔒 VIP 解鎖",
+                "次領域環節": v.get("sub_segment", "-"),
+                "產業層級": v.get("tier", "-"),
                 "毛利率": v.get("margin", "-"),
                 "報價日期": v.get("price_date", "-")
             })
@@ -833,7 +850,7 @@ def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
             sync_ts = v.get('last_synced_at', '')
             ts_label = f" (更新於: {sync_ts.split(' ')[1]})" if sync_ts else ""
             
-            st.markdown(f"""
+            st.markdown(textwrap.dedent(f"""
                 <div class="company-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-size: 1.85rem; font-weight: 800; color: #0284c7; letter-spacing: -0.01em;">
@@ -858,7 +875,7 @@ def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
                         📅 報價日期: {date_badge}{ts_label}
                     </div>
                 </div>
-            """, unsafe_allow_html=True)
+            """), unsafe_allow_html=True)
 
         with col_btn:
             st.write("")
