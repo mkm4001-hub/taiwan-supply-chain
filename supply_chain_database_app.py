@@ -374,9 +374,165 @@ def apply_vendor_market_update(code, res):
 # ==============================================================================
 # 主程式介面
 # ==============================================================================
+
+def render_single_vendor_page(code, v):
+    """
+    獨立單一公司戰略情報網頁專屬視圖：
+    1. 不與其他公司混在同一畫面，純粹呈現該公司的全套深度情報檔案。
+    2. 頂部與底部皆設有「← 返回前一頁 (供應商總覽)」按鈕。
+    3. 包含最新行情、動態/預估PE、目標PE區間、潛在空間、即時更新行情、直通 V25.2 分析、CapEx、法說會指引與出處。
+    4. 完全在 Streamlit 內部 session 狀態下運作，不會觸發登入重導向。
+    """
+    # 頂部導航列
+    col_nav_back, col_nav_meta = st.columns([2.8, 7.2])
+    with col_nav_back:
+        if st.button("← 返回前一頁 (供應商總覽)", key="btn_back_single_top", use_container_width=True):
+            st.session_state["selected_vendor_code"] = None
+            st.rerun()
+    with col_nav_meta:
+        st.markdown(f"""
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding-top: 6px;">
+                <span style="color: #64748b; font-size: 0.88rem;">所屬產業鏈：<strong>{v.get('tier', '供應鏈')}</strong></span>
+                <span style="color: #cbd5e1;">｜</span>
+                <span style="color: #0284c7; font-size: 0.88rem; font-weight: 700; background: rgba(2, 132, 199, 0.08); padding: 2px 8px; border-radius: 6px;">{v.get('sub_segment', '-')}</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+    # 主公司 Banner 資訊卡
+    date_badge = v.get('price_date', '最新')
+    sync_ts = v.get('last_synced_at', '')
+    ts_label = f" (更新於: {sync_ts.split(' ')[1]})" if sync_ts else ""
+
+    st.markdown(f"""
+        <div style="padding: 24px 28px; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(99, 102, 241, 0.08)); border: 1.5px solid #0284c7; border-radius: 18px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(2, 132, 199, 0.12);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
+                <div>
+                    <h1 style="margin: 0; font-size: 2.2rem; font-weight: 800; color: #0284c7; letter-spacing: -0.01em;">
+                        {v['name']} <span style="font-size: 1.5rem; color: #6366f1; font-weight: 700;">({code})</span>
+                    </h1>
+                    <div style="font-size: 0.95rem; color: #475569; margin-top: 6px; font-weight: 500;">
+                        {v.get('products', '-')}
+                    </div>
+                </div>
+                <div style="font-size: 0.82rem; color: #059669; background: rgba(5, 150, 105, 0.12); border: 1px solid rgba(5, 150, 105, 0.3); padding: 4px 10px; border-radius: 8px; font-weight: 700;">
+                    {v.get('role_type', '領頭羊主供應商')}
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(2, 132, 199, 0.25);">
+                <div>
+                    <span style="font-size: 0.78rem; color: #64748b;">最新收盤價</span><br>
+                    <strong style="color: #0284c7; font-size: 1.45rem;">{v.get('price', '-')}</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.78rem; color: #64748b;">動態本益比 (近四季EPS: {v.get('eps_4q', '-')})</span><br>
+                    <strong style="color: #059669; font-size: 1.45rem;">{v.get('trailing_pe', '-')}</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.78rem; color: #64748b;">預估本益比 (法人預估EPS: {v.get('forward_eps', '-')})</span><br>
+                    <strong style="color: #0284c7; font-size: 1.45rem;">{v.get('forward_pe', '-')}</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.78rem; color: #64748b;">🎯 法人目標 PE 區間</span><br>
+                    <strong style="color: #d97706; font-size: 1.45rem;">{v.get('target_pe_range', '-')}</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.78rem; color: #64748b;">🚀 目標價潛在空間</span><br>
+                    <strong style="color: #059669; font-size: 1.45rem;">+{v.get('target_upside', '-')}</strong>
+                </div>
+            </div>
+            <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 10px;">
+                📅 報價基準日：{date_badge}{ts_label}
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # 兩大快捷操作按鈕
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        if st.button("🔄 即時連網更新此股行情", key="btn_sync_single_stock", use_container_width=True):
+            engine = V25MarketSyncEngine(finmind_token=st.session_state.get("fm_token", ""))
+            with st.spinner(f"連網更新 {v['name']} ({code}) ..."):
+                res, err = engine.fetch_single_stock_price(code, apply_delay=False)
+                if res and res.get("status") == "success":
+                    apply_vendor_market_update(code, res)
+                    st.success(f"✅ {v['name']} 最新價: {res['price']}，各項指標已全數重算完成！")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error(f"❌ 更新失敗: {err}")
+
+    with col_btn2:
+        v25_link = f"{V25_APP_URL}/?stock={code}"
+        st.link_button(f"🐋 前往巨鯨 V25.2 完整技術籌碼分析 ↗", v25_link, use_container_width=True)
+
+    st.markdown("---")
+
+    # 深度基本面情報卡片 (直接展開展示，不與其他公司混合)
+    st.markdown("### 📋 完整深度戰略情報檔案")
+
+    st.markdown(f"**🤝 核心合作客戶**： {' '.join([f'`{c}`' for c in v.get('clients', [])])}")
+    st.markdown(f"**🎯 業務純度佔比**：`{v.get('pure_share', '-')}` ｜ **最新毛利率**：`{v.get('margin', '-')}`")
+
+    # 業務拆解進度條
+    st.markdown("##### 📊 各戰略領域營收比重拆解")
+    domain_list = v.get("domain_breakdown", [])
+    if domain_list:
+        for item in domain_list:
+            st.write(f"{item['domain']}: {item['share']}%")
+            st.progress(item['share'] / 100)
+    else:
+        st.caption("暫無多領域詳細拆解數據")
+
+    st.markdown(f"""##### 🏗️ 資本支出 (CapEx) 規模與擴產目的
+- **未來 2 年預估規模**：`{v.get('capex_future_2y', '-')}`
+- **年增幅度**：`{v.get('capex_yoy_increase', '-')}`
+- **投資目的**：{v.get('capex_purpose', '-')}
+""")
+
+    st.markdown("##### 🎯 法人估值與重估解析 (Valuation & Rerating)")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.metric("當前預估 PE", v.get("forward_pe", "-"))
+    with c2:
+        st.metric("法人目標 PE 區間", v.get("target_pe_range", "-"))
+    with c3:
+        up_val = f"+{v.get('target_upside')}" if v.get("target_upside") else "-"
+        st.metric("目標價潛在空間", up_val)
+
+    rerating_text = v.get("rerating_driver", "")
+    if rerating_text:
+        st.info(f"💡 **法人估值重估 (Rerating) 關鍵驅動力**：\n\n{rerating_text}")
+
+    if current_role == "VIP":
+        st.markdown(f"**法說成長指引**：{v.get('guidance', '-')}")
+        st.markdown(f"**法人共識目標價**：`{v.get('target_price', '-')}` ({v.get('analyst_count', '-')})")
+    else:
+        st.info("🔒 法說成長指引與法人共識目標價屬於 VIP 會員專屬內容，請升級帳號權限查閱。")
+
+    if "last_synced_at" in v:
+        st.caption(f"🕒 數據最後更新時間：{v['last_synced_at']} (已永久保存至硬碟)")
+
+    st.markdown("##### 📑 官方數據出處佐證")
+    for s in v.get("sources", []):
+        st.markdown(f"- **[{s.get('date', '最新')}]** [{s['title']}]({s['url']})")
+
+    st.markdown("---")
+    if st.button("← 返回前一頁 (供應商總覽)", key="btn_back_single_bottom", use_container_width=True):
+        st.session_state["selected_vendor_code"] = None
+        st.rerun()
+
 def main():
     global _RENDERED_KEYS
     _RENDERED_KEYS.clear()
+
+    # 檢查是否進入單一公司專屬情報網頁模式 (完全獨立，不與其他公司混合)
+    selected_v_code = st.session_state.get("selected_vendor_code")
+    if selected_v_code and selected_v_code in vendors:
+        render_single_vendor_page(selected_v_code, vendors[selected_v_code])
+        return
     last_sync_info = db.get("last_global_sync", "2026-09-04 08:30:00")
     user_name = st.session_state.get("user_name", "會員")
     role_badge = "👑 VIP 尊榮權限" if current_role == "VIP" else "👤 一般會員權限"
@@ -608,60 +764,21 @@ def main():
     # --- 全廠商資料總覽表 ---
     with tabs[2]:
         st.subheader("📊 全體 87 家上市櫃供應商總覽表")
-
-        # 支援 URL query parameter (例如 ?stock=8996 或 ?stock=2330)
-        url_stock = st.query_params.get("stock")
-        if url_stock and url_stock in vendors:
-            st.session_state["active_table_stock"] = url_stock
-
-        # 頂部快速搜尋與操作控制列
-        col_t_search, col_t_btn = st.columns([7, 3])
+        st.markdown("<p style='color: #475569; font-size: 0.92rem; padding: 6px 12px; background: rgba(2,132,199,0.06); border-left: 3px solid #0284c7; border-radius: 0 6px 6px 0; margin-bottom: 12px;'>👉 <strong>點選下方總表任一列</strong>（或在上方直接選擇公司），畫面將<strong>直接進入該公司的獨立專屬情報網頁</strong>，純粹單一檢視，不與其他公司混合！</p>", unsafe_allow_html=True)
+        
+        col_t_search, col_t_info = st.columns([2.5, 3.5])
         with col_t_search:
-            vendor_options = ["-- 點選此處下拉搜尋 / 選擇廠商直調情報專頁 --"] + [
+            vendor_options = ["-- 點此直接選擇公司進入獨立情報網頁 --"] + [
                 f"{c} {v['name']} ｜ {v.get('sub_segment', '')} ({v.get('tier', '')})" for c, v in vendors.items()
             ]
-            picked_vendor = st.selectbox("🎯 快速選擇供應商穿透檢視：", vendor_options, key="table_vendor_picker")
-            if picked_vendor != "-- 點選此處下拉搜尋 / 選擇廠商直調情報專頁 --":
-                st.session_state["active_table_stock"] = picked_vendor.split(" ")[0]
+            picked_vendor = st.selectbox("🎯 快速選擇供應商進入情報網頁：", vendor_options, key="table_vendor_picker")
+            if picked_vendor != "-- 點此直接選擇公司進入獨立情報網頁 --":
+                chosen_code = picked_vendor.split(" ")[0]
+                st.session_state["selected_vendor_code"] = chosen_code
+                st.rerun()
 
-        with col_t_btn:
-            st.write("")
-            st.write("")
-            if st.session_state.get("active_table_stock"):
-                if st.button("✕ 關閉當前檔案 / 返回總表", key="btn_close_active_stock", use_container_width=True):
-                    st.session_state["active_table_stock"] = None
-                    if "stock" in st.query_params:
-                        st.query_params.clear()
-                    st.rerun()
-
-        # 置頂呈現：選定廠商的深度戰略情報專頁（點擊總表任一列或選單後立即置頂開展！）
-        target_stock_code = st.session_state.get("active_table_stock")
-        if target_stock_code and target_stock_code in vendors:
-            target_v = vendors[target_stock_code]
-            st.markdown(f"""
-                <div style="padding: 16px 20px; background: linear-gradient(135deg, rgba(2, 132, 199, 0.14), rgba(99, 102, 241, 0.16)); border: 2px solid #0284c7; border-radius: 14px; margin: 12px 0 20px 0; box-shadow: 0 4px 18px rgba(2, 132, 199, 0.2);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                        <h3 style="margin: 0; color: #0284c7; display: flex; align-items: center; gap: 8px; font-size: 1.35rem; font-weight: 800;">
-                            <span>📑</span> 【{target_v['name']} ({target_stock_code})】深度戰略情報檔案專頁
-                        </h3>
-                        <span style="font-size: 0.8rem; color: #059669; background: rgba(5, 150, 105, 0.15); border: 1px solid rgba(5, 150, 105, 0.35); padding: 3px 8px; border-radius: 6px; font-weight: 700;">
-                            ✅ 已成功直調專屬檔案
-                        </span>
-                    </div>
-                    <p style="margin: 6px 0 0 0; color: #475569; font-size: 0.88rem;">
-                        以下為從總表直接穿透調出的深度檔案，包含最新股價、動態/預估本益比、法人目標PE、潛在空間、即時行情更新與直通 V25.2 分析。
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-            render_vendor_card_with_sync(target_stock_code, target_v, prefix=f"top_detail_{target_stock_code}", default_expanded=True)
-            st.markdown("---")
-
-        # 互動提示說明
-        st.markdown("""
-            <div style="padding: 10px 14px; background: rgba(2, 132, 199, 0.05); border-left: 3px solid #0284c7; border-radius: 0 8px 8px 0; margin-bottom: 12px; font-size: 0.88rem; color: #334155;">
-                👉 <strong>操作提示</strong>：在下方總表中<strong>點擊任一列（例如高力、台積電）</strong>或點擊<strong>「點此進入情報」</strong>連結，即可直接置頂調出該公司的完整深度情報網頁！
-            </div>
-        """, unsafe_allow_html=True)
+        with col_t_info:
+            st.caption("💡 **操作方式**：點擊總表中任一列（例如台積電、高力、奇鋐），畫面會瞬間切換至該公司專屬情報檔案；查閱後點擊「← 返回前一頁」即可隨時回到總表。")
 
         # 整理總表資料
         df_list = []
@@ -669,7 +786,6 @@ def main():
             df_list.append({
                 "股票代號": code_item,
                 "公司名稱": v["name"],
-                "點此進入情報": f"?stock={code_item}",
                 "次領域環節": v.get("sub_segment", "-"),
                 "產業層級": v.get("tier", "-"),
                 "最新收盤價": v.get("price", "-"),
@@ -686,33 +802,21 @@ def main():
 
         df_display = pd.DataFrame(df_list)
 
-        col_configs = {
-            "點此進入情報": st.column_config.LinkColumn(
-                "點此進入情報",
-                display_text="🔍 進入情報專頁 ↗",
-                help="點擊即可直接調閱此公司完整戰略檔案"
-            )
-        }
-
-        # 啟用表格點選互動事件 (單擊任一列立即觸發)
+        # 啟用表格點選互動事件 (點擊整列任意位置即刻進入獨立情報專頁)
         event = st.dataframe(
             df_display,
             use_container_width=True,
             selection_mode="single-row",
             on_select="rerun",
-            column_config=col_configs,
             key="overview_vendor_dataframe"
         )
 
-        # 當使用者點擊表格任一列
         if event and hasattr(event, "selection") and event.selection.rows:
             sel_row_idx = event.selection.rows[0]
             if 0 <= sel_row_idx < len(df_display):
                 clicked_code = str(df_display.iloc[sel_row_idx]["股票代號"]).strip()
-                if clicked_code != st.session_state.get("active_table_stock"):
-                    st.session_state["active_table_stock"] = clicked_code
-                    st.rerun()
-
+                st.session_state["selected_vendor_code"] = clicked_code
+                st.rerun()
 
 def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
     """
@@ -775,6 +879,12 @@ def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
             # 按鈕 2：直接連到 V25.2 網頁，不詢問、不帶密碼，由使用者在 V25 頁面自行 KEY 密碼
             v25_link = f"{V25_APP_URL}/?stock={code}"
             st.link_button("🐋 前往 V25.2 分析 ↗", v25_link, use_container_width=True)
+            
+            # 直接切換進入獨立單一公司情報網頁
+            btn_open_page_key = get_unique_key(f"btn_open_page_{code}_{prefix}")
+            if st.button("📑 進入完整情報專頁 ➔", key=btn_open_page_key, use_container_width=True):
+                st.session_state["selected_vendor_code"] = code
+                st.rerun()
 
         # 展開基本面情報抽屜
         with st.expander(f"🔍 檢視 {v['name']} ({code}) 完整基本面情報檔案", expanded=(default_expanded or prefix.startswith("top_detail") or prefix.startswith("table_detail"))):
