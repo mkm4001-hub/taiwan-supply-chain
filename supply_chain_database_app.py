@@ -22,7 +22,7 @@ import pandas as pd
 from datetime import datetime
 
 st.set_page_config(
-    page_title="科技巨頭台灣供應鏈情報庫 (V13 / V25.5 估值重估聯動旗艦版)",
+    page_title="科技巨頭台灣供應鏈情報庫 (V14 旗艦正式版)",
     page_icon="🌐",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -149,19 +149,51 @@ def check_multiuser_auth():
     if st.session_state.get("authenticated", False):
         return True
 
+    # 登入畫面調整 1.5 倍放大樣式注入 (不放置更改說明)
     st.markdown("""
-        <div style="max-width: 480px; margin: 50px auto 20px auto; padding: 28px; border-radius: 18px; border: 2px solid #0284c7; background: rgba(2, 132, 199, 0.04); text-align: center;">
-            <div style="font-size: 2.8rem; margin-bottom: 8px;">🔐</div>
-            <h2 style="color: #0284c7; margin: 0 0 8px 0; font-weight: 800;">科技巨頭台灣供應鏈情報庫</h2>
-            <p style="color: #64748b; font-size: 0.92rem; margin: 0;">多使用者身分認證系統 ｜ 權限同步對接 V25.2</p>
+        <style>
+            div[data-testid="stTextInput"] input {
+                font-size: 1.35rem !important;
+                height: 3.6rem !important;
+                border-radius: 12px !important;
+                border: 1.8px solid rgba(2, 132, 199, 0.35) !important;
+                padding: 10px 16px !important;
+            }
+            div[data-testid="stTextInput"] label p {
+                font-size: 1.25rem !important;
+                font-weight: 700 !important;
+                color: #0284c7 !important;
+                margin-bottom: 6px !important;
+            }
+            div.stButton > button {
+                font-size: 1.35rem !important;
+                font-weight: 800 !important;
+                padding: 12px 28px !important;
+                height: 3.8rem !important;
+                border-radius: 12px !important;
+                background: linear-gradient(135deg, #0284c7, #2563eb) !important;
+                color: white !important;
+                box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35) !important;
+                transition: all 0.25s !important;
+            }
+            div.stButton > button:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 6px 24px rgba(2, 132, 199, 0.5) !important;
+            }
+        </style>
+        <div style="max-width: 720px; margin: 35px auto 25px auto; padding: 40px 36px; border-radius: 24px; border: 2.5px solid #0284c7; background: linear-gradient(180deg, rgba(2, 132, 199, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%); text-align: center; box-shadow: 0 16px 40px -10px rgba(2, 132, 199, 0.25);">
+            <div style="font-size: 4.2rem; margin-bottom: 10px;">🔐</div>
+            <h1 style="color: #0284c7; margin: 0 0 10px 0; font-weight: 900; font-size: 2.6rem; letter-spacing: -0.01em;">科技巨頭台灣供應鏈情報庫</h1>
+            <p style="color: #475569; font-size: 1.35rem; margin: 0; font-weight: 600;">多使用者身分認證系統 ｜ V14 旗艦正式版</p>
         </div>
     """, unsafe_allow_html=True)
 
-    col_l, col_m, col_r = st.columns([1.2, 2, 1.2])
+    col_l, col_m, col_r = st.columns([1, 2.5, 1])
     with col_m:
-        user_input = st.text_input("👤 使用者名稱 (帳號)", placeholder="例如: admin、vip 或 user1").strip()
-        pwd_input = st.text_input("🔑 登入密碼", type="password", placeholder="請輸入密碼...")
-        
+        user_input = st.text_input("👤 使用者帳號 (Username)", placeholder="請輸入帳號 (例如 admin / vip)").strip()
+        st.write("")
+        pwd_input = st.text_input("🔑 登入密碼 (Password)", type="password", placeholder="請輸入密碼...")
+        st.write("")
         if st.button("🚀 登入系統 ➔", use_container_width=True):
             if user_input in users_dict:
                 acc = users_dict[user_input]
@@ -179,9 +211,8 @@ def check_multiuser_auth():
             else:
                 st.error("❌ 找不到此使用者帳號，請確認名稱是否正確。")
         
-        st.caption("🔒 專屬量化情報系統，請使用授權帳號密碼登入。")
+        st.markdown("<div style='text-align: center; color: #94a3b8; font-size: 1.05rem; margin-top: 18px;'>🔒 專屬量化情報系統，請使用授權帳號密碼登入。</div>", unsafe_allow_html=True)
     return False
-
 if not check_multiuser_auth():
     st.stop()
 
@@ -554,7 +585,7 @@ def main():
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
                     <h1 class="hero-title">🌐 科技巨頭台灣供應鏈情報庫</h1>
-                    <p class="hero-sub">AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ 整合巨鯨 V25.2 系統直連</p>
+                    <p class="hero-sub">AI 算力 ＆ 低軌衛星 ＆ 車用電子 ＆ 光通訊 ＆ 智慧機器人 ｜ V14 供應商同族群橫向評比 ＆ 巨鯨 V25.2 直連</p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div style="font-size: 0.85rem; color: #f1f5f9; background: rgba(2, 132, 199, 0.25); border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 8px;">
@@ -669,7 +700,7 @@ def main():
         st.markdown("---")
 
     # 首頁三大分頁
-    tabs = st.tabs(["🏢 SECTION A：國際大客戶專區", "🌐 SECTION B：五大戰略產業鏈全景", "📑 全 87 家廠商總表"])
+    tabs = st.tabs(["🏢 SECTION A：國際大客戶專區", "🌐 SECTION B：五大戰略產業鏈全景", "📑 全 87 家廠商總表", "🔥 供應商同族群比較"])
 
     # --- SECTION A: 國際客戶專區 ---
     with tabs[0]:
@@ -834,6 +865,124 @@ def main():
                 clicked_code = str(df_display.iloc[sel_row_idx]["股票代號"]).strip()
                 st.session_state["selected_vendor_code"] = clicked_code
                 st.rerun()
+
+
+    # --- SECTION D: 供應商同族群比較 (V14 全新模組) ---
+    with tabs[3]:
+        st.subheader("🔥 供應商同族群橫向評比專區 (13 大高討論度核心群組)")
+        st.markdown("""
+            <p style='color: #475569; font-size: 0.92rem; padding: 8px 14px; background: rgba(2,132,199,0.06); border-left: 3.5px solid #0284c7; border-radius: 0 8px 8px 0; margin-bottom: 16px;'>
+                💡 <strong>同族群對比核心理念</strong>：將同性質、同零組件供應商放在同一個維度橫向比較（最新股價、股本、動態PE、預估PE、目標PE、潛在空間、月營收YoY/MoM、近3週法人散戶籌碼）。若同一家企業兼具多項業務（如台達電兼具電源與散熱、貿聯兼具線束與車用），則均歸類至各對應族群中。
+            </p>
+        """, unsafe_allow_html=True)
+
+        clusters_data = db.get("clusters", {})
+        cluster_names = list(clusters_data.keys())
+
+        col_c_sel, col_c_info = st.columns([3, 7])
+        with col_c_sel:
+            chosen_cname = st.selectbox("🎯 選擇比較的供應商族群：", cluster_names, key="cluster_picker")
+        
+        c_info = clusters_data.get(chosen_cname, {})
+        with col_c_info:
+            st.markdown(f"""
+                <div style="padding: 12px 18px; background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(56, 189, 248, 0.3); border-radius: 12px;">
+                    <div style="font-size: 0.82rem; color: #38bdf8; font-weight: 700; margin-bottom: 4px;">🚀 產業趨勢焦點 ｜ 共 {len(c_info.get('members', []))} 家代表性廠商</div>
+                    <div style="color: #f1f5f9; font-size: 0.9rem; font-weight: 600; line-height: 1.45;">{c_info.get('trend', '')}</div>
+                    <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px;">範疇：{c_info.get('desc', '')}</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+        # 彙整該族群所有廠商的指標資料
+        cluster_rows = []
+        for m_item in c_info.get("members", []):
+            m_code = m_item["code"]
+            m_role = m_item["role"]
+            v = vendors.get(m_code)
+            if v:
+                cluster_rows.append({
+                    "股票代號": m_code,
+                    "公司名稱": v["name"],
+                    "在此族群主力角色與產品": m_role,
+                    "最新收盤價": v.get("price", "-"),
+                    "實收股本": v.get("capital_stock", "-").split(" ")[0],
+                    "動態PE": v.get("trailing_pe", "-"),
+                    "預估PE": v.get("forward_pe", "-"),
+                    "目標 PE 區間": v.get("target_pe_range", "-"),
+                    "目標價潛在空間": v.get("target_upside", "-"),
+                    "營收 YoY": v.get("revenue_yoy", "-"),
+                    "營收 MoM": v.get("revenue_mom", "-"),
+                    "3週法人持股": v.get("chip_inst_3w", "-"),
+                    "3週散戶持股": v.get("chip_retail_3w", "-"),
+                    "近四季EPS": v.get("eps_4q", "-"),
+                    "預估EPS": v.get("forward_eps", "-"),
+                    "毛利率": v.get("margin", "-")
+                })
+
+        df_cluster = pd.DataFrame(cluster_rows)
+
+        # 互動式同族群橫向評比表格
+        st.markdown("##### 📋 同族群企業核心數據橫向對照總表 (點擊任一列直接穿透調出專屬情報網頁)")
+        
+        c_event = st.dataframe(
+            df_cluster,
+            use_container_width=True,
+            selection_mode="single-row",
+            on_select="rerun",
+            key=f"cluster_table_{chosen_cname}"
+        )
+
+        if c_event and hasattr(c_event, "selection") and c_event.selection.rows:
+            sel_idx = c_event.selection.rows[0]
+            if 0 <= sel_idx < len(df_cluster):
+                picked_code = str(df_cluster.iloc[sel_idx]["股票代號"]).strip()
+                st.session_state["selected_vendor_code"] = picked_code
+                st.rerun()
+
+        # 族群內各公司卡片快速檢視區塊 (支援直通獨立網頁)
+        st.markdown(f"##### 🗂️ 【{chosen_cname}】各廠商快速檢視與直調專頁")
+        c_cols = st.columns(2)
+        for i, m_item in enumerate(c_info.get("members", [])):
+            m_code = m_item["code"]
+            v = vendors.get(m_code)
+            if v:
+                with c_cols[i % 2]:
+                    with st.container(border=True):
+                        st.markdown(f"""
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-size: 1.35rem; font-weight: 800; color: #0284c7;">
+                                    {v['name']} <span style="font-size: 1.05rem; color: #6366f1;">({m_code})</span>
+                                </span>
+                                <span style="font-size: 0.76rem; color: #059669; background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.28); padding: 2px 7px; border-radius: 6px; font-weight: 700;">
+                                    {v.get('tier', '供應鏈')}
+                                </span>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 8px; font-weight: 500;">
+                                🎯 <strong>族群角色</strong>：{m_item['role']}
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; color: #64748b; padding-top: 6px; border-top: 1px dashed rgba(2, 132, 199, 0.2);">
+                                <span>股價: <strong style="color: #0284c7;">{v.get('price', '-')}</strong></span>
+                                <span>預估PE: <strong style="color: #059669;">{v.get('forward_pe', '-')}</strong></span>
+                                <span>目標PE: <strong style="color: #d97706;">{v.get('target_pe_range', '-')}</strong></span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-top: 4px; padding: 3px 8px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+                                <span>營收YoY: <strong style="color: #10b981;">{v.get('revenue_yoy', '-')}</strong></span>
+                                <span>3週法人: <strong style="color: #6366f1;">{v.get('chip_inst_3w', '-')}</strong></span>
+                                <span>潛在空間: <strong style="color: #059669;">+{v.get('target_upside', '-')}</strong></span>
+                            </div>
+                        """, unsafe_allow_html=True)
+                        st.write("")
+                        c_btn1, c_btn2 = st.columns(2)
+                        with c_btn1:
+                            if st.button(f"📑 進入 {v['name']} 情報專頁 ➔", key=f"btn_cpage_{m_code}_{i}", use_container_width=True):
+                                st.session_state["selected_vendor_code"] = m_code
+                                st.rerun()
+                        with c_btn2:
+                            v25_link = f"{V25_APP_URL}/?stock={m_code}"
+                            st.link_button(f"🐋 V25.2 分析 ↗", v25_link, use_container_width=True)
+
 
 def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
     """
