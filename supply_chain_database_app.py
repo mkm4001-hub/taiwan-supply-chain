@@ -1,3 +1,4 @@
+import re
 import textwrap
 
 
@@ -42,13 +43,42 @@ USERS_PATH = os.path.join(BASE_DIR, "users.json")
 # ==============================================================================
 st.markdown("""
 <style>
+    /* 超寬螢幕比例優化居中：避免圖表與文字拉扯過度扁長 */
+    .main .block-container {
+        max-width: 1720px !important;
+        padding-top: 1.8rem !important;
+        padding-bottom: 3rem !important;
+        margin: 0 auto !important;
+    }
+    /* 小字體放大 1.5 倍 (由 0.8rem 放大至 1.15rem) */
+    div[data-testid="stCaptionContainer"] p, .stCaption {
+        font-size: 1.12rem !important;
+        line-height: 1.55 !important;
+        color: #94a3b8 !important;
+    }
+    div[data-testid="stMetricLabel"] p {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        color: #94a3b8 !important;
+    }
+    div[data-testid="stMetricValue"] div {
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
+    }
+    div[data-testid="stMarkdownContainer"] p {
+        font-size: 1.12rem !important;
+        line-height: 1.6 !important;
+    }
+    div[data-testid="stMarkdownContainer"] span {
+        font-size: 1.08rem !important;
+    }
     div[data-baseweb="tab-list"] {
         gap: 12px !important;
         margin-bottom: 24px !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
     }
     div[data-baseweb="tab-list"] button[role="tab"] {
-        font-size: 1.22rem !important;
+        font-size: 1.25rem !important;
         padding: 12px 26px !important;
         letter-spacing: 0.02em !important;
         border-radius: 10px 10px 0 0 !important;
@@ -75,17 +105,17 @@ st.markdown("""
     .hero-title {
         color: #ffffff;
         margin: 0;
-        font-size: 2.1rem;
+        font-size: 2.2rem;
         font-weight: 800;
         letter-spacing: -0.01em;
     }
     .hero-sub {
         color: #94a3b8;
         margin: 6px 0 0 0;
-        font-size: 0.95rem;
+        font-size: 1.15rem;
     }
     .company-card {
-        padding: 14px 18px;
+        padding: 16px 20px;
         border: 1.5px solid rgba(2, 132, 199, 0.25);
         border-radius: 14px;
         background: rgba(255, 255, 255, 0.03);
@@ -462,6 +492,13 @@ def apply_vendor_market_update(code, res):
 
 
 
+
+def safe_extract_pct(val, default=25.0):
+    if not val:
+        return default
+    m = re.search(r'\d+(\.\d+)?', str(val))
+    return float(m.group(0)) if m else default
+
 def get_last_n_trading_days(n=20, end_date=None):
     """以更新當日為基準，自動剔除週末回推精準 N 個交易日"""
     if end_date is None:
@@ -666,10 +703,10 @@ def render_single_vendor_page(code, v):
     col_g1, col_g2 = st.columns(2)
     with col_g1:
         st.markdown("<p style='font-size:0.88rem; font-weight:700; color:#0284c7; margin-bottom:4px;'>📈 近 20 日收盤價走勢 (折線圖)</p>", unsafe_allow_html=True)
-        st.line_chart(df_p_20d, use_container_width=True)
+        st.line_chart(df_p_20d, height=210, use_container_width=True)
     with col_g2:
         st.markdown("<p style='font-size:0.88rem; font-weight:700; color:#10b981; margin-bottom:4px;'>📊 近 20 日成交量 (長條圖 / 張)</p>", unsafe_allow_html=True)
-        st.bar_chart(df_v_20d, use_container_width=True)
+        st.bar_chart(df_v_20d, height=210, use_container_width=True)
 
     # =========================================================================
     # 5. 核心新功能：近四季 EPS 詳細明細 (25Q3 / 25Q4 / 26Q1 / 26Q2) ＆ 各季毛利淨利一併列出
@@ -723,20 +760,20 @@ def render_single_vendor_page(code, v):
             st.markdown(f"毛利率：`{q_gm_list[3]}` ｜ 淨利率：`{q_nm_list[3]}`")
 
     st.write("")
-    # 近 4 季 EPS 長條圖與毛利率折線圖
+    # 近 4 季 EPS 長條圖與毛利率折線圖 (尺寸小巧精緻化)
     col_qg1, col_qg2 = st.columns(2)
     with col_qg1:
-        st.markdown("<p style='font-size:0.88rem; font-weight:700; color:#0284c7; margin-bottom:4px;'>📊 近 4 季單季 EPS 成長 (長條圖 / 元)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:0.95rem; font-weight:700; color:#0284c7; margin-bottom:4px;'>📊 近 4 季單季 EPS 成長 (長條圖 / 元)</p>", unsafe_allow_html=True)
         df_q_eps = pd.DataFrame(index=["25Q3", "25Q4", "26Q1", "26Q2"])
         df_q_eps["單季 EPS (元)"] = q_eps_list
-        st.bar_chart(df_q_eps, use_container_width=True)
+        st.bar_chart(df_q_eps, height=190, use_container_width=True)
 
     with col_qg2:
-        st.markdown("<p style='font-size:0.88rem; font-weight:700; color:#059669; margin-bottom:4px;'>📈 近 4 季毛利率與淨利率走勢 (折線圖 / %)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:0.95rem; font-weight:700; color:#059669; margin-bottom:4px;'>📈 近 4 季毛利率與淨利率走勢 (折線圖 / %)</p>", unsafe_allow_html=True)
         df_q_m = pd.DataFrame(index=["25Q3", "25Q4", "26Q1", "26Q2"])
-        df_q_m["營業毛利率 (%)"] = [float(re.search(r'\d+(\.\d+)?', str(x)).group(0)) for x in q_gm_list]
-        df_q_m["稅後淨利率 (%)"] = [float(re.search(r'\d+(\.\d+)?', str(x)).group(0)) for x in q_nm_list]
-        st.line_chart(df_q_m, use_container_width=True)
+        df_q_m["營業毛利率 (%)"] = [safe_extract_pct(x) for x in q_gm_list]
+        df_q_m["稅後淨利率 (%)"] = [safe_extract_pct(x, 12.0) for x in q_nm_list]
+        st.line_chart(df_q_m, height=190, use_container_width=True)
 
     # =========================================================================
     # 6. 同族群標竿 2 大巨頭對比 ＆ 近四季營收成長趨勢折線圖
@@ -809,7 +846,7 @@ def render_single_vendor_page(code, v):
         if has_p2 and p2_v:
             chart_df[f"{p2_v.get('name')} ({p2_code})"] = get_4q_revenue_yoy_series(p2_v)
 
-        st.line_chart(chart_df, use_container_width=True)
+        st.line_chart(chart_df, height=210, use_container_width=True)
         st.caption("💡 滑鼠懸停於線段節點即可查看各季精準成長率。")
     else:
         st.info("💡 此公司為獨佔型利基龍頭，無同環節完全重疊之同業標竿。")
@@ -1001,7 +1038,7 @@ def main():
         st.markdown("---")
 
     # 首頁三大分頁
-    tabs = st.tabs(["🏢 SECTION A：國際大客戶專區", "🌐 SECTION B：五大戰略產業鏈全景", "📑 全 87 家廠商總表", "🔥 供應商同族群比較"])
+    tabs = st.tabs(["🏢 SECTION A：國際大客戶專區", "🌐 SECTION B：五大戰略產業鏈全景", "📑 全 87 家廠商總表", "🔥 供應商同族群比較", "📊 族群自選多公司PK比較"])
 
     # --- SECTION A: 國際客戶專區 ---
     with tabs[0]:
@@ -1349,6 +1386,167 @@ def main():
                         with c_btn2:
                             v25_link = f"{V25_APP_URL}/?stock={m_code}"
                             st.link_button(f"🐋 V25.2 分析 ↗", v25_link, use_container_width=True)
+
+
+
+    # --- SECTION E: 族群自選多公司PK比較 (全新 5 號分頁) ---
+    with tabs[4]:
+        st.subheader("📊 族群自選多公司走勢 ＆ 近四季獲利 PK 比較專區")
+        st.markdown("""
+            <div style="padding: 14px 18px; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(99, 102, 241, 0.08)); border: 1.5px solid #0284c7; border-radius: 14px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <h4 style="margin: 0; color: #0284c7; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                        <span>🎯</span> 13 大熱門產業鏈 ｜ 自選多家企業同台 PK
+                    </h4>
+                    <span style="font-size: 0.8rem; color: #6366f1; background: rgba(99, 102, 241, 0.12); padding: 3px 8px; border-radius: 6px; font-weight: 700;">
+                        自選走勢 ＋ 4 季 EPS 堆疊雙圖譜
+                    </span>
+                </div>
+                <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.86rem;">
+                    針對指定產業族群，自由勾選 2~6 家代表性供應商，即時生成<strong>「近 20 日股價折線對照圖」</strong>與<strong>「近 4 季 EPS 堆疊長條圖（一公司一長條、4 季 4 色）」</strong>，橫向透視獲利爆發力與股價相對強弱。
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
+        clusters_data = db.get("clusters", {})
+        cluster_names = list(clusters_data.keys())
+
+        col_pk_sel, col_pk_multi = st.columns([3.5, 6.5])
+        with col_pk_sel:
+            chosen_pk_cluster = st.selectbox("🎯 1. 選擇族群分類：", cluster_names, key="pk_tab_cluster_select")
+
+        c_info = clusters_data.get(chosen_pk_cluster, {})
+        member_items = c_info.get("members", [])
+        
+        # 建立多選選單選項
+        member_options = []
+        member_code_map = {}
+        for m in member_items:
+            m_code = m["code"]
+            v_obj = vendors.get(m_code)
+            if v_obj:
+                label = f"{m_code} {v_obj['name']} ({m['role'].split('、')[0]})"
+                member_options.append(label)
+                member_code_map[label] = m_code
+
+        # 預設勾選前 3~5 家
+        default_selected = member_options[:min(5, len(member_options))]
+        
+        with col_pk_multi:
+            picked_labels = st.multiselect(
+                "🔍 2. 勾選要進行 PK 比較的公司（自由勾選 2~6 家）：",
+                member_options,
+                default=default_selected,
+                key=f"pk_multi_{chosen_pk_cluster}"
+            )
+
+        if not picked_labels or len(picked_labels) < 2:
+            st.warning("⚠️ 請至少勾選 2 家公司以生成橫向 PK 比較圖表！")
+        else:
+            picked_codes = [member_code_map[lbl] for lbl in picked_labels if lbl in member_code_map]
+            
+            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+            # =================================================================
+            # 圖表 1：近 20 個交易日 股價走勢折線圖 (N 家公司 N 條折線)
+            # =================================================================
+            st.markdown(f"##### 📈 【{chosen_pk_cluster}】近 20 個交易日股價走勢折線圖 ({len(picked_codes)} 家公司 ｜ {len(picked_codes)} 條彩色折線)")
+            
+            # 動態以當前基準日生成 20 個交易日
+            base_date_str = db.get("last_global_sync", datetime.now().strftime("%Y-%m-%d"))
+            dates_20d = get_last_n_trading_days(20, base_date_str)
+            
+            df_price_pk = pd.DataFrame(index=dates_20d)
+            for c_code in picked_codes:
+                v_obj = vendors[c_code]
+                df_p_single, _ = get_dynamic_20d_chart(v_obj, c_code)
+                # 對齊 index
+                df_price_pk[f"{v_obj['name']} ({c_code})"] = df_p_single["收盤價 (元)"].values[:len(dates_20d)]
+            
+            st.line_chart(df_price_pk, height=230, use_container_width=True)
+            st.caption(f"💡 橫軸為近 20 個交易日時間軸，縱軸為收盤價 (元)。選取之 {len(picked_codes)} 家公司各自對應一條彩色折線。滑鼠懸停即可浮動對照各公司每日價格。")
+
+            st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+
+            # =================================================================
+            # 圖表 2：近 4 季 EPS 堆疊長條圖 (一公司一長條 ｜ 4 季 4 種顏色)
+            # =================================================================
+            st.markdown(f"##### 📊 【{chosen_pk_cluster}】近四季 EPS 獲利結構長條圖 (一公司一條長條 ｜ 4 季 4 種顏色堆疊)")
+            
+            eps_rows = []
+            bar_labels = []
+            for c_code in picked_codes:
+                v_obj = vendors[c_code]
+                bar_labels.append(f"{v_obj['name']} ({c_code})")
+                q_d = v_obj.get("quarterly_data", {})
+                e_list = q_d.get("eps", [5.0, 6.0, 7.0, 8.0])
+                eps_rows.append({
+                    "2025 Q3": e_list[0],
+                    "2025 Q4": e_list[1],
+                    "2026 Q1": e_list[2],
+                    "2026 Q2 (最新)": e_list[3]
+                })
+
+            df_eps_stacked = pd.DataFrame(eps_rows, index=bar_labels)
+            st.bar_chart(df_eps_stacked, height=230, use_container_width=True)
+            st.caption(f"💡 每間廠商擁有一條獨立長條（共 {len(picked_codes)} 條），長條總高度為「近四季累計 EPS」，長條內部以 4 種顏色堆疊展示 25Q3 ➔ 25Q4 ➔ 26Q1 ➔ 26Q2 的每季獲利佔比與成長態勢。")
+
+            st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+
+            # =================================================================
+            # 表格：所選 PK 廠商完整財務與估值數據對照表
+            # =================================================================
+            st.markdown(f"##### 📋 PK 廠商核心數據橫向對照表 (點選任一列可穿透直達獨立情報網頁)")
+            
+            pk_table_data = []
+            for c_code in picked_codes:
+                v_obj = vendors[c_code]
+                pk_table_data.append({
+                    "股票代號": c_code,
+                    "公司名稱": v_obj["name"],
+                    "最新收盤價": v_obj.get("price", "-"),
+                    "動態PE": v_obj.get("trailing_pe", "-"),
+                    "預估PE": v_obj.get("forward_pe", "-"),
+                    "25Q3 EPS": v_obj.get("eps_25q3", "-"),
+                    "25Q4 EPS": v_obj.get("eps_25q4", "-"),
+                    "26Q1 EPS": v_obj.get("eps_26q1", "-"),
+                    "26Q2 EPS": v_obj.get("eps_26q2", "-"),
+                    "近四季累計EPS": v_obj.get("eps_4q", "-"),
+                    "預估EPS": v_obj.get("forward_eps", "-"),
+                    "最新毛利率": v_obj.get("margin", "-"),
+                    "最新淨利率": v_obj.get("net_margin", "-"),
+                    "實收股本": v_obj.get("capital_stock", "-").split(" ")[0],
+                    "營收 YoY": v_obj.get("revenue_yoy", "-"),
+                    "營收 MoM": v_obj.get("revenue_mom", "-"),
+                    "目標 PE 區間": v_obj.get("target_pe_range", "-"),
+                    "目標價潛在空間": v_obj.get("target_upside", "-")
+                })
+            
+            df_pk_table = pd.DataFrame(pk_table_data)
+            pk_event = st.dataframe(
+                df_pk_table,
+                use_container_width=True,
+                selection_mode="single-row",
+                on_select="rerun",
+                key=f"pk_table_{chosen_pk_cluster}"
+            )
+            
+            if pk_event and hasattr(pk_event, "selection") and pk_event.selection.rows:
+                sel_p_idx = pk_event.selection.rows[0]
+                if 0 <= sel_p_idx < len(df_pk_table):
+                    p_picked_code = str(df_pk_table.iloc[sel_p_idx]["股票代號"]).strip()
+                    st.session_state["selected_vendor_code"] = p_picked_code
+                    st.rerun()
+
+            # 快速進入各公司專屬網頁按鈕列
+            st.write("")
+            btn_pk_cols = st.columns(len(picked_codes))
+            for b_i, c_code in enumerate(picked_codes):
+                v_obj = vendors[c_code]
+                with btn_pk_cols[b_i]:
+                    if st.button(f"📑 進入 {v_obj['name']} 專頁 ➔", key=f"btn_pk_goto_{c_code}_{b_i}", use_container_width=True):
+                        st.session_state["selected_vendor_code"] = c_code
+                        st.rerun()
 
 
 def render_vendor_card_with_sync(code, v, prefix='', default_expanded=False):
