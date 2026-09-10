@@ -1,3 +1,13 @@
+# ==============================================================================
+# GrandMaster Whale Engine V25.6 Pro (邏輯閉環完全體) - 網頁端專用決策判斷核心模組
+# 
+# 🌟 本版本具備三大升級：
+# 1. 獵豹升級：實作底部成本區位豁免權 (成本距離 <= 8%)，免除起漲誤殺
+# 2. 籌碼折價因子：徹底解決基本面高分但籌碼潰散的自我矛盾 (華邦電穿幫修復)
+# 3. 投信波段認養濾網：連續買超天數與 >= 100 張絕對門檻，防範冷門股與單日隔日沖雜訊
+# 4. DataEngine 柔性對齊：完全拔除 YF 延遲當機 Bug，採用 T-1 柔性對齊
+# ==============================================================================
+
 import os
 import sys
 import time
@@ -11,7 +21,7 @@ import numpy as np
 
 warnings.filterwarnings("ignore")
 
-WHALE_VERSION = "V25.2 PRO"
+WHALE_VERSION = "V25.6 PRO"
 
 # Optional DataLoader import
 try:
@@ -25,16 +35,20 @@ except Exception:
         def taiwan_stock_holding_shares_per(self, **kwargs): return pd.DataFrame()
         def taiwan_stock_daily(self, **kwargs): return pd.DataFrame()
 
-# ===== CELL 1 =====
+try:
+    import yfinance as yf
+except Exception:
+    yf = None
 
-# GrandMaster Whale Engine V25.2 Pro
+
+
+# GrandMaster Whale Engine V25.6 Pro
 # Cell 2: 工具函式
 
 class WhaleTools:
     @staticmethod
     def round_tick(price, direction='nearest'):
         if pd.isna(price) or price <= 0: return 0.0
-        # 🟢 台灣證交所普通股票真實升降單位
         if price < 10: tick = 0.01
         elif price < 50: tick = 0.05
         elif price < 100: tick = 0.10
@@ -88,20 +102,58 @@ class WhaleTools:
 
 print(f"WhaleTools 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 2 =====
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 3: DataEngine (🌟 完全拔除 YF 延遲當機 Bug，採用 T-1 柔性對齊)
 
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 3: DataEngine (🌟 V25.2 強化：導入擬真延遲與大盤備援機制)
+class TDCCCacheManager:
+    def __init__(self, cache_dir):
+        self.cache_dir = cache_dir
+        if not os.path.exists(self.cache_dir):
+            os.makedirs(self.cache_dir)
+        self.cached_dfs = {}
+        self.load_cache_to_memory()
+
+    def load_cache_to_memory(self):
+        files = [f for f in os.listdir(self.cache_dir) if f.startswith('TDCC_') and f.endswith('.csv')]
+        if not files:
+            print("⚠️ 尚未發現集保快取資料，請記得週末先執行【TDCC 資料庫建置器】")
+            return
+
+        print("⏳ 正在將 Google Drive 集保歷史快取載入系統記憶體...")
+        for f in files:
+            path = os.path.join(self.cache_dir, f)
+            try:
+                df = pd.read_csv(path, dtype={'stock_id': str})
+                df['stock_id'] = df['stock_id'].astype(str).str.strip()
+                df['date'] = pd.to_datetime(df['date'])
+                self.cached_dfs[f] = df
+            except Exception as e:
+                print(f"無法讀取快取檔 {f}: {e}")
+
+        print(f"✅ 成功載入 {len(self.cached_dfs)} 週的集保大戶資料！")
+
+    def get_stock_data(self, stock_id):
+        if not self.cached_dfs: return pd.DataFrame()
+        dfs = []
+        target_id = str(stock_id).strip()
+        for f, df in self.cached_dfs.items():
+            stock_df = df[df['stock_id'] == target_id]
+            if not stock_df.empty:
+                dfs.append(stock_df)
+        if dfs:
+            final_df = pd.concat(dfs)
+            return final_df.sort_values('date').reset_index(drop=True)
+        return pd.DataFrame()
 
 class DataEngine:
-    def __init__(self, dataloader=None):
+    def __init__(self, dataloader=None, tdcc_manager=None):
         if dataloader is None:
             self.dl = DataLoader()
-            token = os.getenv("FINMIND_TOKEN", "")
-            if token:
-                try: self.dl.login_by_token(api_token=token)
-                except Exception: pass
+            token = os.getenv("FINMIND_TOKEN")
+            if not token: raise RuntimeError("缺少 FINMIND_TOKEN")
+            self.dl.login_by_token(api_token=token)
         else: self.dl = dataloader
+        self.tdcc_manager = tdcc_manager
 
     def load_stock(self, stock_id, mode='after_market'):
         tw_code = str(stock_id).strip() + ".TW"
@@ -171,9 +223,6 @@ class DataEngine:
         start_date = (now - timedelta(days=730)).strftime("%Y-%m-%d")
         fm_end_date = now.strftime("%Y-%m-%d")
 
-        # 🌟 V25.2 新增：FinMind 併發阻斷機制，強制加入隨機短延遲
-
-        # --- 1. 法人資料 ---
         try:
             inst_df = self.dl.taiwan_stock_institutional_investors(stock_id=stock_id, start_date=start_date, end_date=fm_end_date)
             if not inst_df.empty:
@@ -200,10 +249,8 @@ class DataEngine:
                 df['Inst_NetBuy'] = df['Trust_NetBuy'] + df['Foreign_NetBuy'] + df['Dealer_NetBuy']
 
                 date_strs = inst_df['date'].dt.strftime("%Y-%m-%d")
-                if latest_price_date in date_strs.values:
-                    data_quality['inst_state'] = 'complete'
-                else:
-                    data_quality['inst_state'] = 'stale'
+                if latest_price_date in date_strs.values: data_quality['inst_state'] = 'complete'
+                else: data_quality['inst_state'] = 'stale'
             else:
                 data_quality['inst_state'] = 'empty_response'
                 df['Trust_NetBuy'] = df['Foreign_NetBuy'] = df['Dealer_NetBuy'] = df['Inst_NetBuy'] = np.nan
@@ -211,9 +258,8 @@ class DataEngine:
             data_quality['inst_state'] = 'network_error'
             df['Trust_NetBuy'] = df['Foreign_NetBuy'] = df['Dealer_NetBuy'] = df['Inst_NetBuy'] = np.nan
 
-        time.sleep(random.uniform(0.2, 0.6)) # 🌟 防火牆緩衝
+        time.sleep(random.uniform(0.3, 0.7))
 
-        # --- 2. 融資資料 ---
         try:
             margin_df = self.dl.taiwan_stock_margin_purchase_short_sale(stock_id=stock_id, start_date=start_date, end_date=fm_end_date)
             if not margin_df.empty and "MarginPurchaseTodayBalance" in margin_df.columns:
@@ -230,9 +276,8 @@ class DataEngine:
             data_quality['margin_state'] = 'network_error'
             df['Margin_Balance_Raw'] = np.nan
 
-        time.sleep(random.uniform(0.2, 0.6)) # 🌟 防火牆緩衝
+        time.sleep(random.uniform(0.3, 0.7))
 
-        # --- 3. 營收資料 ---
         try:
             rev_start = (now - timedelta(days=365*4)).strftime("%Y-%m-%d")
             rev_df_raw = self.dl.taiwan_stock_month_revenue(stock_id=stock_id, start_date=rev_start, end_date=fm_end_date)
@@ -245,60 +290,41 @@ class DataEngine:
         except Exception as e:
             pass
 
-        time.sleep(random.uniform(0.2, 0.6)) # 🌟 防火牆緩衝
-
-        # --- 4. 集保戶股權分散表 (TDCC) ---
         try:
-            tdcc_start = (now - timedelta(days=180)).strftime("%Y-%m-%d")
-            tdcc_raw = self.dl.taiwan_stock_holding_shares_per(stock_id=stock_id, start_date=tdcc_start, end_date=fm_end_date)
+            if self.tdcc_manager:
+                tdcc_raw = self.tdcc_manager.get_stock_data(stock_id)
+                if tdcc_raw is not None and not tdcc_raw.empty:
+                    tdcc_raw['level'] = tdcc_raw['level'].astype(str).str.strip()
+                    grouped = tdcc_raw.groupby('date')
+                    records = []
 
-            if tdcc_raw is not None and not tdcc_raw.empty:
-                cols_lower = [c.lower() for c in tdcc_raw.columns]
-                tdcc_raw.columns = cols_lower
-                if 'holdingshareslevel' in cols_lower: lvl_col = 'holdingshareslevel'
-                elif 'size' in cols_lower: lvl_col = 'size'
-                else: lvl_col = cols_lower[2]
+                    for d, grp in grouped:
+                        valid_levels = [str(i) for i in range(1, 16)]
+                        total_shares = grp[grp['level'].isin(valid_levels)]['hold_shares'].sum()
+                        if total_shares == 0: continue
 
-                tdcc_raw['date'] = pd.to_datetime(tdcc_raw['date'])
-                tdcc_raw['level'] = tdcc_raw[lvl_col].astype(str).str.strip()
-                tdcc_raw['hold_shares'] = pd.to_numeric(tdcc_raw['hold_shares'].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
-                tdcc_raw['percent'] = pd.to_numeric(tdcc_raw['percent'].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
+                        retail_levels = [str(i) for i in range(1, 10)]
+                        retail_pct = grp[grp['level'].isin(retail_levels)]['percent'].sum()
 
-                grouped = tdcc_raw.groupby('date')
-                records = []
+                        cap_size = 'Small_Cap' if total_shares < 200000000 else 'Large_Cap'
+                        if cap_size == 'Small_Cap': whale_pct = grp[grp['level'].isin(['12','13','14','15'])]['percent'].sum()
+                        else: whale_pct = grp[grp['level'].isin(['15'])]['percent'].sum()
 
-                for d, grp in grouped:
-                    valid_levels = [str(i) for i in range(1, 16)]
-                    total_shares = grp[grp['level'].isin(valid_levels)]['hold_shares'].sum()
-                    if total_shares == 0: continue
+                        records.append({'date': d, 'Total_Shares': total_shares, 'Cap_Size': cap_size, 'Retail_Pct': retail_pct, 'Whale_Pct': whale_pct})
 
-                    retail_levels = [str(i) for i in range(1, 10)]
-                    retail_pct = grp[grp['level'].isin(retail_levels)]['percent'].sum()
-                    cap_size = 'Small_Cap' if total_shares < 200000000 else 'Large_Cap'
-                    if cap_size == 'Small_Cap':
-                        whale_pct = grp[grp['level'].isin(['12','13','14','15'])]['percent'].sum()
+                    if records:
+                        tdcc_df = pd.DataFrame(records).sort_values('date').reset_index(drop=True)
+                        data_quality['tdcc_latest_date'] = tdcc_df.iloc[-1]['date'].strftime("%Y-%m-%d")
                     else:
-                        whale_pct = grp[grp['level'].isin(['15'])]['percent'].sum()
-
-                    records.append({
-                        'date': d, 'Total_Shares': total_shares, 'Cap_Size': cap_size,
-                        'Retail_Pct': retail_pct, 'Whale_Pct': whale_pct
-                    })
-
-                if records:
-                    tdcc_df = pd.DataFrame(records).sort_values('date').reset_index(drop=True)
-                    data_quality['tdcc_latest_date'] = tdcc_df.iloc[-1]['date'].strftime("%Y-%m-%d")
+                        data_quality['errors'].append("[TDCC] 級距解析後無有效記錄")
                 else:
-                    data_quality['errors'].append("[TDCC] 級距解析後無有效記錄")
-            else:
-                data_quality['errors'].append("[TDCC] API回傳空表或無資料")
+                    data_quality['errors'].append("[TDCC] 快取庫中無此檔股票資料")
         except Exception as e:
-            data_quality['errors'].append(f"[TDCC_Error] 集保解析例外: {str(e)}")
+            data_quality['errors'].append(f"[TDCC_Error] 快取提取例外: {str(e)}")
 
         return df, target_code, data_quality, rev_df, tdcc_df
 
     def load_market(self, target_code, latest_stock_date):
-        # 🌟 V25.2 強化：OTC 指數斷更備援機制
         mkt_ticker = "^TWOII" if target_code.endswith(".TWO") else "^TWII"
         mkt = yf.Ticker(mkt_ticker).history(period="2y", auto_adjust=True)
 
@@ -306,8 +332,8 @@ class DataEngine:
             mkt.index = mkt.index.tz_convert('Asia/Taipei').tz_localize(None)
 
         if mkt_ticker == "^TWOII":
-            if mkt is None or mkt.empty or mkt.index[-1].strftime("%Y-%m-%d") < latest_stock_date:
-                # 發現 OTC 指數落後個股，啟動自動備援，降級為上市加權指數
+            mkt_latest = mkt.index[-1].strftime("%Y-%m-%d") if (mkt is not None and not mkt.empty) else "1900-01-01"
+            if mkt is None or mkt.empty or mkt_latest < latest_stock_date:
                 mkt = yf.Ticker("^TWII").history(period="2y", auto_adjust=True)
                 if mkt is not None and not mkt.empty and mkt.index.tz is not None:
                     mkt.index = mkt.index.tz_convert('Asia/Taipei').tz_localize(None)
@@ -359,25 +385,58 @@ class DataEngine:
         vol_factor = WhaleTools.get_vol_factor(df)
         ma20_slope = WhaleTools.calculate_slope(df["MA20"], period=5, scale=50, adaptive_factor=vol_factor)
 
-        common_idx = df.index.intersection(mkt.index)
-        market_factor = 1.0
-        mkt_latest_date = mkt.index[-1].strftime("%Y-%m-%d")
+        # 🌟 V25.6 核心修復：T-1 雙重驗證法，徹底消滅 YF 延遲導致的 Stale 當機
+        stock_latest = df.index[-1]
+        mkt_latest = mkt.index[-1] if not mkt.empty else pd.Timestamp('1900-01-01')
 
-        if len(common_idx) > 0:
-            if df.index[-1] != mkt.index[-1]:
-                rs20, rs60, market_status = 0.0, 0.0, "Stale"
+        market_status = "Unknown"
+        sync_msg = ""
+        latest_common = None
+
+        if not mkt.empty:
+            if stock_latest == mkt_latest:
+                latest_common = stock_latest
+            elif len(df) > 1 and df.index[-2] == mkt_latest:
+                latest_common = mkt_latest
+                sync_msg = " (啟用2天比對: YF大盤延遲1天)"
             else:
-                rs20 = WhaleTools.calculate_rs(df.loc[common_idx, "Close"], mkt.loc[common_idx, "Close"], period=20)
-                rs60 = WhaleTools.calculate_rs(df.loc[common_idx, "Close"], mkt.loc[common_idx, "Close"], period=60)
-                mkt["MA20"] = mkt["Close"].rolling(20, min_periods=1).mean()
-                market_factor = WhaleTools.get_market_adaptive_factor(mkt)
-                mkt_slope = WhaleTools.calculate_slope(mkt["MA20"], period=5, scale=50, adaptive_factor=market_factor)
+                common_idx = df.index.intersection(mkt.index)
+                if len(common_idx) > 0:
+                    latest_common = common_idx[-1]
+                    days_behind = (stock_latest - latest_common).days
+                    if days_behind <= 5:
+                        sync_msg = f" (啟用多日比對: 大盤延遲{days_behind}天)"
+                    else:
+                        market_status = "Stale"
+                        sync_msg = " (大盤資料過舊)"
+                else:
+                    sync_msg = " (無共同交易日)"
 
-                if (mkt["Close"].loc[common_idx].iloc[-1] > mkt["MA20"].loc[common_idx].iloc[-1] and mkt_slope > 0): market_status = "Bull"
-                elif (mkt["Close"].loc[common_idx].iloc[-1] < mkt["MA20"].loc[common_idx].iloc[-1] and mkt_slope < 0): market_status = "Bear"
+        mkt_latest_date = (latest_common.strftime("%Y-%m-%d") + sync_msg) if latest_common else "無資料"
+
+        if latest_common and market_status != "Stale":
+            stock_close = df.loc[:latest_common, "Close"]
+            market_close = mkt.loc[:latest_common, "Close"]
+
+            if len(stock_close) >= 60 and len(market_close) >= 60:
+                rs20 = WhaleTools.calculate_rs(stock_close, market_close, period=20)
+                rs60 = WhaleTools.calculate_rs(stock_close, market_close, period=60)
+
+                mkt["MA20"] = mkt["Close"].rolling(20, min_periods=1).mean()
+                market_factor = WhaleTools.get_market_adaptive_factor(mkt.loc[:latest_common])
+                mkt_slope = WhaleTools.calculate_slope(mkt.loc[:latest_common, "MA20"], period=5, scale=50, adaptive_factor=market_factor)
+
+                mkt_latest_close = mkt.loc[latest_common, "Close"]
+                mkt_latest_ma20 = mkt.loc[latest_common, "MA20"]
+
+                if mkt_latest_close > mkt_latest_ma20 and mkt_slope > 0: market_status = "Bull"
+                elif mkt_latest_close < mkt_latest_ma20 and mkt_slope < 0: market_status = "Bear"
                 else: market_status = "Neutral"
+            else:
+                rs20, rs60, market_status = 0.0, 0.0, "Unknown"
         else:
-            rs20, rs60, market_status = 0.0, 0.0, "Unknown"
+            rs20, rs60 = 0.0, 0.0
+            if market_status != "Stale": market_status = "Unknown"
 
         return {
             "df": df, "mkt": mkt, "rs20": rs20, "rs60": rs60,
@@ -387,10 +446,8 @@ class DataEngine:
 
 print(f"DataEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 3 =====
-
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 4: FishScoreEngine (🌟 V25.2 強化：流動性濾網嚴格化至 1 億台幣)
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 4: FishScoreEngine
 
 class FishScoreEngine:
     def calculate(self, data, custom_params=None):
@@ -423,17 +480,22 @@ class FishScoreEngine:
         rs20, rs60 = data["rs20"], data["rs60"]
         rs_limit_high = custom_params.get("rs_limit_high", 0.10) * market_factor
         rs_limit_mid = (rs_limit_high / 2.0)
+
         if rs20 > rs_limit_high: rs_score += 10
         elif rs20 > rs_limit_mid: rs_score += 7
         elif rs20 > 0: rs_score += 4
+        elif data["market_status"] == "Bull" and latest["Close"] > latest["MA20"]: rs_score -= 5
+        else: rs_score -= 10
 
         if rs60 > rs_limit_high: rs_score += 10
         elif rs60 > rs_limit_mid: rs_score += 7
         elif rs60 > 0: rs_score += 4
+        elif data["market_status"] == "Bull" and latest["Close"] > latest["MA60"]: rs_score -= 5
+        else: rs_score -= 10
 
         health_checks.append(("RS20 > 0 (動態門檻校準)", rs20 > 0))
         health_checks.append(("RS60 > 0", rs60 > 0))
-        score += rs_score
+        score += max(0, rs_score + 20)
 
         vwap_score = 0
         if latest["Close"] > latest["VWAP60"]:
@@ -446,15 +508,15 @@ class FishScoreEngine:
         score += vwap_score
 
         try:
-            prev_bandwidth_min = df["Bandwidth"].shift(1).tail(20).min()
+            mean_bandwidth = df["Bandwidth"].shift(1).tail(20).mean()
             prev_bandwidth = df["Bandwidth"].shift(1).iloc[-1]
-            is_bb_squeeze = prev_bandwidth <= (prev_bandwidth_min * 1.05) if prev_bandwidth_min > 0 else False
-            if is_bb_squeeze and latest["Close"] > df["UpperBB"].shift(1).iloc[-1]:
+            is_bb_squeeze = prev_bandwidth <= (mean_bandwidth * 0.85) if mean_bandwidth > 0 else False
+            if is_bb_squeeze and latest["Close"] > latest["MA20"]:
                 score += 15
-                health_checks.append(("布林極限壓縮後突破上軌", True))
-            else: health_checks.append(("布林極限壓縮後突破上軌", False))
+                health_checks.append(("布林極限壓縮後突破發動", True))
+            else: health_checks.append(("布林極限壓縮後突破發動", False))
         except Exception:
-            health_checks.append(("布林極限壓縮後突破上軌", "Error"))
+            health_checks.append(("布林極限壓縮後突破發動", "Error"))
             has_error = True
 
         volume_score = 0
@@ -481,7 +543,6 @@ class FishScoreEngine:
         else:
             health_checks.append(("大盤濾網(空頭)", False))
 
-        # 🌟 V25.2 修改：流動性嚴格把關 (1億)
         if latest["Close"] * prev_vol20 > 100000000:
             score += 10
             health_checks.append(("日均成交額大於1億", True))
@@ -490,7 +551,7 @@ class FishScoreEngine:
         score = min(100, max(0, score))
         grade = "S" if score >= 90 else "A" if score >= 80 else "B" if score >= 70 else "C" if score >= 60 else "D"
         trend_status = "強勢" if trend_score >= 25 else "整理" if trend_score >= 15 else "轉弱"
-        rs_status = "相對大盤強勢" if rs_score >= 14 else "與大盤同步" if rs_score >= 7 else "相對弱勢"
+        rs_status = "相對大盤強勢" if rs_score >= 14 else "與大盤同步" if rs_score >= 0 else "相對弱勢"
         chip_status = "換手安定" if vwap_score >= 10 else "換手震盪" if vwap_score >= 5 else "鬆動"
 
         error_details = []
@@ -505,10 +566,8 @@ class FishScoreEngine:
 
 print(f"FishScoreEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 4 =====
-
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 5: RetreatScoreEngine
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 5: RetreatScoreEngine (🌟 獵豹升級：實作底部成本區位豁免權，免除起漲誤殺)
 
 class RetreatScoreEngine:
     def calculate(self, data, custom_params=None):
@@ -531,6 +590,9 @@ class RetreatScoreEngine:
         inst_state = data_quality.get("inst_state")
         is_inst_complete = (inst_state == 'complete')
 
+        # 🌟 新增：底部豁免權判定 (成本距離 <= 8%)
+        is_bottom_exempt = cost_distance <= 8.0
+
         grp1_score = 0
         try:
             price_change = (latest["Close"] - prev["Close"]) / prev["Close"]
@@ -538,14 +600,17 @@ class RetreatScoreEngine:
             is_price_stagnant = price_change < 0.02
             memory_triggered = False
 
-            for i in range(max(0, len(df)-11), len(df)-1):
-                if df.iloc[i]["Volume"] > df["VOL20_PRIOR"].iloc[i] * vol_breakout_limit:
-                    if latest["Close"] < df.iloc[i]["Low"]: memory_triggered = True; break
+            # 🌟 若具備底部豁免權，則強制關閉「10天破底記仇」機制
+            if not is_bottom_exempt:
+                for i in range(max(0, len(df)-11), len(df)-1):
+                    if df.iloc[i]["Volume"] > df["VOL20_PRIOR"].iloc[i] * vol_breakout_limit:
+                        if latest["Close"] < df.iloc[i]["Low"]: memory_triggered = True; break
 
             vol_str = "高檔爆量且已確認法人大賣" if is_inst_complete else "高檔爆量(法人資料未齊，無法確認)"
 
             if (is_volume_high and is_price_stagnant) or memory_triggered:
-                if cost_distance > 5.0:
+                # 🌟 若具備底部豁免權，則不扣除 45 分重罰，視為「良性換手吃貨」
+                if not is_bottom_exempt and cost_distance > 5.0:
                     if is_inst_complete:
                         if latest.get("Inst_NetBuy", 0) < 0 or memory_triggered:
                             grp1_score += 45
@@ -556,8 +621,10 @@ class RetreatScoreEngine:
                     else:
                         grp1_score += 25
                         retreat_checks.extend([(vol_str, "Unknown"), ("爆量不漲", True)])
-                else: retreat_checks.extend([(f"{vol_str}(底部換手不扣分)", False if is_inst_complete else "Unknown"), ("爆量不漲(底部換手)", False)])
-            else: retreat_checks.extend([(vol_str, False if is_inst_complete else "Unknown"), ("爆量不漲", False)])
+                else:
+                    retreat_checks.extend([(f"{vol_str}(底部換手不扣分)", False if is_inst_complete else "Unknown"), ("爆量不漲(底部良性換手)", False)])
+            else:
+                retreat_checks.extend([(vol_str, False if is_inst_complete else "Unknown"), ("爆量不漲", False)])
         except Exception as e:
             retreat_checks.extend([(f"高檔爆量且法人大賣", "Error"), ("爆量不漲", "Error")])
             error_details.append(f"[Retreat_Vol] {str(e)}")
@@ -667,24 +734,11 @@ class RetreatScoreEngine:
         elif retreat_score >= 20: risk_status = "提高警覺"
         else: risk_status = "低"
 
-        if has_error: retreat_comment = "安全模組計算發生異常，防禦失效"
-        elif retreat_score >= 80: retreat_comment = "主力撤退訊號明顯,建議盡速避險"
-        elif retreat_score >= 60: retreat_comment = "疑似開始出貨,建議密切觀察"
-        elif retreat_score >= 40: retreat_comment = "籌碼有鬆動跡象,提防拉高倒貨"
-        elif retreat_score >= 20: retreat_comment = "部分撤退訊號出現,需提高警覺"
-        else: retreat_comment = "尚未發現嚴重出貨訊號"
-
-        return {
-            "retreat_score": round(retreat_score), "risk_status": risk_status,
-            "retreat_comment": retreat_comment, "retreat_checks": retreat_checks,
-            "has_error": has_error, "error_details": error_details
-        }
+        return {"retreat_score": round(retreat_score), "risk_status": risk_status, "retreat_checks": retreat_checks, "has_error": has_error, "error_details": error_details}
 
 print(f"RetreatScoreEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 5 =====
-
-# GrandMaster Whale Engine V25.2 Pro
+# GrandMaster Whale Engine V25.6 Pro
 # Cell 6: WhaleEnduranceEngine
 
 class WhaleEnduranceEngine:
@@ -719,11 +773,11 @@ class WhaleEnduranceEngine:
                  messages.append("[型態代理] 弱勢跌停一字線(極度恐慌)")
             elif is_limit_up:
                 if latest['Volume'] < (df['VOL5_PRIOR'].iloc[-1] * 0.7):
-                    score += 10
-                    messages.append("[型態代理] 漲停量縮鎖死(籌碼安定)")
+                    score += 15
+                    messages.append("[型態代理] 漲停量縮鎖死(籌碼極度安定)")
                 else:
-                    score -= 15
-                    messages.append("[型態代理] 量價背離(上漲無量,續航力存疑)")
+                    score += 10
+                    messages.append("[型態代理] 放量換手漲停(攻擊動能強勁)")
 
             avg_range = (df['Raw_High'] - df['Raw_Low']).tail(5).mean()
             if avg_range > 0 and day_range < (avg_range * 0.6) and latest['Volume'] < df['VOL20_PRIOR'].iloc[-1]:
@@ -775,36 +829,23 @@ class WhaleEnduranceEngine:
         elif score >= 40: status = "動能衰退(高位背離)"
         else: status = "燃料耗盡(賣壓湧現)"
 
-        return {
-            "endurance_score": round(score), "endurance_status": status, "endurance_messages": messages,
-            "has_error": has_error, "error_details": error_details
-        }
+        return {"endurance_score": round(score), "endurance_status": status, "endurance_messages": messages, "has_error": has_error, "error_details": error_details}
 
 print(f"WhaleEnduranceEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 6 =====
-
-# GrandMaster Whale Engine V25.2 Pro
+# GrandMaster Whale Engine V25.6 Pro
 # Cell 7: FundamentalEngine
 
 class FundamentalEngine:
     def calculate(self, rev_df, current_date):
         if rev_df is None or rev_df.empty:
-            return {
-                "fund_score": 0, "fund_label": "【無營收資料】",
-                "yoy": 0, "mom": 0, "is_high": False, "fund_state": "missing",
-                "is_pit_embargo": False
-            }
+            return {"fund_score": 0, "fund_label": "【無營收資料】", "yoy": 0, "mom": 0, "is_high": False, "fund_state": "missing", "is_pit_embargo": False}
 
         rev_df['revenue'] = pd.to_numeric(rev_df['revenue'], errors='coerce')
         rev_df = rev_df.dropna(subset=['revenue'])
 
         if len(rev_df) < 2:
-            return {
-                "fund_score": 0, "fund_label": "【營收資料不足】",
-                "yoy": 0, "mom": 0, "is_high": False, "fund_state": "insufficient",
-                "is_pit_embargo": False
-            }
+            return {"fund_score": 0, "fund_label": "【營收資料不足】", "yoy": 0, "mom": 0, "is_high": False, "fund_state": "insufficient", "is_pit_embargo": False}
 
         latest_rev = rev_df.iloc[-1]['revenue']
         prev_rev = rev_df.iloc[-2]['revenue']
@@ -816,7 +857,7 @@ class FundamentalEngine:
         is_stale = months_diff > 2
 
         is_pit_embargo = False
-        if current_dt.day <= 10 and months_diff == 1:
+        if current_dt.day <= 10 and months_diff in [1, 2]:
             is_pit_embargo = True
 
         last_year_df = rev_df[(rev_df['revenue_year'] == latest_year - 1) & (rev_df['revenue_month'] == latest_month)]
@@ -836,14 +877,12 @@ class FundamentalEngine:
 
         is_mom_valid = (expected_prev_month == actual_prev_month and expected_prev_year == actual_prev_year)
 
-        if is_mom_valid and prev_rev > 0:
-            mom = ((latest_rev - prev_rev) / prev_rev) * 100
+        if is_mom_valid and prev_rev > 0: mom = ((latest_rev - prev_rev) / prev_rev) * 100
 
         is_high = False
         if len(rev_df) > 0:
             recent_max = rev_df['revenue'].tail(24).max()
-            if latest_rev >= recent_max * 0.99:
-                is_high = True
+            if latest_rev >= recent_max * 0.99: is_high = True
 
         score = 0
         if yoy >= 30: score += 20
@@ -871,45 +910,29 @@ class FundamentalEngine:
         if is_stale:
             fund_label = f"【營收資料過舊】(最後更新 {latest_year}/{latest_month})"
             fund_state = "stale"
-            score = 0
-            is_dual_growth = False
+            score, is_dual_growth = 0, False
         elif not has_yoy or not is_mom_valid:
             fund_label = f"【營收期間不連續/不足】({'+'.join(label_parts)})"
             fund_state = "insufficient"
-            score = 0
-            is_dual_growth = False
+            score, is_dual_growth = 0, False
         else:
             fund_state = "complete"
-            if is_dual_growth and yoy >= 10:
-                fund_label = f"【營收雙增護體】{embargo_warn}({'+'.join(label_parts)})"
+            if is_dual_growth and yoy >= 10: fund_label = f"【營收雙增護體】{embargo_warn}({'+'.join(label_parts)})"
             elif yoy >= 10:
                 mom_str = "MoM回落" if mom <= 0 else ""
                 fund_label = f"【YoY成長，{mom_str}】{embargo_warn}({'+'.join(label_parts)})"
-            elif yoy < 0 and mom > 0:
-                fund_label = f"【谷底回溫/轉機】{embargo_warn}({'+'.join(label_parts)})"
-            else:
-                fund_label = f"【營收動能疲弱】{embargo_warn}({'+'.join(label_parts)})"
+            elif yoy < 0 and mom > 0: fund_label = f"【谷底回溫/轉機】{embargo_warn}({'+'.join(label_parts)})"
+            else: fund_label = f"【營收動能疲弱】{embargo_warn}({'+'.join(label_parts)})"
 
-        return {
-            "fund_score": min(40, score),
-            "fund_label": fund_label,
-            "yoy": round(yoy, 2) if has_yoy else "N/A",
-            "mom": round(mom, 2) if is_mom_valid else "N/A",
-            "is_high": is_high,
-            "is_dual_growth": is_dual_growth,
-            "fund_state": fund_state,
-            "is_pit_embargo": is_pit_embargo
-        }
+        return {"fund_score": min(40, score), "fund_label": fund_label, "yoy": round(yoy, 2) if has_yoy else "N/A", "mom": round(mom, 2) if is_mom_valid else "N/A", "is_high": is_high, "is_dual_growth": is_dual_growth, "fund_state": fund_state, "is_pit_embargo": is_pit_embargo}
 
 print(f"FundamentalEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 7 =====
-
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 8: Fish Position Engine (🌟 V25.2: 動態防守寬容度與目標價綁定波動率)
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 8: Fish Position Engine (🌟 微調：初升段防守價直接錨定發動K棒最低點，杜絕停損過深)
 
 class FishPositionEngine:
-    def calculate(self, data, fish, retreat, warning, endurance, defense, fundamental):
+    def calculate(self, data, fish, retreat, warning, endurance, defense, fundamental, chip_data, chip_xray):
         df = data["df"]
         latest = df.iloc[-1]
         prev = df.iloc[-2]
@@ -918,6 +941,7 @@ class FishPositionEngine:
         retreat_score = retreat["retreat_score"]
         warning_score = warning["warning_score"]
         rs20, rs60, slope = data['rs20'], data["rs60"], data["ma20_slope"]
+        chip_score = chip_data.get("chip_score", 0)
 
         fund_score = fundamental.get("fund_score", 0)
         is_dual_growth = fundamental.get("is_dual_growth", False)
@@ -930,18 +954,12 @@ class FishPositionEngine:
         data_layer_errors = len(fatal_errors) > 0
 
         has_sys_error = (
-            data_layer_errors or
-            fish.get("has_error", False) or
-            retreat.get("has_error", False) or
-            warning.get("has_error", False) or
-            endurance.get("has_error", False) or
-            defense.get("has_error", False)
+            data_layer_errors or fish.get("has_error", False) or retreat.get("has_error", False) or
+            warning.get("has_error", False) or endurance.get("has_error", False) or defense.get("has_error", False)
         )
 
         try: bias20 = ((latest["Close"] - latest["MA20"]) / latest["MA20"]) * 100
-        except Exception as e:
-            bias20 = 0
-            has_sys_error = True
+        except Exception: bias20, has_sys_error = 0, True
 
         if retreat_score >= 80: position, progress = "魚尾區", 85
         elif retreat_score >= 60: position, progress = "出貨區", 100
@@ -950,15 +968,23 @@ class FishPositionEngine:
         elif fish_score >= 70 and slope > 1: position, progress = "魚頭形成期", 30
         else: position, progress = "築底階段", 10
 
-        if progress <= 30: base_score = 40
-        elif progress == 50: base_score = 60
-        elif progress == 70: base_score = 30
-        else: base_score = 10
+        base_score = 40 if progress <= 30 else 60 if progress == 50 else 30 if progress == 70 else 10
+        opportunity_score = min(100, base_score + fund_score) if progress >= 30 else base_score
 
-        if progress >= 30: opportunity_score = min(100, base_score + fund_score)
-        else: opportunity_score = base_score
+        if chip_xray.get("is_surge", False):
+            opportunity_score = min(100, opportunity_score + 10)
 
-        tech_veto = (fish_score < 60 or retreat_score >= 40 or warning_score >= 30)
+        # 🌟 實作「籌碼折價因子」
+        e_score = max(0, min(100, endurance.get("endurance_score", 0) + chip_score))
+
+        if e_score <= 30 or chip_score <= -15:
+            opportunity_score = min(opportunity_score, 39)
+        elif e_score <= 50:
+            opportunity_score = min(opportunity_score, 59)
+
+        has_immunity = is_dual_growth and (chip_score >= 10)
+        veto_threshold = 55 if has_immunity else 60
+        tech_veto = (fish_score < veto_threshold or retreat_score >= 40 or warning_score >= 40)
 
         data_quality = data.get("data_quality", {})
         inst_state = data_quality.get('inst_state', 'missing')
@@ -967,54 +993,32 @@ class FishPositionEngine:
         fund_state = fundamental.get('fund_state', 'missing')
         is_intraday = data_quality.get('is_intraday', False)
 
-        margin_warning_valid = False
         margin_streak = 0
-        is_margin_complete_3d = False
-
         if margin_state == 'complete':
-            recent_3_margin = df['Margin_Balance_Raw'].dropna().tail(3)
-            if len(recent_3_margin) == 3 and (recent_3_margin.index == df.index[-3:]).all():
-                margin_warning_valid = True
-                is_margin_complete_3d = True
-
             valid_margin = df['Margin_Balance_Raw'].dropna()
             if len(valid_margin) > 1:
-                diffs = valid_margin.diff().dropna()
-                for val in diffs.iloc[::-1]:
+                for val in valid_margin.diff().dropna().iloc[::-1]:
                     if val > 0: margin_streak += 1
                     else: break
-
-        if not margin_warning_valid: margin_streak = 0
-
-        is_inst_complete = (inst_state == 'complete')
-        is_inst_partial = (inst_state == 'partial')
 
         k_date = data_quality.get('latest_price_date')
         i_date = data_quality.get('inst_latest_date')
         m_date = data_quality.get('margin_latest_date')
-        latest_market_date = data_quality.get('mkt_latest_date', '無')
 
         is_fresh_and_complete = (
-            is_inst_complete and
-            is_margin_complete_3d and
-            (fund_state == 'complete') and
-            (market_status not in ['Unknown', 'Stale']) and
-            (k_date == i_date == m_date == latest_market_date)
+            inst_state == 'complete' and margin_state == 'complete' and fund_state == 'complete' and
+            market_status not in ['Unknown', 'Stale'] and
+            (k_date == i_date == m_date)
         )
 
         missing_msg = []
-        if is_inst_partial: missing_msg.extend(data_quality.get('missing_inst_parts', []))
-        if not is_margin_complete_3d: missing_msg.append("融資不連貫")
+        if inst_state == 'partial': missing_msg.extend(data_quality.get('missing_inst_parts', []))
+        if margin_state != 'complete': missing_msg.append("融資不連貫")
         if fund_state != 'complete': missing_msg.append("營收異常或過舊")
-        if market_status in ['Unknown', 'Stale']: missing_msg.append("大盤狀態異常")
-        if k_date != latest_market_date or i_date != latest_market_date or m_date != latest_market_date:
-            missing_msg.append("基準日未對齊大盤")
-
         missing_str = "缺" + "+".join(missing_msg) if missing_msg else "資料齊全"
         margin_str = f"(融資連買{margin_streak}天)" if margin_streak > 0 else ""
 
-        if not is_fresh_and_complete and opportunity_score > 0:
-            opportunity_score = int(opportunity_score * 0.5)
+        if not is_fresh_and_complete and opportunity_score > 0: opportunity_score = int(opportunity_score * 0.5)
 
         if opportunity_score >= 80: opportunity_level = "*****"
         elif opportunity_score >= 60: opportunity_level = "****"
@@ -1026,112 +1030,88 @@ class FishPositionEngine:
             opportunity_level = f"降級({opportunity_level})"
 
         position_comment = ""
+
+        # 🌟 邏輯閉環：主標籤狀態判定網
         if has_sys_error:
-            candidate_status = "觀察 - 系統計算異常"
-            opportunity_score = 0
-            opportunity_level = "-"
+            candidate_status, opportunity_score, opportunity_level = "觀察 - 系統計算異常", 0, "-"
             position_comment = "底層安全模組例外，系統強制拒絕評估"
         elif tech_veto:
-            candidate_status = "排除"
-            opportunity_score = 0
-            opportunity_level = "-"
+            candidate_status, opportunity_score, opportunity_level = "排除", 0, "-"
             position_comment = "風險閘門未通過，不列入候選"
-        elif is_intraday or inst_state in ['missing', 'schema_error', 'error']:
-            candidate_status = "技術觀察(缺資料)"
-            opportunity_score = 0
-            opportunity_level = "-"
-            position_comment = "剛脫離整理區,仍在築底階段" if progress <= 20 else "魚頭形成中,適合開始觀察"
-            if progress > 40: position_comment = "技術趨勢成型,適合開始觀察"
-            position_comment += " [缺乏當日籌碼]"
+        elif e_score <= 30 or chip_score <= -15:
+            candidate_status, opportunity_score, opportunity_level = "觀察 - 籌碼惡化", 0, "-"
+            position_comment = f"[{missing_str}] {margin_str} 籌碼與動能極度惡化，系統強制剔除候選資格"
         else:
-            if is_fresh_and_complete:
-                candidate_status = "候選 - 完整大局"
-            else:
-                candidate_status = "觀察 - 籌碼/基本面未齊"
-
+            candidate_status = "候選 - 完整大局" if is_fresh_and_complete else "觀察 - 籌碼/基本面未齊"
             if progress <= 20: position_comment = "剛脫離整理區,仍在築底階段"
             elif progress <= 40: position_comment = "魚頭形成中,適合開始觀察"
             elif progress <= 60: position_comment = "進入主升初期,趨勢開始加速"
             elif progress <= 80: position_comment = "主升中後段,報酬與風險同步增加"
-            elif progress <= 90: position_comment = "魚尾區,追價風險提高"
-            else: position_comment = "疑似出貨區,需提高警覺"
-
+            else: position_comment = "魚尾或出貨區,追價風險極高"
             position_comment = f"【{candidate_status}】 [{missing_str}] {margin_str} " + position_comment
 
         current_price_adj = float(latest["Close"])
         current_price_raw = float(latest.get("Raw_Close", current_price_adj))
         atr14 = float(latest.get("ATR14", current_price_adj * 0.03))
-
-        vwap_breakout, close_pos, vol_shrink_standard, extreme_vol_shrink, near_ma10, near_ma20 = False, 0.5, False, False, False, False
-
-        try:
-            if retreat_score < 60:
-                ma10, ma20 = float(latest["MA10"]), float(latest["MA20"])
-                near_ma10 = (abs(current_price_adj - ma10) / ma10 < 0.02) and (current_price_adj > ma10 * 0.99)
-                near_ma20 = (abs(current_price_adj - ma20) / ma20 < 0.02) and (current_price_adj > ma20 * 0.99)
-                vol_shrink_standard = float(latest["Volume"]) < float(prev["Volume"]) * 0.5
-                extreme_vol_shrink = float(latest["Volume"]) < float(df["VOL5_PRIOR"].iloc[-1]) * 0.7
-                day_range = float(latest["Raw_High"]) - float(latest["Raw_Low"])
-                close_pos = (current_price_raw - float(latest["Raw_Low"])) / day_range if day_range > 0 else 0.5
-                vwap_breakout = (current_price_adj > float(latest["Typical_Price"])) and (float(prev["Close"]) <= float(prev["Typical_Price"]))
-        except Exception as e:
-            has_sys_error = True
-            position_comment = f"【安全模組例外】價格判斷失敗: {str(e)}"
-            candidate_status = "觀察 - 系統計算異常"
-
-        trust_buy = df.get("Trust_NetBuy", pd.Series([0])).tail(3).sum() > 0
-        co_buy = trust_buy and (df.get("Foreign_NetBuy", pd.Series([0])).tail(3).sum() > 0)
+        ratio = current_price_raw / current_price_adj if current_price_adj > 0 else 1.0
 
         vwap60_adj = float(latest.get("VWAP60", df["MA60"].iloc[-1]))
         if pd.isna(vwap60_adj) or vwap60_adj <= 0: vwap60_adj = float(latest["MA60"]) if not pd.isna(latest["MA60"]) else current_price_adj
 
-        cost_gap = current_price_adj - vwap60_adj
-        cost_distance = (cost_gap / vwap60_adj * 100) if vwap60_adj > 0 else 0
+        cost_distance = ((current_price_adj - vwap60_adj) / vwap60_adj * 100) if vwap60_adj > 0 else 0
+        heat_level = "過熱" if cost_distance > 20 else "偏熱" if cost_distance > 10 else "水下(套牢)" if cost_distance < 0 else "正常"
 
-        if cost_distance > 20: heat_level = "過熱"
-        elif cost_distance > 10: heat_level = "偏熱"
-        elif cost_distance < 0: heat_level = "水下(套牢)"
-        else: heat_level = "正常"
+        if heat_level == "過熱": max_tolerance = 15.0
+        elif heat_level == "偏熱": max_tolerance = 20.0
+        else: max_tolerance = 25.0
 
-        can_relax_atr = is_dual_growth and (not is_pit_embargo) and (yoy >= 10) and (progress >= 30) and not tech_veto and is_fresh_and_complete
+        # 🌟 實作「雙軌防守價錨定體系」
+        is_early_stage = (progress <= 40) or (cost_distance <= 6.0)
 
-        # 🌟 V25.2 修改：防守寬容度提升，包容主力洗盤
-        if can_relax_atr:
-            baseline = float(latest["MA10"]) if not pd.isna(latest["MA10"]) else current_price_adj
-            defensive_price_adj = baseline - (2.2 * atr14) # 基本面護體，防守拉開至 2.2 倍
-            if heat_level == "過熱": max_tolerance = 12.0
-            elif heat_level == "偏熱": max_tolerance = 15.0
-            else: max_tolerance = 18.0
+        if is_early_stage:
+            # 軌道 A：初升發動段 (🌟 微調：直接錨定當日最低點，拔除 min 造成的防守過深)
+            raw_low_adj = float(latest.get("Raw_Low", current_price_raw)) / ratio
+            baseline = raw_low_adj
+            defensive_price_adj = baseline
+            defensive_status_text = "初升段起漲防守 (貼近低點)"
         else:
+            # 軌道 B：主升成型段 (均線支撐，容忍洗盤)
             ma20_val = float(latest["MA20"]) if not pd.isna(latest["MA20"]) else current_price_adj
             valid_supports = [s for s in [ma20_val, vwap60_adj] if s < current_price_adj]
             baseline = max(valid_supports) if valid_supports else current_price_adj
-            defensive_price_adj = baseline - (1.8 * atr14) # 一般狀態防守拉開至 1.8 倍
-            if heat_level == "過熱": max_tolerance = 8.0
-            elif heat_level == "偏熱": max_tolerance = 12.0
-            else: max_tolerance = 15.0
+            defensive_price_adj = baseline - (1.8 * atr14)
+            defensive_status_text = "主升段波段防守 (均線ATR)"
 
-        ratio = current_price_raw / current_price_adj if current_price_adj > 0 else 1.0
         defensive_price_raw = defensive_price_adj * ratio
+        is_evaluable = True
 
-        is_defense_valid = True
         if pd.isna(defensive_price_raw) or defensive_price_raw <= 0:
             defensive_price_exec = 0.0
-            defensive_status_text = "無有效防守價 (負值或異常)"
-            is_defense_valid = False
+            defensive_status_text = "無有效防守價 (異常)"
+            is_evaluable = False
         elif ((current_price_raw - defensive_price_raw) / current_price_raw * 100) > max_tolerance:
-            defensive_price_exec = 0.0
-            defensive_status_text = f"無有效防守價 (防守空間 > {max_tolerance}%)"
-            is_defense_valid = False
-        else:
+            from __main__ import WhaleTools
             defensive_price_exec = WhaleTools.round_tick(defensive_price_raw, 'floor')
-            defensive_status_text = "ATR動態基準計算"
-
-        is_evaluable = False
-        if (candidate_status == "候選 - 完整大局") and (not has_sys_error) and (not tech_veto) and is_defense_valid:
-            is_evaluable = True
+            defensive_status_text = f"防守價過深(> {max_tolerance}%)，建議改用短均線停利"
+        else:
+            from __main__ import WhaleTools
+            defensive_price_exec = WhaleTools.round_tick(defensive_price_raw, 'floor')
 
         if is_evaluable:
+            vol_shrink_standard = float(latest["Volume"]) < float(prev["Volume"]) * 0.5
+            extreme_vol_shrink = float(latest["Volume"]) < float(df["VOL5_PRIOR"].iloc[-1]) * 0.7
+            day_range = float(latest["Raw_High"]) - float(latest["Raw_Low"])
+            close_pos = (current_price_raw - float(latest["Raw_Low"])) / day_range if day_range > 0 else 0.5
+            vwap_breakout = (current_price_adj > float(latest["Typical_Price"])) and (float(prev["Close"]) <= float(prev["Typical_Price"]))
+
+            ma10 = float(latest["MA10"]) if not pd.isna(latest["MA10"]) else current_price_adj
+            ma20 = float(latest["MA20"]) if not pd.isna(latest["MA20"]) else current_price_adj
+            near_ma10 = (abs(current_price_adj - ma10) / ma10 < 0.02) and (current_price_adj > ma10 * 0.99)
+            near_ma20 = (abs(current_price_adj - ma20) / ma20 < 0.02) and (current_price_adj > ma20 * 0.99)
+
+            trust_buy = df.get("Trust_NetBuy", pd.Series([0])).tail(3).sum() > 0
+            co_buy = trust_buy and (df.get("Foreign_NetBuy", pd.Series([0])).tail(3).sum() > 0)
+
             if (near_ma10 or near_ma20) and (vol_shrink_standard or extreme_vol_shrink) and close_pos > 0.8:
                 if vwap_breakout and co_buy and extreme_vol_shrink: position_comment = "[技術S級買點] 雙資合買極致量縮回測支撐,站上HLC/3代理!"
                 elif vwap_breakout and co_buy: position_comment = "[技術S級買點] 雙資合買量縮回測,站上HLC/3代理!"
@@ -1144,61 +1124,42 @@ class FishPositionEngine:
         except Exception:
             vwap60_raw = current_price_raw
 
-        # 🌟 V25.2 修改：動態目標價，不再死守 15%，改綁定個股真實波動率 ATR
         atr14_raw = atr14 * ratio
         target_low_raw = vwap60_raw + (3 * atr14_raw)
         target_high_raw = vwap60_raw + (6 * atr14_raw)
-
         if current_price_raw >= target_low_raw:
-            # 如果已經噴出突破第一目標區，跟隨價格推進測距
             target_low_raw = current_price_raw + (1.5 * atr14_raw)
             target_high_raw = current_price_raw + (3.0 * atr14_raw)
 
+        from __main__ import WhaleTools
         upside_low = ((target_low_raw - current_price_raw) / current_price_raw * 100) if current_price_raw > 0 else 0.0
         upside_high = ((target_high_raw - current_price_raw) / current_price_raw * 100) if current_price_raw > 0 else 0.0
         target_low_exec = WhaleTools.round_tick(target_low_raw, 'floor')
         target_high_exec = WhaleTools.round_tick(target_high_raw, 'ceil')
 
-        e_score = max(0, min(100, endurance.get("endurance_score", 0) + data.get("chip_score", 0)))
-
-        if defensive_price_exec <= 0 or not is_defense_valid:
-            base_strategy = "【防守價失效/無防守】無法核算出合理的 ATR 防守區間或乖離過大，風險不可控"
-        elif fish_score >= 70 and e_score <= 40:
-            base_strategy = "【技術與籌碼背離】大趨勢偏多，但短線動能衰退，慎防獲利了結賣壓，切勿追高！"
-        elif fish_score < 70 and (retreat_score >= 60 or warning_score >= 70) and e_score < 40:
+        if not is_evaluable: base_strategy = "【防守價失效/無防守】無法核算出合理的防守區間，風險不可控"
+        elif e_score <= 30 or chip_score <= -15: base_strategy = "【籌碼潰散/破線危機】主力法人無情提款或動能徹底消散，切勿接刀！"
+        elif fish_score >= 70 and e_score <= 40: base_strategy = "【技術與籌碼背離】大趨勢偏多，但短線動能衰退，切勿追高！"
+        elif fish_score < 70 and (retreat_score >= 60 or warning_score >= 70) and e_score < 40 and progress >= 50:
             base_strategy = "【末升段誘多】高風險+低期望值(出貨與接刀跡象已現,切勿追高)"
-        elif e_score <= 40 and retreat_score >= 60:
-            base_strategy = "【短線籌碼潰散/破線危機】短線遭遇沉重賣壓,嚴格防守!"
-        elif cost_distance > 25.0 and retreat_score <= 20 and fish_score >= 70 and e_score > 50:
-            base_strategy = "【極端妖股】風險極端(正乖離極大!空手勿追,防守沿5日線)"
-        elif fish_score >= 70 and (retreat_score <= 20 and warning_score < 30) and cost_distance <= max_tolerance and e_score >= 60 and fundamental.get('is_dual_growth', False):
-            base_strategy = "【大局完整：營收雙增核心單】低風險+高成長(多方與基本面共振完好,可偏多波段操作)"
-        elif fish_score >= 70 and (retreat_score <= 20 and warning_score < 30) and cost_distance <= max_tolerance and e_score >= 60:
-            base_strategy = "【純技術波段單】低風險+高期望值(技術籌碼共振完好,可積極操作)"
-        elif fish_score >= 60 and cost_distance <= 7.0 and e_score >= 60:
-            base_strategy = "【初升段成型】趨勢轉強且風險低(結構初展端倪,可酌量佈局)"
-        elif fish_score >= 60 and (retreat_score <= 20 and warning_score < 30) and cost_distance <= 8.0 and e_score >= 40:
-            base_strategy = "【左側轉折單】低風險+高期望值(左側摸底試單,嚴守停損)"
-        elif retreat_score >= 40 or warning_score >= 40:
-            base_strategy = "【風險醞釀中】部分風險指標升高(高位鬆動跡象,建議減碼或觀望)"
-        elif fish_score >= 60 and e_score < 60:
-            base_strategy = "【技術偏多但動能不足】線型尚可但缺乏買盤點火,建議等待表態"
-        else:
-            base_strategy = "【震盪整理區】多空動能分歧且不明確(建議休養生息)"
+        elif e_score <= 40 and retreat_score >= 60: base_strategy = "【短線籌碼潰散/破線危機】短線遭遇沉重賣壓,嚴格防守!"
+        elif cost_distance > 25.0 and retreat_score <= 20 and fish_score >= 70 and e_score > 50: base_strategy = "【極端妖股】風險極端(正乖離極大!空手勿追,防守沿5日線)"
+        elif fish_score >= 70 and retreat_score <= 20 and warning_score < 40 and e_score >= 60 and is_dual_growth: base_strategy = "【大局完整：營收雙增核心單】低風險+高成長(多方與基本面共振完好)"
+        elif fish_score >= 70 and retreat_score <= 20 and warning_score < 40 and e_score >= 60: base_strategy = "【純技術波段單】低風險+高期望值(技術籌碼共振完好,可積極操作)"
+        elif fish_score >= 60 and cost_distance <= 7.0 and e_score >= 60: base_strategy = "【初升段成型】趨勢轉強且風險低(結構初展端倪,可酌量佈局)"
+        elif fish_score >= 60 and retreat_score <= 20 and warning_score < 40 and cost_distance <= 8.0 and e_score >= 40: base_strategy = "【左側轉折單】低風險+高期望值(左側摸底試單,嚴守停損)"
+        elif retreat_score >= 40 or warning_score >= 40: base_strategy = "【風險醞釀中】部分風險指標升高(高位鬆動跡象,建議減碼或觀望)"
+        elif fish_score >= 60 and e_score < 60: base_strategy = "【技術偏多但動能不足】線型尚可但缺乏買盤點火,建議等待表態"
+        else: base_strategy = "【震盪整理區】多空動能分歧且不明確(建議休養生息)"
 
-        if market_status == 'Bear':
-            base_strategy = f"【逆勢高風險】大盤空頭，請縮小部位！ " + base_strategy
+        if market_status == 'Bear': base_strategy = f"【逆勢高風險】大盤空頭！ " + base_strategy
 
-        if candidate_status == "觀察 - 系統計算異常":
-            strategy_profile = f"【安全模組異常】系統強制降級。純技術面研判：{base_strategy}"
-        elif candidate_status == "【分析失敗】資料異常":
-            strategy_profile = f"【系統防呆】資料嚴重異常。純技術面研判：{base_strategy}"
-        elif candidate_status == "排除":
-            strategy_profile = f"【風險閘門排除】不列入期望值評估。純技術面研判：{base_strategy}"
-        elif not is_evaluable:
-            strategy_profile = f"【{candidate_status}】缺乏大局資料。純技術面研判：{base_strategy}"
-        else:
-            strategy_profile = base_strategy
+        if candidate_status == "觀察 - 系統計算異常": strategy_profile = f"【安全模組異常】系統強制降級。純技術面研判：{base_strategy}"
+        elif candidate_status == "【分析失敗】資料異常": strategy_profile = f"【系統防呆】資料嚴重異常。純技術面研判：{base_strategy}"
+        elif candidate_status == "排除": strategy_profile = f"【風險閘門排除】技術或籌碼面存在顯著風險，不建議進場操作。純技術面研判：{base_strategy}"
+        elif candidate_status == "觀察 - 籌碼惡化": strategy_profile = f"【籌碼制衡降級】籌碼極差，退出候選名單。純技術面研判：{base_strategy}"
+        elif not is_evaluable: strategy_profile = f"【防守價異常】無法核算合理停損區間。純技術面研判：{base_strategy}"
+        else: strategy_profile = base_strategy
 
         return {
             "candidate_status": candidate_status, "fish_position": position, "progress": progress,
@@ -1213,10 +1174,11 @@ class FishPositionEngine:
 
 print(f"FishPositionEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 8 =====
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 9: EarlyWarningEngine
 
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 9: EarlyWarningEngine (🌟 V25.2 強化：放寬高檔預警偵測帶至 10%)
+import pandas as pd
+import numpy as np
 
 class EarlyWarningEngine:
     def calculate(self, data):
@@ -1231,27 +1193,21 @@ class EarlyWarningEngine:
             delta = df['Close'].diff()
             gain = delta.clip(lower=0)
             loss = -delta.clip(upper=0)
-
             avg_gain = gain.ewm(alpha=1/14, adjust=False).mean()
             avg_loss = loss.ewm(alpha=1/14, adjust=False).mean()
-
             rs = avg_gain / avg_loss
             df['RSI'] = 100 - (100 / (1 + rs))
-
             df['RSI'] = np.where(avg_loss == 0, 100.0, df['RSI'])
             df['RSI'] = np.where((avg_loss == 0) & (avg_gain == 0), 50.0, df['RSI'])
-
             latest = df.iloc[-1]
-            prev = df.iloc[-2]
-
         except Exception as e:
             df['RSI'] = np.nan
             error_details.append(f"RSI計算錯誤: {str(e)}")
             has_error = True
 
         recent_high = df['High'].tail(20).max()
-        # 🌟 V25.2 修改：放寬至 10%，防禦主力閃崩出貨
-        is_near_high = ((recent_high - latest['Close']) / latest['Close']) < 0.10
+        is_uptrend = latest['Close'] > df['MA60'].iloc[-1]
+        is_near_high = (((recent_high - latest['Close']) / latest['Close']) < 0.10) and is_uptrend
 
         grp1_score = 0
         try:
@@ -1262,7 +1218,6 @@ class EarlyWarningEngine:
         except Exception as e:
             checks.append(("高檔量縮且K線壓縮", "Error"))
             error_details.append(f"[Warning_Vol] {str(e)}")
-            has_error = True
 
         try:
             if 'Typical_Price' in df.columns and (df['Close'].tail(3) < df['Typical_Price'].tail(3)).sum() >= 2 and is_near_high:
@@ -1272,26 +1227,19 @@ class EarlyWarningEngine:
         except Exception as e:
             checks.append(("連續受制當日HLC/3代理線", "Error"))
             error_details.append(f"[Warning_HLC3] {str(e)}")
-            has_error = True
 
         try:
-            if pd.isna(latest['RSI']):
-                checks.append(("RSI動能頂背離現象", "Error"))
-                has_error = True
+            if pd.isna(latest['RSI']): checks.append(("RSI動能頂背離現象", "Error"))
             else:
                 is_price_peak = latest['Close'] >= df['Close'].tail(15).max()
                 prev_peaks = df.iloc[-25:-5][df.iloc[-25:-5]['Close'] >= df.iloc[-25:-5]['Close'].rolling(5).max()]
-                if is_price_peak and not prev_peaks.empty:
-                    prev_peak_rsi = prev_peaks.iloc[-1]['RSI']
-                    if latest['RSI'] < prev_peak_rsi:
-                        grp1_score += 30
-                        checks.append(("RSI動能頂背離現象", True))
-                    else: checks.append(("RSI動能頂背離現象", False))
+                if is_price_peak and not prev_peaks.empty and latest['RSI'] < prev_peaks.iloc[-1]['RSI']:
+                    grp1_score += 30
+                    checks.append(("RSI動能頂背離現象", True))
                 else: checks.append(("RSI動能頂背離現象", False))
         except Exception as e:
             checks.append(("RSI動能頂背離現象", "Error"))
             error_details.append(f"[Warning_RSI] {str(e)}")
-            has_error = True
 
         try:
             macd_decelerating = (latest['MACD_Hist'] > 0) and (latest['MACD_Hist'] < prev['MACD_Hist']) and (prev['MACD_Hist'] < df.iloc[-3]['MACD_Hist'])
@@ -1302,50 +1250,42 @@ class EarlyWarningEngine:
         except Exception as e:
             checks.append(("MACD紅柱連縮(上漲加速度反轉)", "Error"))
             error_details.append(f"[Warning_MACD] {str(e)}")
-            has_error = True
 
         grp1_score = min(60, grp1_score)
 
         grp2_score = 0
-        data_quality = data.get("data_quality", {})
-        margin_state = data_quality.get("margin_state", "missing")
-
-        if margin_state != 'complete':
-            checks.append(("融資餘額異常增加(散戶接刀)", "Unknown"))
+        margin_state = data.get("data_quality", {}).get("margin_state", "missing")
+        if margin_state != 'complete': checks.append(("融資餘額異常增加(散戶接刀)", "Unknown"))
         else:
             try:
                 recent_3_raw = df['Margin_Balance_Raw'].dropna().tail(3)
                 if len(recent_3_raw) == 3 and (recent_3_raw.index == df.index[-3:]).all():
-                    margin_diff = recent_3_raw.diff().dropna()
-                    if (margin_diff > 0).sum() >= 2:
-                        checks.append(("融資餘額異常增加(散戶接刀)", True))
-                        grp2_score += 40
+                    diffs = recent_3_raw.diff().dropna()
+                    if (diffs > 0).sum() >= 2:
+                        margin_inc = diffs[diffs > 0].sum()
+                        vol_avg = df['VOL20_PRIOR'].iloc[-1]
+                        if margin_inc > (vol_avg * 0.05):
+                            checks.append(("融資餘額異常增加(散戶接刀)", True))
+                            grp2_score += 20
+                        else: checks.append(("融資微增(未達警戒比例)", False))
                     else: checks.append(("融資餘額異常增加(散戶接刀)", False))
-                else:
-                    checks.append(("融資餘額異常增加(散戶接刀)", "Unknown"))
+                else: checks.append(("融資餘額異常增加(散戶接刀)", "Unknown"))
             except Exception as e:
                 checks.append(("融資餘額異常增加(散戶接刀)", "Error"))
                 error_details.append(f"[Warning_Margin] {str(e)}")
-                has_error = True
 
-        grp2_score = min(40, grp2_score)
         score = min(100, grp1_score + grp2_score)
 
-        if has_error: status = "系統計算異常(Unknown)"
+        if len(error_details) > 0: status = "系統計算異常(Unknown)"
         elif score >= 70: status = "高度警戒(A轉風險極大或散戶接刀)"
         elif score >= 30: status = "動能衰退(提防拉高出貨)"
         else: status = "動能正常(未見明顯敗象)"
 
-        return {
-            "warning_score": score, "warning_status": status, "warning_checks": checks,
-            "has_error": has_error, "error_details": error_details
-        }
+        return {"warning_score": score, "warning_status": status, "warning_checks": checks, "has_error": len(error_details)>0, "error_details": error_details}
 
 print(f"EarlyWarningEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 9 =====
-
-# GrandMaster Whale Engine V25.2 Pro
+# GrandMaster Whale Engine V25.6 Pro
 # Cell 10: SmartMoneyDefenseEngine
 
 class SmartMoneyDefenseEngine:
@@ -1466,10 +1406,8 @@ class SmartMoneyDefenseEngine:
 
 print(f"SmartMoneyDefenseEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 10 =====
-
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 11: ChipRadarEngine
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 11: ChipRadarEngine (🌟 微調：投信首度插旗加入 >= 100張 的絕對張數濾網，防範冷門股雜訊)
 
 class ChipRadarEngine:
     def calculate(self, data, mode):
@@ -1506,12 +1444,54 @@ class ChipRadarEngine:
         if is_complete:
             messages.append(f"【單日籌碼明細】外資: {int(foreign_buy):+} 張 | 投信: {int(trust_buy):+} 張 | 自營: {int(dealer_buy):+} 張 | 合計: {int(inst_buy):+} 張")
 
-            if trust_buy > (vol * 0.05) or trust_buy > 500:
-                score += 20
-                messages.append(f"【投信大買】當日投信買超 {int(trust_buy)} 張,大哥啟動波段認養!")
-            elif trust_buy < -500:
-                score -= 10
-                messages.append(f"【投信結帳】當日投信賣超 {abs(int(trust_buy))} 張,留意大哥結帳!")
+            df_valid_trust = df.dropna(subset=['Trust_NetBuy'])
+            if len(df_valid_trust) >= 5:
+                recent_5_trust = df_valid_trust['Trust_NetBuy'].tail(5) / 1000
+                trust_5d_sum = recent_5_trust.sum()
+
+                trust_consecutive_buy = 0
+                for val in recent_5_trust.iloc[::-1]:
+                    if val > 0: trust_consecutive_buy += 1
+                    else: break
+
+                trust_consecutive_sell = 0
+                for val in recent_5_trust.iloc[::-1]:
+                    if val < 0: trust_consecutive_sell += 1
+                    else: break
+
+                vol_avg_5d = df_valid_trust['Volume'].tail(5).mean() / 1000
+
+                # 🌟 波段認養判斷 (連買 3 天，或 5 日總買超大)
+                if trust_consecutive_buy >= 3 or trust_5d_sum > (vol_avg_5d * 0.1) or trust_5d_sum > 1000:
+                    score += 20
+                    messages.append(f"【投信波段認養】近5日大哥累計買超 {int(trust_5d_sum)} 張(連買{trust_consecutive_buy}天)，籌碼集中！")
+
+                # 🌟 新增：「投信首度插旗」提早卡位 (前幾天沒動作，今天突然單日大買佔均量 > 5% 且絕對張數 >= 100張)
+                elif trust_consecutive_buy in [1, 2] and trust_buy > (vol_avg_5d * 0.05) and trust_buy >= 100:
+                    score += 20
+                    messages.append(f"【投信首度插旗】大哥單日大買 {int(trust_buy)} 張(佔均量>5%)，首度表態卡位！")
+
+                # 🌟 波段結帳判斷
+                elif trust_consecutive_sell >= 2 or trust_5d_sum < -500:
+                    score -= 15
+                    messages.append(f"【投信波段結帳】近5日大哥累計賣超 {abs(int(trust_5d_sum))} 張(連賣{trust_consecutive_sell}天)，警戒撤退！")
+
+                # 🌟 單日微幅調節 (豁免扣分)
+                elif trust_buy < 0 and trust_5d_sum > 0:
+                    messages.append(f"【投信微幅調節】單日小賣 {abs(int(trust_buy))} 張，但近5日仍偏多，持續觀察。")
+
+                # 🌟 單日點火 (未達首度插旗標準)
+                elif trust_buy > 0:
+                    score += 5
+                    messages.append(f"【投信單日點火】單日買超 {int(trust_buy)} 張，觀察是否形成連買。")
+            else:
+                # 資料不足 5 天的回退機制
+                if trust_buy > (vol * 0.05) or trust_buy > 500:
+                    score += 20
+                    messages.append(f"【投信大買】當日投信買超 {int(trust_buy)} 張,大哥啟動波段認養!")
+                elif trust_buy < -500:
+                    score -= 10
+                    messages.append(f"【投信結帳】當日投信賣超 {abs(int(trust_buy))} 張,留意大哥結帳!")
 
             if inst_buy > (vol * 0.1) and trust_buy > 0 and foreign_buy > 0 and dealer_buy > 0:
                 score += 15
@@ -1554,15 +1534,18 @@ class ChipRadarEngine:
 
 print(f"ChipRadarEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 11 =====
-
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 12: ChipXRayEngine (🌟 V25.2: 修正規避大戶吸籌純度過 100% 語意問題)
+# GrandMaster Whale Engine V25.6 Pro
+# Cell 12: ChipXRayEngine
 
 class ChipXRayEngine:
-    def calculate(self, tdcc_df, position_info):
+    def calculate(self, tdcc_df, fish_score, retreat_score):
         if tdcc_df is None or tdcc_df.empty or len(tdcc_df) < 3:
-            return {"xray_status": "資料不足", "xray_message": "集保數據不足，無法進行中線判定", "is_surge": False}
+            avail = len(tdcc_df) if tdcc_df is not None else 0
+            return {
+                "xray_status": "快取累積中",
+                "xray_message": f"本地快取庫僅有 {avail} 週記錄，需累積滿 3 週即可啟動大戶 X 光透視",
+                "is_surge": False
+            }
 
         latest_3 = tdcc_df.tail(3).reset_index(drop=True)
         w0 = latest_3.iloc[2]
@@ -1583,8 +1566,7 @@ class ChipXRayEngine:
             purity = delta_w / abs(delta_r) if delta_r != 0 else 0.0
             if purity >= 0.8:
                 status = "S級急買突襲"
-                # 🌟 V25.2 修改：修正純度語法，符合現實籌碼轉移現況
-                message = f"🔥 【S級急買突襲】大戶單週暴力掃貨 (增幅 {delta_w:.2f}%)，大戶吸籌力道為散戶退場的 {purity:.1f} 倍！散戶急退，隨時發動！"
+                message = f"🔥 【S級急買突襲】大戶單週暴力掃貨 (增幅 {delta_w:.2f}%)，大戶吸籌力道為散戶退場的 {purity:.1f} 倍！隨時發動！"
                 is_surge = True
                 return {"xray_status": status, "xray_message": message, "is_surge": is_surge}
 
@@ -1594,10 +1576,10 @@ class ChipXRayEngine:
         is_distributing = (w0['Whale_Pct'] < w1['Whale_Pct'] and w1['Whale_Pct'] < w2['Whale_Pct'])
         is_retail_entering = (w0['Retail_Pct'] > w1['Retail_Pct'] and w1['Retail_Pct'] > w2['Retail_Pct'])
 
-        pos = position_info.get("fish_position", "")
+        pos_str = "底" if fish_score < 60 else "出貨" if retreat_score >= 60 else ""
 
         if is_accumulating and is_retail_leaving:
-            if "底" in pos or "形成" in pos:
+            if "底" in pos_str:
                 status = "黃金坑潛伏"
                 message = f"★ 【底部籌碼沉澱】大戶(連3週)默默吸籌，散戶退場，等待突破！"
             else:
@@ -1605,7 +1587,7 @@ class ChipXRayEngine:
                 message = f"💡 【大戶吸籌】籌碼持續集中至大戶手中，趨勢偏多。"
 
         elif is_distributing and is_retail_entering:
-            if "出貨" in pos or "魚尾" in pos:
+            if "出貨" in pos_str:
                 status = "逃頂警報"
                 message = f"☠️ 【大戶派發確認】高檔籌碼鬆動，主力連3週倒貨給散戶，嚴格防守！"
             else:
@@ -1616,9 +1598,7 @@ class ChipXRayEngine:
 
 print(f"ChipXRayEngine (集保透視外掛) 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 12 =====
-
-# GrandMaster Whale Engine V25.2 Pro
+# GrandMaster Whale Engine V25.6 Pro
 # Cell 13: Dashboard Report Engine
 
 class DashboardEngine:
@@ -1653,7 +1633,7 @@ class DashboardEngine:
 
         fish_check_text = ""
         for item, status in fish["health_checks"]:
-            if status == "Error": mark = "?"
+            if status == "Error": mark = "⚠️錯誤"
             elif status is None: mark = "-"
             elif status: mark = "O"
             else: mark = "X"
@@ -1661,21 +1641,21 @@ class DashboardEngine:
 
         retreat_check_text = ""
         for item, status in retreat["retreat_checks"]:
-            if status == "Error": mark = "?"
-            elif status == "Unknown": mark = "?"
+            if status == "Error": mark = "⚠️錯誤"
+            elif status == "Unknown": mark = "❓未知"
             elif status is None: mark = "-"
-            elif status: mark = "X"
-            else: mark = "O"
+            elif status: mark = "🚨觸發"
+            else: mark = "✅安全"
             retreat_check_text += f"{item:<25} [{mark}]\n"
 
         warning_check_text = ""
         for item, status in warning["warning_checks"]:
-            if status == "Error": mark = "?"
-            elif status == "Unknown": mark = "?"
+            if status == "Error": mark = "⚠️錯誤"
+            elif status == "Unknown": mark = "❓未知"
             elif status == "NOT_APP": mark = "不適用"
             elif status is None: mark = "待更新"
-            elif status: mark = "X"
-            else: mark = "O"
+            elif status: mark = "🚨觸發"
+            else: mark = "✅安全"
             warning_check_text += f"{item:<25} [{mark}]\n"
 
         endurance_msg_text = ""
@@ -1757,28 +1737,19 @@ Cost Heat: {heat_level} (動態容忍上限 {position.get('max_tolerance', 0)}%)
 
 print(f"DashboardEngine 載入完成 ({WHALE_VERSION})")
 
-# ===== CELL 13 =====
-
-# GrandMaster Whale Engine V25.2 Pro
-# Cell 14: 執行主程式 (🌟 V25.2 強化：主迴圈亂數擬真延遲)
-
-import os
-import json
-import time
-import random
-from datetime import datetime
-import pytz
-
 class WhaleEngine:
     def __init__(self, token=None):
+        # Local class references already in module scope
         self.shared_dl = DataLoader()
-        if token is None:
-            token = os.getenv("FINMIND_TOKEN", "")
+        token = token or os.getenv("FINMIND_TOKEN", "")
         if token:
             try: self.shared_dl.login_by_token(api_token=token)
             except Exception: pass
 
-        self.data_engine = DataEngine(dataloader=self.shared_dl)
+        tdcc_cache_dir = os.path.join(os.getcwd(), 'TDCC_Cache')
+        self.tdcc_manager = TDCCCacheManager(tdcc_cache_dir)
+        self.data_engine = DataEngine(dataloader=self.shared_dl, tdcc_manager=self.tdcc_manager)
+
         self.fish_engine = FishScoreEngine()
         self.retreat_engine = RetreatScoreEngine()
         self.fundamental_engine = FundamentalEngine()
@@ -1794,18 +1765,15 @@ class WhaleEngine:
         if custom_params is None: custom_params = {}
         try:
             print(f"\n開始分析 {stock_id}...")
-
             tz = pytz.timezone('Asia/Taipei')
             now = datetime.now(tz)
-            requested_mode = mode
-            effective_mode = mode
+            requested_mode, effective_mode = mode, mode
 
             df, target_code, data_quality, rev_df, tdcc_df = self.data_engine.load_stock(stock_id, effective_mode)
 
             if df is None or df.empty or len(df) < 60: raise Exception("歷史資料不足或異常")
             if pd.isna(df["Volume"].iloc[-1]) or df["Volume"].iloc[-1] <= 0: raise Exception("無成交量")
 
-            # 🌟 V25.2 傳入個股最新日期，提供 OTC 防呆判斷
             mkt = self.data_engine.load_market(target_code, data_quality['latest_price_date'])
             data = self.data_engine.prepare_indicators(df, mkt)
 
@@ -1819,19 +1787,12 @@ class WhaleEngine:
             endurance = self.endurance_engine.calculate(data)
             defense = self.defense_engine.calculate(data, market_data={"df": mkt})
 
-            all_errors = (
-                data_quality.get('errors', []) +
-                fish.get('error_details', []) +
-                retreat.get('error_details', []) +
-                warning.get('error_details', []) +
-                endurance.get('error_details', []) +
-                defense.get('error_details', [])
-            )
-            data['data_quality']['errors'] = all_errors
-
-            position = self.position_engine.calculate(data, fish, retreat, warning, endurance, defense, fundamental)
             chip = self.chip_engine.calculate(data, effective_mode)
-            chip_xray = self.xray_engine.calculate(tdcc_df, position)
+            chip_xray = self.xray_engine.calculate(tdcc_df, fish["fish_score"], retreat["retreat_score"])
+            position = self.position_engine.calculate(data, fish, retreat, warning, endurance, defense, fundamental, chip, chip_xray)
+
+            all_errors = data_quality.get('errors', []) + fish.get('error_details', []) + retreat.get('error_details', []) + warning.get('error_details', []) + endurance.get('error_details', []) + defense.get('error_details', [])
+            data['data_quality']['errors'] = all_errors
 
             mode_info = {'requested': requested_mode, 'effective': effective_mode}
             self.dashboard_engine.generate_report(stock_id, fish, retreat, position, endurance, warning, defense, chip, chip_xray, fundamental, data_quality, mode_info)
@@ -1844,95 +1805,103 @@ class WhaleEngine:
             }
         except Exception as e:
             print(f"[{stock_id}] 分析過程遭遇錯誤: {str(e)}")
-            return {
-                "stock_id": stock_id,
-                "fish": {"fish_score": 0, "health_grade": "-", "trend_status": "-", "rs_status": "-", "chip_status": "-", "health_checks": []},
-                "retreat": {"retreat_score": 0, "risk_status": "-", "retreat_comment": f"分析失敗", "retreat_checks": []},
-                "position": {
-                    "candidate_status": "【分析失敗】資料異常", "fish_position": "-", "progress": 0, "opportunity_score": 0, "opportunity_level": "-",
-                    "position_comment": "資料獲取或計算發生異常", "strategy_profile": "【系統防呆】分析過程發生錯誤，略過評估",
-                    "bias20": 0, "current_price": 0, "vwap60": 0,
-                    "cost_distance": 0, "target_low": 0, "target_high": 0, "upside_low": 0, "upside_high": 0,
-                    "heat_level": "-", "defensive_price": 0, "max_tolerance": 8.0, "defensive_status_text": "錯誤", "is_evaluable": False
-                },
-                "fundamental": {"fund_score": 0, "fund_label": "【分析異常】", "yoy": 0, "mom": 0, "is_high": False, "fund_state": "error"},
-                "endurance": {"endurance_score": 0, "endurance_status": "-", "endurance_messages": []},
-                "warning": {"warning_score": 0, "warning_status": "-", "warning_checks": []},
-                "defense": {"defense_status": "-", "defense_signals": []},
-                "chip": {"chip_score": 0, "chip_status": "-", "chip_messages": []},
-                "chip_xray": {"xray_status": "分析異常", "xray_message": "系統計算失敗", "is_surge": False},
-                "data_quality": {}, "is_optimized": is_optimized, "all_errors": [str(e)],
-                "mode_info": {'requested': requested_mode, 'effective': 'intraday'}
-            }
+            return {"stock_id": stock_id, "position": {"candidate_status": "【分析失敗】資料異常"}, "all_errors": [str(e)]}
 
 
-if __name__ == '__main__':
-    results = []
-    print("-" * 50)
-    print(f"GrandMaster Whale Engine {WHALE_VERSION} 啟動")
-    
-    print("[1] 盤中極速模式(純技術面,快速掃描,免耗 API)")
-    print("[2] 盤後大局透視(包含集保大戶X光掃描)")
-    print("-" * 50)
-    
-    mode_choice = input("請輸入模式代碼 (1或2,預設為2): ").strip()
-    current_mode = 'intraday' if mode_choice == '1' else 'after_market'
-    
-    stock_input = input("\n請輸入股票代號(請以空格分隔,例如: 2330 2317 3324): \n").strip()
-    stock_list = list(dict.fromkeys([s.strip() for s in stock_input.split() if s.strip()]))
-    
-    print("-" * 50)
-    param_choice = input("是否載入鯨魚優化器參數？(1: 載入, 2: 不載入/使用預設, 預設2): ").strip()
-    use_custom_params = True if param_choice == '1' else False
-    print("-" * 50)
-    
-    print(f"喚醒並更新總司令(engine)至 {WHALE_VERSION} 版本...")
+
+
+# ==============================================================================
+# Cell 15: Excel Export Module (可選輸出工具)
+# ==============================================================================
+
+def format_check(status):
+    if status == "Error": return "⚠️錯誤"
+    elif status == "Unknown": return "❓未知"
+    elif status is None: return "-"
+    elif status: return "🚨觸發"
+    else: return "✅安全"
+
+def format_fish_check(status):
+    if status == "Error": return "⚠️錯誤"
+    elif status is None: return "-"
+    elif status: return "O"
+    else: return "X"
+
+def export_v25_6_to_excel(results, output_filename=None):
+    if not results:
+        return None
     try:
-        engine = WhaleEngine()
-    except Exception as e:
-        print(f"引擎喚醒失敗: {e}")
-    
-    stats = {"evaluable": 0, "veto": 0, "observe": 0, "error": 0, "fail": 0}
-    
-    if 'engine' in locals():
-        for stock_id in stock_list:
-            print("-" * 50)
-            custom_params = {}
-            is_optimized = False
-    
-            if use_custom_params:
-                file_name = f"{stock_id}_參數回朔.json"
-                if os.path.exists(file_name):
-                    try:
-                        with open(file_name, 'r', encoding='utf-8') as f:
-                            custom_params = json.load(f).get("custom_parameters", {})
-                        print(f"[{stock_id}] ✅ 載入優化參數: {custom_params}")
-                        is_optimized = True
-                    except Exception as e:
-                        print(f"[{stock_id}] ⚠️ 參數讀取失敗 ({e})，退回預設。")
-    
-            result = engine.analyze(stock_id, mode=current_mode, custom_params=custom_params, is_optimized=is_optimized)
-            if result is not None:
-                results.append(result)
-    
-                c_status = result["position"]["candidate_status"]
-                if c_status == "【分析失敗】資料異常": stats["fail"] += 1
-                elif "系統計算異常" in c_status: stats["error"] += 1
-                elif c_status == "排除": stats["veto"] += 1
-                elif "觀察" in c_status: stats["observe"] += 1
-                elif "候選" in c_status: stats["evaluable"] += 1
-    
-            # 🌟 V25.2 升級：動態亂數延遲 (防鎖)
-            delay_time = random.uniform(1.5, 3.5)
-            print(f"--- 安全延遲 {delay_time:.2f} 秒 ---")
-            time.sleep(delay_time)
-    
-    print("\n" + "="*50)
-    print(f"批次分析完成! 共掃描 {len(results)} 檔。")
-    print(f"✅ 可評估候選: {stats['evaluable']} 檔")
-    print(f"👀 降級為觀察: {stats['observe']} 檔")
-    print(f"🚫 風險被排除: {stats['veto']} 檔")
-    print(f"⚠️ 系統算異常: {stats['error']} 檔")
-    print(f"❌ 分析總失敗: {stats['fail']} 檔")
-    print("="*50)
-    print("系統將自動執行下一個 Cell 並為您下載 Excel 實戰報表...")
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        print("openpyxl 未安裝，無法匯出 Excel")
+        return None
+
+    wb = Workbook()
+    summary_ws = wb.active
+    summary_ws.title = "Summary"
+
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+
+    as_of_date = datetime.now(pytz.timezone('Asia/Taipei')).strftime("%Y-%m-%d %H:%M:%S")
+    summary_ws.append([f"報表產出時間: {as_of_date}", "", "市場別: 台灣 (TSE/OTC)", "", "貨幣: TWD", "價格口徑: 實戰價"])
+    summary_ws.append(["註：報表中之型態、代理等用語為量價規則式判讀，非絕對事實，請搭配實際市場籌碼服用。"])
+    summary_ws.append(["*免責註記：防守價以還原價基準配上 ATR 計算後再轉回實戰價；極端除權息或系統拒絕評估時標示為無效。"])
+    summary_ws.append([])
+
+    headers = [
+        "股票", "參數狀態", "大局狀態", "機會分數", "魚頭分數", "綜合撤退風險", "綜合預警狀態",
+        "基本面標籤", "營收 YoY", "營收 MoM", "集保X光狀態", "型態防禦", "健康等級",
+        "續航力狀態", "魚體位置", "目前價(Raw)", "實戰防守價(ATR)", "60日加權均價",
+        "大戶籌碼動向", "實戰期望/風險評估", "底層錯誤追蹤", "運作模式"
+    ]
+    summary_ws.append(headers)
+
+    for r in results:
+        if not r or "position" not in r: continue
+        pos = r.get("position", {})
+        fsh = r.get("fish", {})
+        ret = r.get("retreat", {})
+        war = r.get("warning", {})
+        endur = r.get("endurance", {})
+        fund = r.get("fundamental", {})
+        xray = r.get("chip_xray", {})
+        defen = r.get("defense", {})
+        dq = r.get("data_quality", {})
+        m_inf = r.get("mode_info", {})
+
+        row_data = [
+            r.get("stock_id", "-"),
+            "🌟客製優化" if r.get("is_optimized") else "🔹系統預設",
+            pos.get("candidate_status", "-"),
+            pos.get("opportunity_score", 0),
+            fsh.get("fish_score", 0),
+            ret.get("retreat_status", "-"),
+            war.get("warning_status", "-"),
+            fund.get("revenue_status", "-"),
+            fund.get("yoy", "-"),
+            fund.get("mom", "-"),
+            xray.get("status", "-"),
+            defen.get("defense_status", "-"),
+            pos.get("health_level", "-"),
+            endur.get("endurance_status", "-"),
+            pos.get("fish_position", "-"),
+            pos.get("current_raw_price", 0),
+            pos.get("real_stop_loss_price", 0),
+            pos.get("vwap60", 0),
+            xray.get("movement_label", "-"),
+            pos.get("risk_assessment", "-"),
+            "; ".join(r.get("all_errors", [])) if r.get("all_errors") else "無",
+            m_inf.get("effective", "盤後")
+        ]
+        summary_ws.append(row_data)
+
+    if not output_filename:
+        v_clean = WHALE_VERSION.replace(" ", "_").replace(".", "_")
+        time_str = datetime.now(pytz.timezone('Asia/Taipei')).strftime("%Y%m%d")
+        output_filename = f"{v_clean}_Report_{time_str}.xlsx"
+
+    wb.save(output_filename)
+    return output_filename
