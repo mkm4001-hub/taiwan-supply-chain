@@ -1,11 +1,12 @@
 # ==============================================================================
 # GrandMaster Whale Engine V25.6 Pro (邏輯閉環完全體) - 網頁端專用決策判斷核心模組
 # 
-# 🌟 本版本具備三大升級：
+# 🌟 本版本具備三大升級與除錯微調：
 # 1. 獵豹升級：實作底部成本區位豁免權 (成本距離 <= 8%)，免除起漲誤殺
 # 2. 籌碼折價因子：徹底解決基本面高分但籌碼潰散的自我矛盾 (華邦電穿幫修復)
-# 3. 投信波段認養濾網：連續買超天數與 >= 100 張絕對門檻，防範冷門股與單日隔日沖雜訊
-# 4. DataEngine 柔性對齊：完全拔除 YF 延遲當機 Bug，採用 T-1 柔性對齊
+# 3. 投信波段認養濾網：連續買超天數與 >= 100 張絕對門檻，修復投信連賣與總和為正的語意衝突 Bug
+# 4. 集保透視外掛：開放 2 週資料即可啟動「S級急買突襲」偵測
+# 5. DataEngine 柔性對齊：完全拔除 YF 延遲當機 Bug，採用 T-1 柔性對齊
 # ==============================================================================
 
 import os
@@ -1090,11 +1091,11 @@ class FishPositionEngine:
             defensive_status_text = "無有效防守價 (異常)"
             is_evaluable = False
         elif ((current_price_raw - defensive_price_raw) / current_price_raw * 100) > max_tolerance:
-            from __main__ import WhaleTools
+            # Local WhaleTools reference
             defensive_price_exec = WhaleTools.round_tick(defensive_price_raw, 'floor')
             defensive_status_text = f"防守價過深(> {max_tolerance}%)，建議改用短均線停利"
         else:
-            from __main__ import WhaleTools
+            # Local WhaleTools reference
             defensive_price_exec = WhaleTools.round_tick(defensive_price_raw, 'floor')
 
         if is_evaluable:
@@ -1131,7 +1132,7 @@ class FishPositionEngine:
             target_low_raw = current_price_raw + (1.5 * atr14_raw)
             target_high_raw = current_price_raw + (3.0 * atr14_raw)
 
-        from __main__ import WhaleTools
+        # Local WhaleTools reference
         upside_low = ((target_low_raw - current_price_raw) / current_price_raw * 100) if current_price_raw > 0 else 0.0
         upside_high = ((target_high_raw - current_price_raw) / current_price_raw * 100) if current_price_raw > 0 else 0.0
         target_low_exec = WhaleTools.round_tick(target_low_raw, 'floor')
@@ -1859,49 +1860,177 @@ def export_v25_6_to_excel(results, output_filename=None):
     ]
     summary_ws.append(headers)
 
-    for r in results:
-        if not r or "position" not in r: continue
-        pos = r.get("position", {})
-        fsh = r.get("fish", {})
-        ret = r.get("retreat", {})
-        war = r.get("warning", {})
-        endur = r.get("endurance", {})
-        fund = r.get("fundamental", {})
-        xray = r.get("chip_xray", {})
-        defen = r.get("defense", {})
-        dq = r.get("data_quality", {})
-        m_inf = r.get("mode_info", {})
+    for col_num, header in enumerate(headers, 1):
+        cell = summary_ws.cell(row=5, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
 
-        row_data = [
-            r.get("stock_id", "-"),
-            "🌟客製優化" if r.get("is_optimized") else "🔹系統預設",
-            pos.get("candidate_status", "-"),
-            pos.get("opportunity_score", 0),
-            fsh.get("fish_score", 0),
-            ret.get("retreat_status", "-"),
-            war.get("warning_status", "-"),
-            fund.get("revenue_status", "-"),
-            fund.get("yoy", "-"),
-            fund.get("mom", "-"),
-            xray.get("status", "-"),
-            defen.get("defense_status", "-"),
-            pos.get("health_level", "-"),
-            endur.get("endurance_status", "-"),
-            pos.get("fish_position", "-"),
-            pos.get("current_raw_price", 0),
-            pos.get("real_stop_loss_price", 0),
-            pos.get("vwap60", 0),
-            xray.get("movement_label", "-"),
-            pos.get("risk_assessment", "-"),
-            "; ".join(r.get("all_errors", [])) if r.get("all_errors") else "無",
-            m_inf.get("effective", "盤後")
-        ]
-        summary_ws.append(row_data)
+    for result in results:
+        if not result or "fish" not in result: continue
+        stock_id = result["stock_id"]
+        fish = result.get("fish", {})
+        retreat = result.get("retreat", {})
+        position = result.get("position", {})
+        endurance = result.get("endurance", {})
+        warning = result.get("warning", {})
+        defense = result.get("defense", {"defense_status": "無資料", "defense_signals": []})
+        chip = result.get("chip", {"chip_score": 0, "chip_status": "未啟用", "chip_messages": []})
+        chip_xray = result.get("chip_xray", {"xray_status": "-", "xray_message": "-"})
+        fundamental = result.get("fundamental", {"fund_score": 0, "fund_label": "-", "yoy": 0, "mom": 0})
+        data_quality = result.get("data_quality", {})
+        all_errors = result.get("all_errors", [])
+        error_str = " | ".join(all_errors) if all_errors else "無"
+        mode_info = result.get("mode_info", {'requested':'unknown', 'effective':'unknown'})
+
+        is_opt = result.get("is_optimized", False)
+        opt_status_str = "🌟客製優化" if is_opt else "🔹系統預設"
+        candidate_status = position.get("candidate_status", "")
+        compound_risk = position.get("strategy_profile", "無評估資料")
+
+        summary_ws.append([
+            stock_id, opt_status_str, candidate_status, position.get("opportunity_score", 0), fish.get("fish_score", 0), retreat.get("risk_status", ""),
+            warning.get("warning_status", ""), fundamental.get("fund_label", ""), f"{fundamental.get('yoy', 0)}%", f"{fundamental.get('mom', 0)}%", chip_xray.get("xray_status", ""),
+            defense.get("defense_status", ""), fish.get("health_grade", ""), endurance.get("endurance_status", ""), position.get("fish_position", ""),
+            position.get("current_price", 0), position.get("defensive_price", 0), position.get("vwap60", 0), chip_xray.get("xray_message", ""), compound_risk, error_str,
+            "盤後" if mode_info.get('effective') == 'after_market' else "盤中"
+        ])
+
+        ws = wb.create_sheet(title=stock_id)
+        ws.append(["項目", "數值"])
+        for col in range(1, 3):
+            c = ws.cell(row=1, column=col)
+            c.font, c.fill = header_font, header_fill
+
+        ws.append(["股票代號", stock_id])
+        ws.append(["評分參數來源", opt_status_str])
+        ws.append(["大局候選狀態", candidate_status])
+        ws.append(["機會分數 (滿分100)", position.get("opportunity_score", 0)])
+        ws.append(["魚頭分數", fish.get("fish_score", 0)])
+        ws.append(["撤退分數", retreat.get("retreat_score", 0)])
+        ws.append(["預警分數", warning.get("warning_score", 0)])
+        ws.append(["健康等級", fish.get("health_grade", "")])
+        ws.append(["魚體位置", position.get("fish_position", "")])
+        ws.append(["目前價(Raw)", position.get("current_price", 0)])
+        ws.append(["實戰防守價(ATR)", f"{position.get('defensive_price', 0)} ({position.get('defensive_status_text', '')})"])
+        ws.append(["60日加權均價", position.get("vwap60", 0)])
+        ws.append(["成本距離%", position.get("cost_distance", 0)])
+        ws.append(["動態防守空間上限", f"{position.get('max_tolerance', 0)}%"])
+
+        if position.get("cost_distance", 0) < 0:
+            target_str, upside_str = "破線套牢區(無目標價)", "上檔壓力沉重(切勿盲目抄底)"
+        else:
+            target_str = f"{position.get('target_low', 0)} ~ {position.get('target_high', 0)}"
+            upside_str = f"+{position.get('upside_low', 0)}% ~ +{position.get('upside_high', 0)}%"
+
+        ws.append(["保守目標區", target_str])
+        ws.append(["剩餘空間", upside_str])
+        ws.append([])
+        ws.append(["【大局綜合風險診斷】", "系統判定"])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.cell(row=ws.max_row, column=2).font = Font(bold=True)
+
+        ws.append(["綜合風險提示", compound_risk])
+        ws.append(["獨立撤退狀態", retreat.get("risk_status", "")])
+        ws.append(["獨立預警狀態", warning.get("warning_status", "")])
+
+        ws.append([])
+        ws.append(["【資料對齊與基本面狀態】", "數據內容"])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.append(["K線與技術面最新日", data_quality.get('latest_price_date', '無')])
+        ws.append(["法人買賣超最新日", data_quality.get('inst_latest_date', '無')])
+        ws.append(["融資餘額最新日", data_quality.get('margin_latest_date', '無')])
+        ws.append(["集保大戶最新日", data_quality.get('tdcc_latest_date', '無')])
+        ws.append(["營收所屬月份", data_quality.get('revenue_latest_date', '無')])
+        ws.append(["大盤同步基準日", data_quality.get('mkt_latest_date', '無')])
+        ws.append(["API 執行查詢時間", data_quality.get('queried_at', '無')])
+        ws.append(["營收基本面判定", fundamental.get('fund_label', '')])
+        ws.append(["年增率 (YoY)", f"{fundamental.get('yoy', 0)}%"])
+        ws.append(["月增率 (MoM)", f"{fundamental.get('mom', 0)}%"])
+
+        ws.append([])
+        ws.append(["【集保大戶 X 光透視】", chip_xray.get("xray_status", "")])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.append(["籌碼動向判讀", chip_xray.get("xray_message", "")])
+
+        ws.append([])
+        ws.append(["【籌碼續航力】", endurance.get("endurance_score", 0)])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.append(["當前狀態", endurance.get("endurance_status", "")])
+
+        if endurance.get("endurance_messages", []):
+            for msg in endurance["endurance_messages"]: ws.append(["資金動向", msg])
+
+        ws.append(["【盤後法人透視模組】", chip.get("chip_status", "")])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.append(["籌碼雷達加減分", f"{chip.get('chip_score', 0)} 分"])
+        ws.append(["最終續航力總分", f"{max(0, min(100, endurance.get('endurance_score', 0) + chip.get('chip_score', 0)))} 分"])
+
+        if chip.get("chip_messages", []):
+            for msg in chip["chip_messages"]: ws.append(["法人動向", msg])
+        else: ws.append(["法人動向", "無特殊法人異常動向"])
+
+        ws.append([])
+        ws.append(["【型態防禦雷達】", defense.get("defense_status", "")])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        if defense.get("defense_signals", []):
+            for sig in defense["defense_signals"]: ws.append(["偵測特徵", sig])
+        else: ws.append(["偵測特徵", "未觸發任何防守條件"])
+
+        ws.append([])
+        ws.append(["【事先預警模組】", warning.get("warning_status", "")])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        for item, status in warning.get("warning_checks", []): ws.append([item, format_check(status)])
+
+        ws.append([])
+        ws.append(["【魚頭體檢】", "結果"])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        for item, status in fish.get("health_checks", []): ws.append([item, format_fish_check(status)])
+
+        ws.append([])
+        ws.append(["【撤退檢查】", "結果"])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        for item, status in retreat.get("retreat_checks", []): ws.append([item, format_check(status)])
+
+        ws.append([])
+        ws.append(["【系統解讀】"])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.append([position.get("position_comment", "")])
+        ws.append([compound_risk])
+
+        ws.append([])
+        ws.append(["【系統追蹤資訊】"])
+        ws.cell(row=ws.max_row, column=1).font = Font(bold=True)
+        ws.append(["底層錯誤日誌", error_str])
+
+    summary_ws.freeze_panes = "A6"
+    max_col_letter = get_column_letter(len(headers))
+    summary_ws.auto_filter.ref = f"A5:{max_col_letter}{summary_ws.max_row}"
+
+    for sheet in wb.sheetnames:
+        if sheet == "Summary": continue
+        ws = wb[sheet]
+        ws.column_dimensions['A'].width = 35
+        ws.column_dimensions['B'].width = 50
+        for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=2):
+            for cell in row: cell.alignment = Alignment(wrap_text=True, vertical="center")
+
+    for col_idx, column in enumerate(summary_ws.columns, 1):
+        max_length = 0
+        column_letter = get_column_letter(col_idx)
+        for cell in column:
+            try:
+                if cell.row > 4 and cell.value and len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except: pass
+        summary_ws.column_dimensions[column_letter].width = min(40, max_length + 2)
+
+    for row in summary_ws.iter_rows(min_row=6, max_row=summary_ws.max_row, min_col=1, max_col=len(headers)):
+        for cell in row: cell.alignment = Alignment(wrap_text=True, vertical="center")
 
     if not output_filename:
+        today_str = datetime.now(pytz.timezone('Asia/Taipei')).strftime("%Y%m%d")
         v_clean = WHALE_VERSION.replace(" ", "_").replace(".", "_")
-        time_str = datetime.now(pytz.timezone('Asia/Taipei')).strftime("%Y%m%d")
-        output_filename = f"{v_clean}_Report_{time_str}.xlsx"
+        output_filename = f"{v_clean}_Report_{today_str}.xlsx"
 
     wb.save(output_filename)
     return output_filename
